@@ -5,8 +5,8 @@ Disallow: /admin
 Disallow: /?admin=true
 
 # Sitemaps
-Sitemap: https://yourdomain.com/sitemap.xml
-Sitemap: https://yourdomain.com/news-sitemap.xml
+Sitemap: https://234news.vercel.app/sitemap.xml
+Sitemap: https://234news.vercel.app/news-sitemap.xml
 
 # Google News
 User-agent: Googlebot-News

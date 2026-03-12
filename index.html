@@ -13,21 +13,21 @@
 <meta property="og:title" content="LinkHub — Live News & Curated Backlinks">
 <meta property="og:description" content="Fresh trending news updated every hour: entertainment, sports, celebrity, streaming, movies, world news and more.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://yourdomain.com/">
-<meta property="og:image" content="https://yourdomain.com/og-image.jpg">
+<meta property="og:url" content="https://234news.vercel.app/">
+<meta property="og:image" content="https://234news.vercel.app/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="LinkHub — Live News & Curated Backlinks">
-<link rel="canonical" href="https://yourdomain.com/">
+<link rel="canonical" href="https://234news.vercel.app/">
 <link rel="sitemap" type="application/xml" href="/sitemap.xml">
 <link rel="alternate" type="application/rss+xml" title="LinkHub News Feed" href="/rss.xml">
-<meta name="twitter:image" content="https://yourdomain.com/og-image.jpg">
+<meta name="twitter:image" content="https://234news.vercel.app/og-image.jpg">
 <meta name="twitter:description" content="Fresh trending news updated every hour across entertainment, sports, world, tech and more.">
 <meta name="theme-color" content="#1a56db" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="LinkHub">
-<link rel="apple-touch-icon" href="https://yourdomain.com/icon-192.png">
+<link rel="apple-touch-icon" href="https://234news.vercel.app/icon-192.png">
 <link rel="manifest" href="/manifest.json">
 <!-- Schema.org structured data -->
 <script type="application/ld+json">
@@ -35,11 +35,11 @@
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "LinkHub",
-  "url": "https://yourdomain.com",
+  "url": "https://234news.vercel.app",
   "description": "Live trending news and curated backlinks, refreshed every hour",
   "potentialAction": {
     "@type": "SearchAction",
-    "target": "https://yourdomain.com/?q={search_term_string}",
+    "target": "https://234news.vercel.app/?q={search_term_string}",
     "query-input": "required name=search_term_string"
   }
 }
@@ -709,7 +709,7 @@ footer{background:white;border-top:1px solid var(--border);padding:28px 20px;mar
     <div class="login-sub">Admin sign-in — only you can post</div>
     <div class="login-field">
       <label>Email</label>
-      <input type="email" id="l-email" placeholder="admin@yourdomain.com">
+      <input type="email" id="l-email" placeholder="admin@234news.vercel.app">
     </div>
     <div class="login-field">
       <label>Password</label>
@@ -1696,7 +1696,7 @@ function renderArticle(art, color, article){
     "datePublished": new Date().toISOString(),
     "dateModified":  new Date().toISOString(),
     "author":{"@type":"Organization","name":art.byline||article?.source||'LinkHub'},
-    "publisher":{"@type":"Organization","name":"LinkHub","logo":{"@type":"ImageObject","url":"https://yourdomain.com/icon-192.png"}},
+    "publisher":{"@type":"Organization","name":"LinkHub","logo":{"@type":"ImageObject","url":"https://234news.vercel.app/icon-192.png"}},
     "url": articleUrl,
     "mainEntityOfPage": articleUrl,
     "articleSection": article?.category||'',
@@ -1774,7 +1774,7 @@ function closeArticle(){
   const setMeta=(sel,attr,val)=>{ const el=document.querySelector(sel); if(el) el.setAttribute(attr,val); };
   setMeta('meta[name="description"]','content','Fresh trending news across entertainment, sports, celebrity, streaming, movies, and world news — updated every hour.');
   setMeta('meta[property="og:title"]','content','LinkHub — Live News & Curated Backlinks');
-  setMeta('link[rel="canonical"]','href','https://yourdomain.com/');
+  setMeta('link[rel="canonical"]','href','https://234news.vercel.app/');
   const ld=document.getElementById('article-ld'); if(ld) ld.remove();
   stopReadingProgress();
   CURRENT_ARTICLE = null;
@@ -1944,7 +1944,7 @@ async function generateAndPingSitemap(){
     const {data:cached}   = await SB.from('news_cache').select('slug,title,updated_at,category').order('updated_at',{ascending:false}).limit(1000);
 
     const now = new Date().toISOString().split('T')[0];
-    const domain = 'https://yourdomain.com';
+    const domain = 'https://234news.vercel.app';
 
     // Build news-sitemap.xml (Google News format — last 2 days only)
     const twoDaysAgo = new Date(Date.now()-2*24*60*60*1000);
@@ -2015,7 +2015,7 @@ async function generateRSS(){
   try {
     const {data} = await SB.from('news_cache').select('*').order('updated_at',{ascending:false}).limit(50);
     if(!data||!data.length) return;
-    const domain='https://yourdomain.com';
+    const domain='https://234news.vercel.app';
     const rss=`<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
