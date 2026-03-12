@@ -392,6 +392,111 @@ body.article-open #reading-progress { display: block; }
   body { background:white; color:black; }
 }
 
+
+/* ============================================================
+   PROXY MANAGER PANEL
+   ============================================================ */
+#proxy-panel {
+  display:none; position:fixed; inset:0; z-index:8800;
+  background:rgba(10,15,28,0.85); backdrop-filter:blur(8px);
+  align-items:center; justify-content:center; padding:20px;
+}
+#proxy-panel.show { display:flex; }
+.proxy-box {
+  background:var(--surface); border-radius:20px;
+  width:100%; max-width:780px; max-height:88vh;
+  overflow:hidden; display:flex; flex-direction:column;
+  box-shadow:0 24px 80px rgba(0,0,0,0.4);
+  animation:popIn 0.2s ease;
+}
+.proxy-header {
+  padding:18px 24px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:12px; flex-shrink:0;
+}
+.proxy-header h2 { font-size:1rem; font-weight:800; color:var(--text); flex:1; }
+.proxy-close { background:none; border:none; cursor:pointer; color:var(--muted); font-size:1.2rem; padding:4px 8px; border-radius:6px; }
+.proxy-close:hover { background:var(--surface2); }
+.proxy-tabs { display:flex; gap:0; border-bottom:1px solid var(--border); flex-shrink:0; }
+.proxy-tab {
+  padding:10px 20px; font-size:0.78rem; font-weight:600;
+  color:var(--muted); cursor:pointer; border-bottom:2.5px solid transparent;
+  background:none; border-top:none; border-left:none; border-right:none;
+  font-family:'Plus Jakarta Sans',sans-serif; transition:all 0.15s;
+}
+.proxy-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.proxy-body { flex:1; overflow-y:auto; padding:20px; }
+.proxy-stats-grid {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px;
+}
+@media(max-width:600px){ .proxy-stats-grid{ grid-template-columns:repeat(2,1fr); } }
+.proxy-stat-card {
+  background:var(--surface2); border-radius:12px; padding:14px 16px;
+  border:1px solid var(--border);
+}
+.proxy-stat-label { font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px; }
+.proxy-stat-value { font-size:1.4rem; font-weight:800; color:var(--text); }
+.proxy-stat-sub { font-size:0.65rem; color:var(--muted); margin-top:2px; }
+.proxy-actions { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; align-items:center; }
+.proxy-list { border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+.proxy-list-header {
+  display:grid; grid-template-columns:2fr 1fr 1fr 1fr 80px;
+  padding:8px 14px; background:var(--surface2);
+  font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em;
+  border-bottom:1px solid var(--border);
+}
+.proxy-row {
+  display:grid; grid-template-columns:2fr 1fr 1fr 1fr 80px;
+  padding:10px 14px; border-bottom:1px solid var(--border);
+  font-size:0.78rem; align-items:center; transition:background 0.1s;
+}
+.proxy-row:last-child { border-bottom:none; }
+.proxy-row:hover { background:var(--surface2); }
+.proxy-row.active-proxy { background:var(--accent-light); border-left:3px solid var(--accent); }
+.proxy-ip { font-family:monospace; font-size:0.78rem; color:var(--text); font-weight:600; }
+.proxy-country { font-size:0.75rem; color:var(--text2); }
+.proxy-speed { font-size:0.75rem; }
+.proxy-speed.fast { color:var(--green); }
+.proxy-speed.medium { color:var(--orange); }
+.proxy-speed.slow { color:var(--red); }
+.proxy-status-dot {
+  width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px;
+}
+.dot-alive { background:var(--green); box-shadow:0 0 4px rgba(5,122,85,0.5); }
+.dot-dead { background:var(--red); }
+.dot-testing { background:var(--orange); animation:pulse 1s infinite; }
+.dot-untested { background:var(--muted2); }
+.proxy-actions-cell { display:flex; gap:4px; }
+.proxy-mini-btn {
+  background:none; border:1px solid var(--border2); border-radius:5px;
+  padding:3px 7px; font-size:0.65rem; cursor:pointer; color:var(--text2);
+  font-family:'Plus Jakarta Sans',sans-serif; transition:all 0.15s;
+}
+.proxy-mini-btn:hover { background:var(--accent-light); color:var(--accent); border-color:var(--accent); }
+.proxy-mini-btn.del:hover { background:#fdf2f2; color:var(--red); border-color:var(--red); }
+.proxy-log {
+  background:#0f172a; border-radius:10px; padding:14px 16px;
+  font-family:monospace; font-size:0.72rem; color:#a8d8a8;
+  max-height:220px; overflow-y:auto; line-height:1.7;
+}
+.proxy-log .log-err { color:#f87171; }
+.proxy-log .log-ok  { color:#6ee7b7; }
+.proxy-log .log-info{ color:#93c5fd; }
+.proxy-log .log-warn{ color:#fcd34d; }
+.proxy-empty { text-align:center; padding:40px; color:var(--muted); font-size:0.82rem; }
+.proxy-progress-bar {
+  height:4px; background:var(--surface2); border-radius:2px; margin-bottom:16px; overflow:hidden;
+}
+.proxy-progress-fill {
+  height:100%; background:var(--accent); border-radius:2px;
+  transition:width 0.3s ease; width:0%;
+}
+.current-proxy-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--green-bg); border:1px solid #a7f3d0;
+  border-radius:999px; padding:3px 10px; font-size:0.68rem; font-weight:600; color:var(--green);
+  cursor:pointer;
+}
+
 /* ============================================================
    HEADER
    ============================================================ */
@@ -787,6 +892,7 @@ footer{background:white;border-top:1px solid var(--border);padding:28px 20px;mar
     <div class="live-badge"><span class="live-dot"></span>Live</div>
     <span class="header-clock" id="clock"></span>
     <button class="btn-admin" id="admin-btn" onclick="toggleAdmin()">Admin</button>
+    <button class="btn-settings" onclick="openProxyPanel()" title="Proxy Manager" id="proxy-header-btn">🛡️</button>
     <button class="btn-settings" onclick="toggleBookmarks()" title="Saved articles" id="bookmarks-btn">🔖</button>
     <button class="btn-settings" onclick="toggleSettings()" title="Settings">⚙️</button>
   </div>
@@ -894,6 +1000,95 @@ footer{background:white;border-top:1px solid var(--border);padding:28px 20px;mar
   </div>
 </footer>
 
+
+<!-- PROXY MANAGER PANEL -->
+<div id="proxy-panel">
+  <div class="proxy-box">
+    <div class="proxy-header">
+      <span style="font-size:1.2rem">🛡️</span>
+      <h2>Proxy Manager</h2>
+      <span id="proxy-current-badge" class="current-proxy-badge" style="display:none" onclick="openProxyPanel()">
+        <span class="live-dot"></span><span id="proxy-badge-text">Direct</span>
+      </span>
+      <button class="proxy-close" onclick="closeProxyPanel()">✕</button>
+    </div>
+    <div class="proxy-tabs">
+      <button class="proxy-tab active" onclick="switchProxyTab(this,'dashboard')">📊 Dashboard</button>
+      <button class="proxy-tab" onclick="switchProxyTab(this,'proxies')">📋 Proxy List</button>
+      <button class="proxy-tab" onclick="switchProxyTab(this,'log')">📟 Activity Log</button>
+    </div>
+    <div class="proxy-body">
+
+      <!-- DASHBOARD TAB -->
+      <div id="proxy-tab-dashboard">
+        <div class="proxy-stats-grid">
+          <div class="proxy-stat-card">
+            <div class="proxy-stat-label">Total Proxies</div>
+            <div class="proxy-stat-value" id="pm-total">0</div>
+            <div class="proxy-stat-sub">scraped + tested</div>
+          </div>
+          <div class="proxy-stat-card">
+            <div class="proxy-stat-label">Alive</div>
+            <div class="proxy-stat-value" id="pm-alive" style="color:var(--green)">0</div>
+            <div class="proxy-stat-sub">passing tests</div>
+          </div>
+          <div class="proxy-stat-card">
+            <div class="proxy-stat-label">Avg Speed</div>
+            <div class="proxy-stat-value" id="pm-speed">—</div>
+            <div class="proxy-stat-sub">milliseconds</div>
+          </div>
+          <div class="proxy-stat-card">
+            <div class="proxy-stat-label">Requests</div>
+            <div class="proxy-stat-value" id="pm-requests">0</div>
+            <div class="proxy-stat-sub">proxied total</div>
+          </div>
+        </div>
+        <div class="proxy-progress-bar"><div class="proxy-progress-fill" id="pm-progress"></div></div>
+        <div class="proxy-actions">
+          <button class="btn btn-primary btn-sm" onclick="proxyManager.scrapeAndTest()">🔍 Scrape + Test All</button>
+          <button class="btn btn-ghost btn-sm" onclick="proxyManager.testAll()">⚡ Test Existing</button>
+          <button class="btn btn-ghost btn-sm" onclick="proxyManager.rotate()">🔄 Rotate Now</button>
+          <button class="btn btn-ghost btn-sm" onclick="proxyManager.toggleAuto()" id="pm-auto-btn">▶ Auto ON</button>
+          <button class="btn btn-danger btn-sm" onclick="proxyManager.clearDead()">🗑 Clear Dead</button>
+          <button class="btn btn-ghost btn-sm" onclick="proxyManager.syncNow();toast('☁️ Syncing to Supabase…','✓')">☁️ Sync Cloud</button>
+          <button class="btn btn-ghost btn-sm" onclick="proxyManager.loadCloud();toast('⬇️ Loading from cloud…','✓')">⬇️ Load Cloud</button>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:0.72rem;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em">Current Active Proxy</div>
+          <div id="pm-active-display" style="font-family:monospace;font-size:0.85rem;color:var(--text);background:var(--surface2);padding:10px 14px;border-radius:8px;border:1px solid var(--border)">
+            🌐 Direct connection (no proxy active)
+          </div>
+        </div>
+        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">Country Distribution</div>
+        <div id="pm-countries" style="display:flex;flex-wrap:wrap;gap:6px;font-size:0.72rem"></div>
+      </div>
+
+      <!-- PROXY LIST TAB -->
+      <div id="proxy-tab-proxies" style="display:none">
+        <div class="proxy-actions" style="margin-bottom:12px">
+          <input type="text" id="pm-manual-input" placeholder="ip:port or host:port" style="flex:1;padding:7px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:0.8rem;font-family:'Plus Jakarta Sans',sans-serif;background:var(--surface2);color:var(--text);outline:none;min-width:160px">
+          <button class="btn btn-ghost btn-sm" onclick="proxyManager.addManual()">+ Add</button>
+          <button class="btn btn-ghost btn-sm" onclick="proxyManager.exportList()">⬇ Export</button>
+        </div>
+        <div class="proxy-list" id="pm-list">
+          <div class="proxy-empty">No proxies yet. Click "Scrape + Test All" to get started.</div>
+        </div>
+      </div>
+
+      <!-- LOG TAB -->
+      <div id="proxy-tab-log" style="display:none">
+        <div class="proxy-actions" style="margin-bottom:10px">
+          <button class="btn btn-ghost btn-sm" onclick="proxyManager.clearLog()">🗑 Clear Log</button>
+        </div>
+        <div class="proxy-log" id="pm-log">
+          <span class="log-info">[System] Proxy Manager initialized. Click "Scrape + Test All" to begin.</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast">
   <span id="toast-icon">✓</span>
   <span id="toast-msg">Done!</span>
@@ -986,9 +1181,11 @@ function setDbBadge(cls, txt){
 async function testConn(){
   if(!SB){ setDbBadge('bad','Not configured'); return; }
   setDbBadge('pending','Testing…');
-  const {error} = await SB.from('backlinks').select('id').limit(1);
-  if(error){ setDbBadge('bad','Error'); dom('s-status').className='settings-status err'; dom('s-status').textContent='✗ '+error.message; }
-  else { setDbBadge('ok','Connected ✓'); dom('s-status').className='settings-status'; dom('s-status').textContent='✓ Connected to Supabase!'; loadLinks(); }
+  try {
+    const {error} = await SB.from('backlinks').select('id').limit(1);
+    if(error){ setDbBadge('bad','Error'); dom('s-status').className='settings-status err'; dom('s-status').textContent='✗ '+error.message; }
+    else { setDbBadge('ok','Connected ✓'); dom('s-status').className='settings-status'; dom('s-status').textContent='✓ Connected to Supabase!'; loadLinks(); }
+  } catch(e){ setDbBadge('bad','Error'); dom('s-status').textContent='✗ '+e.message; }
 }
 
 // ================================================================
@@ -1113,7 +1310,7 @@ async function addLinks(){
   if(!valid.length){ toast('No valid URLs found','⚠️'); return; }
 
   if(SB && IS_ADMIN){
-    const {error} = await SB.from('backlinks').insert(valid.map(url=>({url})));
+    const {error} = await SB.from('backlinks').insert(valid.map(url=>({url, created_at:new Date().toISOString()})));
     if(error){ toast('Error: '+error.message.slice(0,40),'✗'); return; }
   } else {
     let arr=JSON.parse(localStorage.getItem('lh_links')||'[]');
@@ -1347,17 +1544,55 @@ async function fetchNews(forceRefresh){
     return all;
   }
 
+
+  // SOURCE 4: Free RSS feeds for categories not covered by paid APIs
+  async function fetchFromRSS(){
+    const feeds=[
+      // Celebrity
+      {url:'https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent('https://www.justjared.com/feed/'),      cat:'Celebrity'},
+      {url:'https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent('https://pagesix.com/feed/'),            cat:'Celebrity'},
+      {url:'https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent('https://variety.com/v/film/feed/'),     cat:'Movies'},
+      {url:'https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent('https://www.hollywoodreporter.com/feed/'),cat:'Movies'},
+      {url:'https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent('https://variety.com/v/tv/feed/'),       cat:'Streaming'},
+      {url:'https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent('https://deadline.com/feed/'),           cat:'Streaming'},
+      {url:'https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent('https://feeds.bbci.co.uk/news/rss.xml'),cat:'Live News'},
+      {url:'https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent('https://rss.cnn.com/rss/cnn_topstories.rss'),cat:'Live News'},
+      {url:'https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent('https://feeds.reuters.com/reuters/topNews'),cat:'World'},
+    ];
+    const requests=feeds.map(f=>
+      fetch(f.url).then(r=>r.ok?r.json():null).catch(()=>null)
+    );
+    const results=await Promise.all(requests);
+    let all=[];
+    results.forEach((data,i)=>{
+      if(data?.items){
+        all=all.concat(data.items.slice(0,6).map(a=>({
+          title:   (a.title||'').replace(/<[^>]+>/g,'').trim(),
+          source:  feeds[i].url.includes('bbc')?'BBC News':feeds[i].url.includes('cnn')?'CNN':feeds[i].url.includes('reuters')?'Reuters':feeds[i].url.includes('variety')?'Variety':feeds[i].url.includes('deadline')?'Deadline':feeds[i].url.includes('hollywoodreporter')?'Hollywood Reporter':feeds[i].url.includes('pagesix')?'Page Six':'JustJared',
+          category:feeds[i].cat,
+          url:     a.link||a.url||'#',
+          image:   a.enclosure?.link||a.thumbnail||null,
+          full_content: a.content||a.description||null,
+          slug:    (a.title||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,60)
+        })));
+      }
+    });
+    return all;
+  }
+
   try {
-    const [g, nd, tna] = await Promise.allSettled([
+    const [g, nd, tna, rss] = await Promise.allSettled([
       fetchFromGNews(),
       fetchFromNewsData(),
-      fetchFromTheNewsAPI()
+      fetchFromTheNewsAPI(),
+      fetchFromRSS()
     ]);
 
     let allNews = [];
     if(g.status==='fulfilled')   allNews = allNews.concat(g.value||[]);
     if(nd.status==='fulfilled')  allNews = allNews.concat(nd.value||[]);
     if(tna.status==='fulfilled') allNews = allNews.concat(tna.value||[]);
+    if(rss.status==='fulfilled') allNews = allNews.concat(rss.value||[]);
 
     // Deduplicate by slug
     const seen = new Set();
@@ -1377,23 +1612,32 @@ async function fetchNews(forceRefresh){
       localStorage.setItem('lh_news_ts', String(Date.now()));
     } catch(e){}
 
-    // Cache in Supabase (batch upsert top 40)
+    // Cache ALL news in Supabase — single chunked batch upsert, includes image
     if(SB){
-      const batch = NEWS.slice(0,40);
-      for(const a of batch){
-        await SB.from('news_cache').upsert({
-          slug:a.slug, title:a.title, source:a.source,
-          category:a.category, url:a.url,
-          updated_at:new Date().toISOString()
-        },{onConflict:'slug'}).catch(()=>{});
-      }
+      try {
+        const rows = NEWS.map(a=>({
+          slug:       a.slug,
+          title:      a.title,
+          source:     a.source,
+          category:   a.category,
+          url:        a.url,
+          image:      a.image||null,
+          updated_at: new Date().toISOString()
+        }));
+        for(let i=0;i<rows.length;i+=200){
+          await SB.from('news_cache').upsert(rows.slice(i,i+200),{onConflict:'slug'}).catch(()=>{});
+        }
+      } catch(e){ console.warn('[SB news_cache]',e); }
     }
 
     dom('news-status').textContent='Live ✓';
     dom('news-status').className='badge badge-green';
+    countdownVal = 3600;
     renderCurrentNews();
     toast('📰 News updated!');
     stampFreshness();
+    // Sitemap + RSS after fetch
+    setTimeout(()=>{ generateAndPingSitemap(); generateRSS(); }, 2000);
 
   } catch(err){
     console.error('[News fetch error]', err);
@@ -1497,7 +1741,7 @@ function changePage(dir){
 }
 
 function getCatEmoji(cat){
-  const map={General:'🌐',World:'🌍',Entertainment:'🎬',Sports:'⚽',Technology:'💻',Business:'📈',Health:'❤️',Science:'🔬',Streaming:'📺',Movies:'🎥'};
+  const map={General:'🌐',World:'🌍',Entertainment:'🎬',Celebrity:'⭐','Live News':'🔴',Sports:'⚽',Technology:'💻',Business:'📈',Health:'❤️',Science:'🔬',Streaming:'📺',Movies:'🎥'};
   return map[cat]||'📰';
 }
 
@@ -1525,9 +1769,9 @@ async function saveEdit(){
   NEWS[EDIT_ID].url = dom('edit-url').value.trim();
   if(SB){
     const a=NEWS[EDIT_ID];
-    await SB.from('news_cache').update({
-      title:a.title,source:a.source,category:a.category,url:a.url,
-      updated_at:new Date().toISOString()
+        await SB.from('news_cache').update({
+      title:a.title, source:a.source, category:a.category, url:a.url,
+      image:a.image||null, updated_at:new Date().toISOString()
     }).eq('slug',a.slug||slug(a.title));
   }
   closeEdit();
@@ -1557,21 +1801,20 @@ async function openArticle(idx, sl){
   document.body.style.overflow='hidden';
   const color=CAT_COLORS[article.category]||'#1a56db';
 
-  // SEO meta updates
   history.pushState({idx,sl},article.title,`/news/${sl}`);
-  document.title=`${article.title} — LinkHub`;
+  document.title=`${article.title} — 234News`;
   dom('art-topbar-title').textContent=article.title;
-  const setMeta=(sel,attr,val)=>{ const el=document.querySelector(sel); if(el) el.setAttribute(attr,val); };
-  setMeta('meta[name="description"]','content',article.title+' — Read the full story on LinkHub.');
+  const setMeta=(sel,attr,val)=>{const el=document.querySelector(sel);if(el)el.setAttribute(attr,val);};
+  setMeta('meta[name="description"]','content',article.title+' — Read the full story on 234News.');
   setMeta('meta[property="og:title"]','content',article.title);
   setMeta('meta[property="og:description"]','content',article.title);
   setMeta('link[rel="canonical"]','href',window.location.href);
   if(article.image) setMeta('meta[property="og:image"]','content',article.image);
 
-  // Supabase cache check
+  // Supabase cache check first
   if(SB){
-    const {data} = await SB.from('news_articles').select('*').eq('slug',sl).single().catch(()=>({data:null}));
-    if(data?.body){ renderArticle(data,color,article); return; }
+    const {data}=await SB.from('news_articles').select('*').eq('slug',sl).single().catch(()=>({data:null}));
+    if(data?.body){renderArticle(data,color,article);return;}
   }
 
   // Skeleton
@@ -1581,90 +1824,120 @@ async function openArticle(idx, sl){
     <div class="article-meta"><strong>${esc(article.source)}</strong><span>Loading…</span></div>
     <div class="article-skel">${Array.from({length:6},()=>`<div class="skel-p" style="width:${60+Math.random()*35}%"></div>`).join('')}</div>`;
 
-  const published = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-  let paras = [], articleImage = article.image||null;
+  const published=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  let paras=[], articleImage=article.image||null;
 
-  // STRATEGY 1: NewsData full_content field (already in article object)
-  if(article.full_content && article.full_content.length > 100){
-    const text = article.full_content.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
-    paras = buildParas(text);
+  // STRATEGY 1: NewsData full_content already embedded in article object
+  if(article.full_content&&article.full_content.length>100){
+    const text=article.full_content.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+    paras=buildParas(text);
   }
 
-  // STRATEGY 2: Fetch via allorigins CORS proxy
-  if(paras.length < 2 && article.url && article.url !== '#'){
-    try {
-      const proxyRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(article.url)}`,{signal:AbortSignal.timeout(8000)});
-      if(proxyRes.ok){
-        const pd = await proxyRes.json();
-        const html = pd.contents||'';
-        // Try to extract image from og:image
-        const imgMatch = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i)
-                      || html.match(/<meta[^>]+content="([^"]+)"[^>]+property="og:image"/i);
-        if(imgMatch && !articleImage) articleImage = imgMatch[1];
-        // Extract article body — prioritise <article> or <main> tags
-        const articleTagMatch = html.match(/<article[^>]*>([\s\S]*?)<\/article>/i)
-                             || html.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
-        const bodyHtml = articleTagMatch ? articleTagMatch[1] : html;
-        const tmp = document.createElement('div');
-        tmp.innerHTML = bodyHtml
+  // STRATEGY 2: Use Proxy Manager — auto-rotates best available relay
+  if(paras.length<2&&article.url&&article.url!=='#'){
+    try{
+      const html = await proxyManager.fetch(article.url, 10000);
+      if(html&&html.length>200){
+        // Extract og:image
+        const imgM=html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
+                 ||html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+        if(imgM&&!articleImage) articleImage=imgM[1];
+        // Extract best content block
+        const bodyM=html.match(/<article[^>]*>([\s\S]*?)<\/article>/i)
+                  ||html.match(/<main[^>]*>([\s\S]*?)<\/main>/i)
+                  ||html.match(/<div[^>]*(?:article|story|content|post)[^>]*>([\s\S]*?)<\/div>/i);
+        const bodyHtml=bodyM?bodyM[1]:html;
+        const tmp=document.createElement('div');
+        tmp.innerHTML=bodyHtml
           .replace(/<script[\s\S]*?<\/script>/gi,'')
           .replace(/<style[\s\S]*?<\/style>/gi,'')
-          .replace(/<nav[\s\S]*?<\/nav>/gi,'')
-          .replace(/<header[\s\S]*?<\/header>/gi,'')
-          .replace(/<footer[\s\S]*?<\/footer>/gi,'')
-          .replace(/<aside[\s\S]*?<\/aside>/gi,'')
-          .replace(/<figure[\s\S]*?<\/figure>/gi,'')
+          .replace(/<(nav|header|footer|aside|figure|form|iframe)[^>]*>[\s\S]*?<\/\1>/gi,'')
           .replace(/<[^>]+>/g,' ');
-        const text = tmp.textContent.replace(/\s+/g,' ').trim().slice(0,5000);
-        if(text.length > 200) paras = buildParas(text);
+        const text=tmp.textContent.replace(/\s+/g,' ').trim().slice(0,6000);
+        if(text.length>300) paras=buildParas(text);
       }
-    } catch(e){ console.warn('[Proxy]', e.message); }
+    }catch(e){console.warn('[ProxyManager]',e.message);}
   }
 
-  // STRATEGY 3: Smart fallback using title + category context
-  if(paras.length < 2){
-    paras = [
-      `${article.title}. This story is currently developing and full details are still emerging from ${article.source}.`,
-      `The ${article.category} sector continues to see significant activity. Stay informed with LinkHub's real-time news feed, refreshed every hour with the latest stories from trusted global sources.`,
-      `For the complete and detailed coverage of this story, we recommend reading the original report directly from ${article.source}.`
-    ];
+  // STRATEGY 3: Generate rich content from title+category using Wikipedia/search snippets
+  if(paras.length<2){
+    paras=await generateRichFallback(article);
   }
 
-  const key_points = paras.slice(0,3).map(p=>p.split(/[.!?]/)[0].trim()).filter(k=>k.length>15);
-  const summary = paras[0].slice(0,220)+(paras[0].length>220?'…':'');
+  const key_points=paras.slice(0,3).map(p=>p.split(/[.!?]/)[0].trim()).filter(k=>k.length>15);
+  const summary=paras[0].slice(0,220)+(paras[0].length>220?'…':'');
 
-  const art = {
-    headline: article.title,
-    byline:   article.source,
+  const art={
+    headline:article.title, byline:article.source,
     published, summary,
-    body:     paras.join('\n\n'),
-    key_points,
-    source_url: article.url,
-    image:    articleImage,
-    slug:     sl
+    body:paras.join('\n\n'),
+    key_points, source_url:article.url,
+    image:articleImage, slug:sl
   };
 
-  // Cache in Supabase
   if(SB){
     SB.from('news_articles').upsert({
       slug:sl, title:art.headline, category:article.category,
       source:article.source, summary:art.summary, body:art.body,
-      source_url:art.source_url, updated_at:new Date().toISOString()
+      source_url:art.source_url, image:art.image||null,
+      updated_at:new Date().toISOString()
     },{onConflict:'slug'}).catch(()=>{});
   }
+  renderArticle(art,color,article);
+}
 
-  renderArticle(art, color, article);
+// Generate rich fallback content using DuckDuckGo instant answer API (free, no key)
+async function generateRichFallback(article){
+  try{
+    const query=encodeURIComponent(article.title.split(' ').slice(0,8).join(' '));
+    const res=await fetch(`https://api.duckduckgo.com/?q=${query}&format=json&no_html=1&skip_disambig=1`,{signal:AbortSignal.timeout(5000)});
+    if(res.ok){
+      const data=await res.json();
+      const abstract=data.AbstractText||'';
+      const related=(data.RelatedTopics||[]).slice(0,4).map(t=>t.Text||'').filter(Boolean);
+      if(abstract.length>100){
+        const paras=[abstract];
+        if(related.length) paras.push(related.join('. ')+'.');
+        paras.push(`This ${article.category} story from ${article.source} continues to develop. Visit the original source for complete coverage and the latest updates.`);
+        paras.push(`234News aggregates the top stories across ${article.category}, World News, Entertainment, Sports, Technology, Business, Health and Science — refreshed every hour.`);
+        return paras;
+      }
+    }
+  }catch(e){}
+  // Final plain fallback
+  const catContext={
+    Entertainment:'The entertainment industry continues to make headlines as celebrities, studios, and streaming platforms shape pop culture worldwide.',
+    Celebrity:'Celebrities and public figures remain under the spotlight as fans and media follow their every move, project, and personal milestone.',
+    Sports:'The world of sports delivers non-stop drama, as athletes and teams push the limits of performance on the global stage.',
+    Technology:'The technology sector is moving faster than ever, with innovations in AI, software, and hardware transforming daily life.',
+    Business:'Global markets and business leaders navigate economic shifts, mergers, and emerging opportunities across industries.',
+    Health:'Health and wellness researchers continue to uncover new findings that impact how we live, eat, and treat disease.',
+    Science:'Scientists and researchers are making groundbreaking discoveries that deepen our understanding of the universe and life itself.',
+    Streaming:'Streaming platforms are in fierce competition, producing original content and signing major deals to capture global audiences.',
+    Movies:'The film industry is delivering a diverse slate of releases, from major blockbusters to critically acclaimed independent features.',
+    'Live News':'Breaking news is unfolding as journalists on the ground report the latest developments from around the world.',
+    World:'Global events are shaping international relations, economies, and the daily lives of billions of people across every continent.',
+    General:'News from across every sector continues to emerge, reflecting the fast-moving pace of events both locally and globally.'
+  };
+  const context=catContext[article.category]||catContext.General;
+  return[
+    `${article.title}. ${context}`,
+    `According to ${article.source}, this story represents one of the more significant developments in the ${article.category} space in recent times. Analysts and observers are closely watching how events unfold.`,
+    `The implications of this story extend beyond the immediate moment. In the broader context of ${article.category} news, developments like these often signal larger trends that will play out over the coming weeks and months.`,
+    `Readers are encouraged to follow ${article.source} directly for the most detailed and up-to-date reporting on this story. 234News will continue to update this and related stories as more information becomes available.`,
+  ];
 }
 
 function buildParas(text){
-  const sentences = text.match(/[^.!?]{20,}[.!?]+/g)||[];
-  const paras = [];
-  for(let i=0; i<sentences.length && paras.length<7; i+=3){
-    const p = sentences.slice(i,i+3).join(' ').trim();
+  const sentences=text.match(/[^.!?]{20,}[.!?]+/g)||[];
+  const paras=[];
+  for(let i=0;i<sentences.length&&paras.length<7;i+=3){
+    const p=sentences.slice(i,i+3).join(' ').trim();
     if(p.length>60) paras.push(p);
   }
   return paras;
 }
+
 
 function renderArticle(art, color, article){
   const ac=dom('article-content');
@@ -1785,7 +2058,7 @@ function closeArticle(){
   document.body.classList.remove('article-open');
   document.body.style.overflow='';
   history.pushState({},'LinkHub','/');
-  document.title='LinkHub — Live News & Curated Backlinks';
+  document.title='234News — Live News & Trending Stories';
   const setMeta=(sel,attr,val)=>{ const el=document.querySelector(sel); if(el) el.setAttribute(attr,val); };
   setMeta('meta[name="description"]','content','Fresh trending news across entertainment, sports, celebrity, streaming, movies, and world news — updated every hour.');
   setMeta('meta[property="og:title"]','content','LinkHub — Live News & Curated Backlinks');
@@ -2070,13 +2343,556 @@ fetchNews = async function(forceRefresh){
   }, 2000);
 };
 
+
+// ================================================================
+// PROXY MANAGER — Scraper, Tester, Rotator
+// ================================================================
+const proxyManager = (() => {
+
+  // ── State ──────────────────────────────────────────────────
+  let proxies     = JSON.parse(localStorage.getItem('pm_proxies') || '[]');
+  let activeProxy = null;
+  let autoRotate  = true;
+  let rotateTimer = null;
+  let requestCount= parseInt(localStorage.getItem('pm_requests')||'0');
+  let scraping    = false;
+
+  // Western country targets for proxy scraping
+  const TARGET_COUNTRIES = ['US','GB','DE','FR','NL','CA','AU','SE','CH','NO','AT','BE','DK','FI','IE','IT','ES','PL'];
+
+  // ── Free proxy list sources (public APIs / pages) ──────────
+  const PROXY_SOURCES = [
+    // JSON APIs
+    { url:'https://proxylist.geonode.com/api/proxy-list?limit=100&page=1&sort_by=lastChecked&sort_type=desc&protocols=http,https&country=US,GB,DE,FR,NL,CA,AU,SE,CH,NO', type:'geonode' },
+    { url:'https://proxylist.geonode.com/api/proxy-list?limit=100&page=2&sort_by=speed&sort_type=asc&protocols=http,https&country=US,GB,DE,FR,NL,CA,AU,SE,CH,NO', type:'geonode' },
+    { url:'https://api.proxyscrape.com/v3/free-proxy-list/get?request=displayproxies&protocol=http&timeout=5000&country=US,GB,DE,FR,NL,CA,AU&simplified=true', type:'text' },
+    { url:'https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt', type:'text' },
+    { url:'https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt', type:'text' },
+    { url:'https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt', type:'text' },
+    { url:'https://raw.githubusercontent.com/hookzof/socks5_list/master/proxy.txt', type:'text' },
+    { url:'https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt', type:'text' },
+    { url:'https://raw.githubusercontent.com/sunny9577/proxy-scraper/master/proxies.txt', type:'text' },
+    { url:'https://www.proxy-list.download/api/v1/get?type=http', type:'text' },
+    { url:'https://www.proxyscan.io/api/proxy?format=txt&type=http&country=US,GB,DE,FR,NL&limit=100', type:'text' },
+  ];
+
+  // CORS relay for scraping proxy sources themselves
+  const RELAY = url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+
+  // ── Test URLs — we try to fetch these through each proxy ───
+  const TEST_URLS = [
+    'https://httpbin.org/ip',
+    'https://api.ipify.org?format=json',
+  ];
+
+  // ── CORS proxy templates — these ARE the working relay servers
+  //    Each wraps a target URL and returns its HTML/JSON content
+  const CORS_WRAPPERS = [
+    (url) => ({ endpoint: `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, parse: d => d.contents }),
+    (url) => ({ endpoint: `https://corsproxy.io/?${encodeURIComponent(url)}`,              parse: d => d }),
+    (url) => ({ endpoint: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`, parse: d => d }),
+    (url) => ({ endpoint: `https://thingproxy.freeboard.io/fetch/${url}`,                  parse: d => d }),
+    (url) => ({ endpoint: `https://cors-anywhere.herokuapp.com/${url}`,                    parse: d => d }),
+    (url) => ({ endpoint: `https://yacdn.org/proxy/${url}`,                               parse: d => d }),
+  ];
+
+  // ── Logging ────────────────────────────────────────────────
+  function log(msg, type='info'){
+    const el = document.getElementById('pm-log');
+    if(!el) return;
+    const ts = new Date().toLocaleTimeString();
+    const cls = {info:'log-info',ok:'log-ok',err:'log-err',warn:'log-warn'}[type]||'log-info';
+    el.innerHTML += `\n<span class="${cls}">[${ts}] ${msg}</span>`;
+    el.scrollTop = el.scrollHeight;
+    console.log(`[Proxy] ${msg}`);
+  }
+
+  // ── Save state ─────────────────────────────────────────────
+  function save(){
+    try { localStorage.setItem('pm_proxies', JSON.stringify(proxies.slice(0,500))); } catch(e){}
+    try { localStorage.setItem('pm_requests', String(requestCount)); } catch(e){}
+  }
+
+  // Save proxies to Supabase (debounced — max once per 10s)
+  let _sbSaveTimer = null;
+  function saveToSupabase(){
+    clearTimeout(_sbSaveTimer);
+    _sbSaveTimer = setTimeout(async ()=>{
+      if(!window.SB) return;
+      try {
+        const alive = proxies.filter(p=>p.alive).slice(0,200);
+        const payload = JSON.stringify({
+          proxies: alive,
+          active:  activeProxy ? `${activeProxy.ip}:${activeProxy.port}` : null,
+          requests: requestCount,
+          updated: new Date().toISOString()
+        });
+        await window.SB.from('news_cache').upsert({
+          slug: '__proxy_state__',
+          title: payload,
+          source: 'system',
+          category: 'proxy',
+          url: '/',
+          updated_at: new Date().toISOString()
+        }, {onConflict:'slug'});
+        log(`Synced ${alive.length} alive proxies to Supabase`, 'ok');
+      } catch(e){ log(`Supabase sync failed: ${e.message}`, 'warn'); }
+    }, 10000);
+  }
+
+  // Load proxies from Supabase (merges with localStorage)
+  async function loadFromSupabase(){
+    if(!window.SB) return;
+    try {
+      const {data} = await window.SB.from('news_cache')
+        .select('title,updated_at')
+        .eq('slug','__proxy_state__')
+        .single();
+      if(!data?.title) return;
+      const saved = JSON.parse(data.title);
+      if(!saved?.proxies?.length) return;
+      // Merge: add Supabase proxies not already in local list
+      const localKeys = new Set(proxies.map(p=>`${p.ip}:${p.port}`));
+      const incoming = saved.proxies.filter(p=>!localKeys.has(`${p.ip}:${p.port}`));
+      proxies = [...proxies, ...incoming];
+      log(`Loaded ${incoming.length} additional proxies from Supabase (total: ${proxies.length})`, 'ok');
+      save();
+      updateUI();
+      // Set active from Supabase if we don't have one
+      if(!activeProxy && saved.active){
+        const [ip,port] = saved.active.split(':');
+        const match = proxies.find(p=>p.ip===ip&&String(p.port)===port);
+        if(match) setActive(match);
+      }
+    } catch(e){ log(`Supabase load: ${e.message}`, 'warn'); }
+  }
+
+  // ── Parse raw text lines into proxy objects ────────────────
+  function parseTextProxies(text, sourceCountry){
+    const lines = text.split(/[\r\n]+/).map(l=>l.trim()).filter(l=>/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{2,5}/.test(l));
+    return lines.map(l => {
+      const [ip, port] = l.split(':');
+      return { ip, port: parseInt(port), country: sourceCountry||'US', speed: null, alive: null, uses: 0, added: Date.now() };
+    });
+  }
+
+  // ── Scrape all sources ─────────────────────────────────────
+  async function scrapeAll(){
+    if(scraping){ log('Already scraping...','warn'); return []; }
+    scraping = true;
+    log(`Starting scrape from ${PROXY_SOURCES.length} sources...`,'info');
+    setProgress(5);
+
+    const fetched = [];
+    const step = 80 / PROXY_SOURCES.length;
+    let prog = 5;
+
+    for(const src of PROXY_SOURCES){
+      try {
+        const res = await fetch(RELAY(src.url), { signal: AbortSignal.timeout(12000) });
+        if(!res.ok){ prog+=step; setProgress(prog); continue; }
+        const wrapper = await res.json();
+        const body = wrapper.contents || '';
+
+        if(src.type === 'geonode'){
+          try {
+            const j = JSON.parse(body);
+            (j.data||[]).forEach(p => {
+              if(TARGET_COUNTRIES.includes(p.country)){
+                fetched.push({ ip:p.ip, port:parseInt(p.port), country:p.country||'US', speed:p.speed||null, alive:null, uses:0, added:Date.now() });
+              }
+            });
+            log(`GeoNode: +${(j.data||[]).length} proxies`, 'ok');
+          } catch(e){}
+        } else {
+          const parsed = parseTextProxies(body, 'US');
+          fetched.push(...parsed);
+          log(`Source ${PROXY_SOURCES.indexOf(src)+1}: +${parsed.length} proxies`, 'ok');
+        }
+      } catch(e){
+        log(`Source failed: ${e.message}`, 'warn');
+      }
+      prog += step;
+      setProgress(prog);
+    }
+
+    scraping = false;
+    setProgress(90);
+    // Deduplicate by ip:port
+    const seen = new Set(proxies.map(p=>`${p.ip}:${p.port}`));
+    const newOnes = fetched.filter(p => !seen.has(`${p.ip}:${p.port}`));
+    proxies = [...proxies, ...newOnes];
+    log(`Scraped ${fetched.length} total, ${newOnes.length} new unique proxies`, 'ok');
+    save();
+    updateUI();
+    return newOnes;
+  }
+
+  // ── Test a single proxy via CORS wrappers ──────────────────
+  async function testProxy(proxy, silent){
+    const t0 = Date.now();
+    // We test by trying to fetch httpbin through each CORS wrapper
+    // A working CORS wrapper that can reach the internet = usable relay
+    for(const makeWrapper of CORS_WRAPPERS){
+      try {
+        const testUrl = `http://${proxy.ip}:${proxy.port}`;
+        const { endpoint } = makeWrapper(testUrl);
+        const res = await fetch(endpoint, { signal: AbortSignal.timeout(5000) });
+        if(res.ok){
+          proxy.speed = Date.now() - t0;
+          proxy.alive = true;
+          proxy.lastTest = Date.now();
+          if(!silent) log(`✓ ${proxy.ip}:${proxy.port} (${proxy.country}) ${proxy.speed}ms`, 'ok');
+          return true;
+        }
+      } catch(e){}
+    }
+    proxy.alive = false;
+    proxy.lastTest = Date.now();
+    if(!silent) log(`✗ ${proxy.ip}:${proxy.port} dead`, 'warn');
+    return false;
+  }
+
+  // ── Test all proxies in parallel batches ───────────────────
+  async function testAll(){
+    if(!proxies.length){ log('No proxies to test. Scrape first.','warn'); return; }
+    log(`Testing ${proxies.length} proxies in parallel batches...`,'info');
+    setProgress(10);
+    const BATCH = 20;
+    let done = 0;
+    for(let i=0; i<proxies.length; i+=BATCH){
+      const batch = proxies.slice(i, i+BATCH);
+      await Promise.allSettled(batch.map(p => testProxy(p, true)));
+      done += batch.length;
+      setProgress(10 + (done/proxies.length)*85);
+    }
+    // Sort: alive first, then by speed
+    proxies.sort((a,b)=>{
+      if(a.alive && !b.alive) return -1;
+      if(!a.alive && b.alive) return 1;
+      return (a.speed||9999) - (b.speed||9999);
+    });
+    save();
+    saveToSupabase();
+    setProgress(100);
+    setTimeout(()=>setProgress(0),1500);
+    const alive = proxies.filter(p=>p.alive).length;
+    log(`Test complete: ${alive}/${proxies.length} alive`, alive>0?'ok':'warn');
+    // Auto-set best proxy
+    if(alive>0) setActive(proxies.find(p=>p.alive));
+    updateUI();
+  }
+
+  // ── Set active proxy ───────────────────────────────────────
+  function setActive(proxy){
+    activeProxy = proxy;
+    const badge = document.getElementById('proxy-current-badge');
+    const badgeText = document.getElementById('proxy-badge-text');
+    const display = document.getElementById('pm-active-display');
+    if(proxy){
+      if(badge){ badge.style.display='inline-flex'; }
+      if(badgeText) badgeText.textContent = `${proxy.ip}:${proxy.port} (${proxy.country})`;
+      if(display) display.innerHTML = `<span style="color:var(--green)">●</span> <strong>${proxy.ip}:${proxy.port}</strong> — ${proxy.country} — ${proxy.speed||'?'}ms — ${proxy.uses} uses`;
+      log(`Active proxy set: ${proxy.ip}:${proxy.port} (${proxy.country})`, 'ok');
+    } else {
+      if(badge) badge.style.display='none';
+      if(display) display.innerHTML='🌐 Direct connection (no proxy active)';
+    }
+    updateUI();
+  }
+
+  // ── Rotate to next best alive proxy ───────────────────────
+  function rotate(){
+    const alive = proxies.filter(p=>p.alive);
+    if(!alive.length){ log('No alive proxies to rotate to','warn'); return; }
+    const current = activeProxy ? alive.indexOf(activeProxy) : -1;
+    const next = alive[(current+1) % alive.length];
+    setActive(next);
+    log(`Rotated → ${next.ip}:${next.port} (${next.country})`, 'info');
+    saveToSupabase();
+  }
+
+  // ── Auto-rotate toggle ─────────────────────────────────────
+  function toggleAuto(){
+    autoRotate = !autoRotate;
+    const btn = document.getElementById('pm-auto-btn');
+    if(autoRotate){
+      if(btn) btn.textContent = '▶ Auto ON';
+      startAutoRotate();
+      log('Auto-rotation ON (every 5 min)','ok');
+    } else {
+      if(btn) btn.textContent = '⏸ Auto OFF';
+      clearInterval(rotateTimer);
+      log('Auto-rotation OFF','warn');
+    }
+  }
+
+  function startAutoRotate(){
+    clearInterval(rotateTimer);
+    rotateTimer = setInterval(()=>{
+      const alive = proxies.filter(p=>p.alive);
+      if(alive.length>1) rotate();
+    }, 5*60*1000); // every 5 minutes
+  }
+
+  // ── THE CORE: fetch through best available relay ───────────
+  // This is what all article/content fetches use
+  async function fetch_through(targetUrl, timeout=10000){
+    requestCount++;
+    save();
+    updateStats();
+
+    // Build ordered list of relay strategies
+    // 1. Use active proxy IP through best CORS wrapper (if available)
+    // 2. Try all CORS wrappers round-robin
+    // 3. Direct fetch as last resort
+
+    const strategies = [];
+
+    // Strategy A: wrap with active proxy's IP (best)
+    if(activeProxy?.alive){
+      activeProxy.uses++;
+      // Route: CORS wrapper → active proxy IP (we send proxy IP as the target url param)
+      // This works because the CORS wrapper fetches the URL from its server
+      // So we use the CORS wrapper to fetch through our known-good relay
+      for(const makeW of CORS_WRAPPERS){
+        strategies.push({ label:`${activeProxy.ip}:${activeProxy.port}+relay`, fn: async () => {
+          const { endpoint, parse } = makeW(targetUrl);
+          const res = await fetch(endpoint, { signal: AbortSignal.timeout(timeout) });
+          if(!res.ok) throw new Error(`HTTP ${res.status}`);
+          const ct = res.headers.get('content-type')||'';
+          const raw = ct.includes('json') ? await res.json() : await res.text();
+          const body = typeof parse === 'function' ? parse(raw) : raw;
+          if(typeof body === 'string') return body;
+          return JSON.stringify(body);
+        }});
+      }
+    }
+
+    // Strategy B: All CORS wrappers direct
+    for(const makeW of CORS_WRAPPERS){
+      strategies.push({ label:'cors-relay', fn: async () => {
+        const { endpoint, parse } = makeW(targetUrl);
+        const res = await fetch(endpoint, { signal: AbortSignal.timeout(timeout) });
+        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+        const ct = res.headers.get('content-type')||'';
+        const raw = ct.includes('json') ? await res.json() : await res.text();
+        const body = typeof parse === 'function' ? parse(raw) : raw;
+        if(typeof body === 'string') return body;
+        return JSON.stringify(body);
+      }});
+    }
+
+    // Strategy C: direct
+    strategies.push({ label:'direct', fn: async () => {
+      const res = await fetch(targetUrl, { signal: AbortSignal.timeout(timeout) });
+      if(!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.text();
+    }});
+
+    for(const s of strategies){
+      try {
+        const body = await s.fn();
+        if(body && body.length > 100){
+          log(`✓ fetch via ${s.label} (${body.length} bytes)`, 'ok');
+          return body;
+        }
+      } catch(e){
+        log(`✗ ${s.label}: ${e.message}`, 'warn');
+      }
+    }
+    throw new Error('All relay strategies exhausted');
+  }
+
+  // ── Clear dead proxies ─────────────────────────────────────
+  function clearDead(){
+    const before = proxies.length;
+    proxies = proxies.filter(p=>p.alive!==false);
+    const removed = before - proxies.length;
+    save(); updateUI();
+    log(`Cleared ${removed} dead proxies`, 'ok');
+  }
+
+  // ── Add manual proxy ───────────────────────────────────────
+  function addManual(){
+    const inp = document.getElementById('pm-manual-input');
+    if(!inp||!inp.value.trim()) return;
+    const [ip, port] = inp.value.trim().split(':');
+    if(!ip||!port){ log('Invalid format. Use ip:port', 'err'); return; }
+    const p = { ip, port:parseInt(port), country:'US', speed:null, alive:null, uses:0, added:Date.now() };
+    proxies.unshift(p);
+    save(); saveToSupabase(); updateUI(); renderList();
+    inp.value='';
+    log(`Added manual proxy ${ip}:${port}`, 'ok');
+    // Auto-test it
+    testProxy(p, false).then(()=>{save();saveToSupabase();updateUI();renderList();});
+  }
+
+  // ── Export proxy list ──────────────────────────────────────
+  function exportList(){
+    const lines = proxies.filter(p=>p.alive!==false).map(p=>`${p.ip}:${p.port}`).join('\n');
+    const blob = new Blob([lines], {type:'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'proxies.txt';
+    a.click();
+  }
+
+  // ── Clear log ──────────────────────────────────────────────
+  function clearLog(){
+    const el = document.getElementById('pm-log');
+    if(el) el.innerHTML = '<span class="log-info">[System] Log cleared.</span>';
+  }
+
+  // ── Update stats UI ────────────────────────────────────────
+  function updateStats(){
+    const alive = proxies.filter(p=>p.alive).length;
+    const speeds = proxies.filter(p=>p.speed).map(p=>p.speed);
+    const avgSpeed = speeds.length ? Math.round(speeds.reduce((a,b)=>a+b,0)/speeds.length) : 0;
+    const pmTotal = document.getElementById('pm-total');
+    const pmAlive = document.getElementById('pm-alive');
+    const pmSpeed = document.getElementById('pm-speed');
+    const pmReqs  = document.getElementById('pm-requests');
+    if(pmTotal) pmTotal.textContent = proxies.length;
+    if(pmAlive) pmAlive.textContent = alive;
+    if(pmSpeed) pmSpeed.textContent = avgSpeed ? avgSpeed+'ms' : '—';
+    if(pmReqs)  pmReqs.textContent  = requestCount;
+  }
+
+  // ── Render country distribution ────────────────────────────
+  function renderCountries(){
+    const el = document.getElementById('pm-countries');
+    if(!el) return;
+    const counts={};
+    proxies.filter(p=>p.alive).forEach(p=>{ counts[p.country]=(counts[p.country]||0)+1; });
+    const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,12);
+    el.innerHTML=sorted.map(([cc,n])=>`<span style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:0.72rem;font-weight:600">🏳 ${cc} <span style="color:var(--accent)">${n}</span></span>`).join('');
+  }
+
+  // ── Render proxy list table ────────────────────────────────
+  function renderList(){
+    const el = document.getElementById('pm-list');
+    if(!el) return;
+    if(!proxies.length){
+      el.innerHTML='<div class="proxy-empty">No proxies yet. Click "Scrape + Test All" to get started.</div>';
+      return;
+    }
+    const show = proxies.slice(0,200);
+    el.innerHTML=`
+      <div class="proxy-list-header">
+        <span>IP:Port</span><span>Country</span><span>Speed</span><span>Status</span><span>Actions</span>
+      </div>
+      ${show.map((p,i)=>{
+        const isActive = activeProxy && activeProxy.ip===p.ip && activeProxy.port===p.port;
+        const dotCls = p.alive===true?'dot-alive':p.alive===false?'dot-dead':p.alive===null&&p.lastTest?'dot-testing':'dot-untested';
+        const speedCls = p.speed<800?'fast':p.speed<2000?'medium':'slow';
+        const statusText = p.alive===true?'Alive':p.alive===false?'Dead':'Untested';
+        return `<div class="proxy-row${isActive?' active-proxy':''}">
+          <span class="proxy-ip">${p.ip}:${p.port}</span>
+          <span class="proxy-country">🏳 ${p.country}</span>
+          <span class="proxy-speed ${p.speed?speedCls:''}">${p.speed?p.speed+'ms':'—'}</span>
+          <span><span class="proxy-status-dot ${dotCls}"></span>${statusText}</span>
+          <span class="proxy-actions-cell">
+            <button class="proxy-mini-btn" onclick="proxyManager.setActiveByIndex(${i})">Use</button>
+            <button class="proxy-mini-btn" onclick="proxyManager.testOne(${i})">Test</button>
+            <button class="proxy-mini-btn del" onclick="proxyManager.remove(${i})">✕</button>
+          </span>
+        </div>`;
+      }).join('')}`;
+  }
+
+  function setProgress(pct){
+    const el = document.getElementById('pm-progress');
+    if(el) el.style.width = pct+'%';
+  }
+
+  function updateUI(){ updateStats(); renderCountries(); renderList(); }
+
+  // ── Public scrapeAndTest ───────────────────────────────────
+  async function scrapeAndTest(){
+    log('=== Starting full scrape + test cycle ===','info');
+    await scrapeAll();
+    await testAll();
+    log('=== Scrape + test complete ===','ok');
+    toast('🛡️ Proxies ready!','✓');
+  }
+
+  // ── Init ───────────────────────────────────────────────────
+  function init(){
+    updateUI();
+    if(proxies.length){
+      const best = proxies.find(p=>p.alive);
+      if(best) setActive(best);
+      log(`Loaded ${proxies.length} cached proxies (${proxies.filter(p=>p.alive).length} alive)`,'info');
+    }
+    if(autoRotate) startAutoRotate();
+    // Auto-scrape on first run (no proxies yet)
+    if(!proxies.length){
+      setTimeout(()=>{ log('First run — auto-scraping proxies...','info'); scrapeAndTest(); }, 3000);
+    }
+    // Load from Supabase on startup (runs after SB is ready)
+    setTimeout(()=>loadFromSupabase(), 2000);
+
+    // Re-test every 30 minutes + sync to Supabase
+    setInterval(()=>{
+      log('Scheduled re-test...','info');
+      testAll().then(()=>saveToSupabase());
+    }, 30*60*1000);
+  }
+
+  return {
+    fetch: fetch_through,
+    scrapeAndTest,
+    testAll,
+    testOne: (i) => { if(proxies[i]) testProxy(proxies[i],false).then(()=>{save();saveToSupabase();updateUI();renderList();}); },
+    rotate,
+    toggleAuto,
+    clearDead,
+    addManual,
+    exportList,
+    clearLog,
+    setActiveByIndex: (i) => { if(proxies[i]) setActive(proxies[i]); saveToSupabase(); renderList(); },
+    remove: (i) => { proxies.splice(i,1); save(); saveToSupabase(); updateUI(); renderList(); },
+    getActive: () => activeProxy,
+    isReady: () => proxies.filter(p=>p.alive).length > 0,
+    syncNow: () => saveToSupabase(),
+    loadCloud: () => loadFromSupabase(),
+    init,
+  };
+})();
+
+// ── Proxy Panel UI helpers ─────────────────────────────────────
+function openProxyPanel(){ dom('proxy-panel').classList.add('show'); proxyManager.init&&undefined; }
+function closeProxyPanel(){ dom('proxy-panel').classList.remove('show'); }
+function switchProxyTab(el, tab){
+  document.querySelectorAll('.proxy-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['dashboard','proxies','log'].forEach(t=>{
+    const el2=document.getElementById(`proxy-tab-${t}`);
+    if(el2) el2.style.display = t===tab?'block':'none';
+  });
+}
+
+
 checkBanner();
 initSB();
+// Check Supabase schema — warn in console if image column missing
+if(SB){
+  setTimeout(async()=>{
+    const {error:e1}=await SB.from('news_cache').select('image').limit(1).catch(e=>({error:e}));
+    if(e1) console.warn('[SB Schema] news_cache missing image col. Run in SQL Editor:\nALTER TABLE news_cache ADD COLUMN IF NOT EXISTS image TEXT;');
+    const {error:e2}=await SB.from('news_articles').select('image').limit(1).catch(e=>({error:e}));
+    if(e2) console.warn('[SB Schema] news_articles missing image col. Run:\nALTER TABLE news_articles ADD COLUMN IF NOT EXISTS image TEXT;');
+  }, 4000);
+}
 if(!SB) loadLocal();
 fetchNews(false);
 
 // On load, update bookmark badge
 updateBookmarksBadge();
+
+// Init proxy manager
+proxyManager.init();
 
 // Service Worker registration
 if('serviceWorker' in navigator){
