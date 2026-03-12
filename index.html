@@ -19,6 +19,16 @@
 <meta name="twitter:title" content="LinkHub — Live News & Curated Backlinks">
 <link rel="canonical" href="https://yourdomain.com/">
 <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+<link rel="alternate" type="application/rss+xml" title="LinkHub News Feed" href="/rss.xml">
+<meta name="twitter:image" content="https://yourdomain.com/og-image.jpg">
+<meta name="twitter:description" content="Fresh trending news updated every hour across entertainment, sports, world, tech and more.">
+<meta name="theme-color" content="#1a56db" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="LinkHub">
+<link rel="apple-touch-icon" href="https://yourdomain.com/icon-192.png">
+<link rel="manifest" href="/manifest.json">
 <!-- Schema.org structured data -->
 <script type="application/ld+json">
 {
@@ -215,6 +225,172 @@ body {
 .article-skel { animation:shimmer 1.5s ease-in-out infinite; }
 .skel-h { height:18px; background:#f0f0f5; border-radius:4px; margin-bottom:10px; }
 .skel-p { height:12px; background:#f0f0f5; border-radius:4px; margin-bottom:8px; }
+
+/* Article image */
+.article-hero-img { width:100%; max-height:400px; object-fit:cover; border-radius:12px; margin-bottom:24px; }
+.article-subhead { font-family:'Merriweather',serif; font-size:1.1rem; font-weight:700; color:var(--text); margin:28px 0 14px; }
+/* News item with thumbnail */
+.news-item { display:flex; align-items:flex-start; gap:12px; padding:14px 20px; border-bottom:1px solid var(--border); cursor:pointer; transition:background .15s; }
+.news-item:hover { background:var(--accent-light); }
+.news-item:last-child { border-bottom:none; }
+.news-thumb { width:72px; height:56px; object-fit:cover; border-radius:8px; flex-shrink:0; background:var(--surface2); }
+.news-thumb-placeholder { width:72px; height:56px; border-radius:8px; flex-shrink:0; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:1.4rem; }
+/* Search bar */
+.news-search-wrap { padding:10px 16px 4px; }
+.news-search { width:100%; padding:8px 14px; border:1px solid var(--border); border-radius:8px; font-size:0.85rem; font-family:'Plus Jakarta Sans',sans-serif; background:var(--surface2); color:var(--text); outline:none; box-sizing:border-box; }
+.news-search:focus { border-color:var(--accent); }
+/* Pagination */
+.news-pagination { display:flex; align-items:center; justify-content:center; gap:10px; padding:14px; border-top:1px solid var(--border); }
+.news-pagination button { padding:6px 16px; border-radius:8px; border:1px solid var(--border); background:var(--surface2); color:var(--text2); font-size:0.8rem; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; }
+.news-pagination button:hover { background:var(--accent-light); }
+.news-pagination button:disabled { opacity:0.4; cursor:not-allowed; }
+.news-page-info { font-size:0.78rem; color:var(--muted); }
+/* Related articles */
+.related-articles { margin-top:40px; border-top:1px solid var(--border); padding-top:24px; }
+.related-articles h3 { font-size:0.78rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:14px; }
+.related-item { display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--border); cursor:pointer; }
+.related-item:last-child { border-bottom:none; }
+.related-thumb { width:56px; height:44px; object-fit:cover; border-radius:6px; flex-shrink:0; background:var(--surface2); }
+.related-title { font-size:0.85rem; font-weight:600; color:var(--text); line-height:1.4; }
+.related-title:hover { color:var(--accent); }
+.related-source { font-size:0.7rem; color:var(--muted); margin-top:3px; }
+
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --white: #1e293b;
+    --surface: #1e293b;
+    --surface2: #243047;
+    --border: #2d3f5e;
+    --border2: #374860;
+    --accent: #3b82f6;
+    --accent-light: #1e3a5f;
+    --accent-dark: #2563eb;
+    --text: #f1f5f9;
+    --text2: #cbd5e1;
+    --muted: #94a3b8;
+    --muted2: #64748b;
+    --green-bg: #0d2d1f;
+    --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+  }
+  body { background: var(--bg); }
+  header, #settings-panel, footer { background: var(--surface); }
+  .cat-bar { background: var(--surface); }
+  .card { background: var(--surface); border-color: var(--border); }
+  .login-box, .edit-box { background: var(--surface); }
+  #article-overlay { background: var(--surface); }
+  .article-topbar { background: var(--surface); }
+  textarea, .sf input, .login-field input, .edit-field input, .edit-field select { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+  .news-search { background: var(--surface2); color: var(--text); }
+  .article-key-points { background: var(--accent-light); border-color: var(--border); }
+  .badge-green { background: var(--green-bg); }
+  .btn-ghost { background: var(--surface2); color: var(--text2); border-color: var(--border2); }
+  .btn-ghost:hover { background: var(--border); }
+  .news-item:hover, .cat-tab:hover { background: var(--surface2); }
+  .link-item:hover { background: var(--surface2); }
+  .setup-banner { background: linear-gradient(135deg, #1e3a5f, #4c1d95); }
+  .toast { background: var(--surface2); }
+}
+
+/* ============================================================
+   READING PROGRESS BAR
+   ============================================================ */
+#reading-progress {
+  position: fixed; top: 0; left: 0; z-index: 9999;
+  height: 3px; width: 0%; background: var(--accent);
+  transition: width 0.1s linear;
+  display: none;
+}
+#article-overlay.show ~ #reading-progress,
+body.article-open #reading-progress { display: block; }
+
+/* ============================================================
+   SHARE BUTTONS
+   ============================================================ */
+.article-share { display:flex; align-items:center; gap:10px; margin:28px 0; flex-wrap:wrap; }
+.article-share span { font-size:0.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
+.share-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:7px 14px; border-radius:8px; border:1.5px solid var(--border2);
+  font-size:0.76rem; font-weight:600; cursor:pointer;
+  font-family:'Plus Jakarta Sans',sans-serif; transition:all 0.15s;
+  background:var(--surface2); color:var(--text2); text-decoration:none;
+}
+.share-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-light); }
+.share-btn.twitter:hover { border-color:#1da1f2; color:#1da1f2; background:#e8f5fe; }
+.share-btn.whatsapp:hover { border-color:#25d366; color:#25d366; background:#f0fdf4; }
+.share-btn.facebook:hover { border-color:#1877f2; color:#1877f2; background:#eff6ff; }
+.share-btn.copy-link:hover { border-color:var(--green); color:var(--green); background:var(--green-bg); }
+
+/* ============================================================
+   READING TIME + BOOKMARK
+   ============================================================ */
+.reading-time { font-size:0.72rem; color:var(--muted); display:flex; align-items:center; gap:4px; }
+.bookmark-btn {
+  background:none; border:1.5px solid var(--border2); border-radius:8px;
+  padding:5px 10px; cursor:pointer; font-size:0.8rem; color:var(--muted);
+  transition:all 0.15s; font-family:'Plus Jakarta Sans',sans-serif;
+}
+.bookmark-btn:hover, .bookmark-btn.saved { border-color:var(--accent); color:var(--accent); background:var(--accent-light); }
+
+/* ============================================================
+   BACK TO TOP
+   ============================================================ */
+#back-to-top {
+  position:fixed; bottom:80px; right:20px; z-index:900;
+  width:40px; height:40px; border-radius:50%;
+  background:var(--accent); color:white; border:none;
+  font-size:1rem; cursor:pointer; box-shadow:var(--shadow-md);
+  opacity:0; pointer-events:none; transition:opacity 0.25s, transform 0.25s;
+  display:flex; align-items:center; justify-content:center;
+}
+#back-to-top.show { opacity:1; pointer-events:auto; }
+#back-to-top:hover { transform:translateY(-3px); }
+
+/* ============================================================
+   BOOKMARKS PANEL
+   ============================================================ */
+#bookmarks-panel {
+  display:none; position:fixed; inset:0; z-index:8500;
+  background:rgba(17,24,39,0.6); backdrop-filter:blur(4px);
+  align-items:flex-start; justify-content:flex-end; padding:60px 20px 20px;
+}
+#bookmarks-panel.show { display:flex; }
+.bookmarks-box {
+  background:var(--surface); border-radius:16px; width:100%; max-width:380px;
+  max-height:80vh; overflow-y:auto; box-shadow:var(--shadow-lg);
+  animation:slideFromRight 0.25s ease;
+}
+@keyframes slideFromRight { from{transform:translateX(30px);opacity:0} to{transform:none;opacity:1} }
+.bookmarks-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.bookmarks-header h3 { font-size:0.9rem; font-weight:700; color:var(--text); }
+.bookmarks-close { background:none; border:none; cursor:pointer; color:var(--muted); font-size:1.1rem; }
+.bookmark-item { padding:12px 20px; border-bottom:1px solid var(--border); cursor:pointer; }
+.bookmark-item:hover { background:var(--surface2); }
+.bookmark-item-title { font-size:0.82rem; font-weight:600; color:var(--text); line-height:1.4; margin-bottom:3px; }
+.bookmark-item-meta { font-size:0.68rem; color:var(--muted); }
+.bookmarks-empty { padding:40px 20px; text-align:center; font-size:0.82rem; color:var(--muted); }
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print {
+  header, nav, .cat-bar, footer, #setup-banner, #back-to-top,
+  .article-topbar, .article-back-btn, .article-share, .related-articles,
+  .article-source-btn, .bookmark-btn, #reading-progress, .toast { display:none !important; }
+  #article-overlay { position:static; overflow:visible; }
+  .article-page { max-width:100%; padding:0; }
+  .article-h1 { font-size:1.6rem; }
+  .article-body { font-size:11pt; line-height:1.8; }
+  a { color:#000 !important; text-decoration:underline; }
+  body { background:white; color:black; }
+}
 
 /* ============================================================
    HEADER
@@ -501,6 +677,20 @@ footer{background:white;border-top:1px solid var(--border);padding:28px 20px;mar
 </head>
 <body>
 
+<div id="reading-progress"></div>
+<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<!-- BOOKMARKS PANEL -->
+<div id="bookmarks-panel">
+  <div class="bookmarks-box">
+    <div class="bookmarks-header">
+      <h3>🔖 Saved Articles</h3>
+      <button class="bookmarks-close" onclick="dom('bookmarks-panel').classList.remove('show')">✕</button>
+    </div>
+    <div id="bookmarks-list"></div>
+  </div>
+</div>
+
 <!-- SEO: updated timestamp tells bots content is fresh -->
 <meta itemprop="dateModified" content="" id="page-mod-date">
 
@@ -536,6 +726,7 @@ footer{background:white;border-top:1px solid var(--border);padding:28px 20px;mar
   <div class="article-topbar">
     <button class="article-back-btn" onclick="closeArticle()">← Back</button>
     <span class="article-topbar-title" id="art-topbar-title">Article</span>
+    <button class="bookmark-btn" id="art-bookmark-btn" onclick="toggleBookmark()" title="Save article">🔖 Save</button>
   </div>
   <div class="article-page" id="article-content"></div>
 </div>
@@ -596,6 +787,7 @@ footer{background:white;border-top:1px solid var(--border);padding:28px 20px;mar
     <div class="live-badge"><span class="live-dot"></span>Live</div>
     <span class="header-clock" id="clock"></span>
     <button class="btn-admin" id="admin-btn" onclick="toggleAdmin()">Admin</button>
+    <button class="btn-settings" onclick="toggleBookmarks()" title="Saved articles" id="bookmarks-btn">🔖</button>
     <button class="btn-settings" onclick="toggleSettings()" title="Settings">⚙️</button>
   </div>
 </header>
@@ -680,7 +872,9 @@ footer{background:white;border-top:1px solid var(--border);padding:28px 20px;mar
             </div>
           </div>
 
+          <div class="news-search-wrap"><input class="news-search" id="news-search" type="search" placeholder="🔍 Search news..." oninput="filterNews(this.value)"></div>
           <div class="news-list-wrap" id="news-list"></div>
+          <div id="news-pagination" class="news-pagination" style="display:none"></div>
         </div>
       </section>
 
@@ -719,6 +913,9 @@ let IS_ADMIN = false;
 let NEWS = [];          // current articles cache
 let ACTIVE_CAT = 'General';
 let EDIT_ID = null;     // news item being edited
+let NEWS_PAGE = 0;      // current pagination page
+const NEWS_PER_PAGE = 20; // articles per page
+let SEARCH_QUERY = '';  // current search filter
 let countdownTimer;
 let countdownVal = 3600;
 
@@ -1040,7 +1237,28 @@ function startCountdown(){
 }
 function fmt(s){ return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
 
-async function fetchNews(){
+async function fetchNews(forceRefresh){
+  // ── LocalStorage cache: skip fetch if <60min old ──────────────
+  const CACHE_KEY = 'lh_news_cache';
+  const CACHE_TS  = 'lh_news_ts';
+  if(!forceRefresh){
+    try {
+      const ts = parseInt(localStorage.getItem(CACHE_TS)||'0');
+      if(Date.now()-ts < 60*60*1000){
+        const cached = JSON.parse(localStorage.getItem(CACHE_KEY)||'[]');
+        if(cached.length){
+          NEWS = cached;
+          dom('news-status').textContent='Live ✓';
+          dom('news-status').className='badge badge-green';
+          renderCurrentNews();
+          startCountdown();
+          stampFreshness();
+          return;
+        }
+      }
+    } catch(e){}
+  }
+
   dom('news-list').innerHTML=Array.from({length:10},()=>`
     <div class="news-skel"><div class="sk w80"></div><div class="sk w50"></div></div>`).join('');
   dom('news-status').textContent='Fetching…';
@@ -1048,58 +1266,126 @@ async function fetchNews(){
   startCountdown();
   stampFreshness();
 
-  const today=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  const catList='General, World, Entertainment, Celebrity, Sports, Technology, Business, Health, Science, Streaming, Movies, Live News';
+  // ── API KEYS ──────────────────────────────────────────────────
+  const GNEWS_KEY      = '7b2d0cfb876736ea83a6d4f98bdeb80c';
+  const NEWSDATA_KEY   = 'pub_a5c9127b5ba9482993f72a2cc070d812';
+  const THENEWSAPI_KEY = 'YP7rBSQEs1aPOHTNrWHFPIpz4qc1i9gkictAS1Nt';
+  // ─────────────────────────────────────────────────────────────
+
+  // SOURCE 1: GNews — all categories fired in parallel
+  async function fetchFromGNews(){
+    const cats = ['general','world','entertainment','sports','technology','business','health','science'];
+    const requests = cats.map(cat =>
+      fetch(`https://gnews.io/api/v4/top-headlines?category=${cat}&lang=en&max=5&apikey=${GNEWS_KEY}`)
+        .then(r=>r.ok?r.json():null).catch(()=>null)
+    );
+    const results = await Promise.all(requests);
+    let all = [];
+    results.forEach((data,i)=>{
+      if(data?.articles){
+        all = all.concat(data.articles.map(a=>({
+          title:    a.title,
+          source:   a.source?.name||'GNews',
+          category: cats[i].charAt(0).toUpperCase()+cats[i].slice(1),
+          url:      a.url,
+          image:    a.image||null,
+          slug:     (a.title||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,60)
+        })));
+      }
+    });
+    return all;
+  }
+
+  // SOURCE 2: NewsData.io — parallel, includes full content field
+  async function fetchFromNewsData(){
+    const cats = ['top','entertainment','sports','technology','business','health','science','world'];
+    const requests = cats.map(cat => {
+      const url = cat==='top'
+        ? `https://newsdata.io/api/1/latest?apikey=${NEWSDATA_KEY}&language=en&full_content=1`
+        : `https://newsdata.io/api/1/latest?apikey=${NEWSDATA_KEY}&language=en&category=${cat}&full_content=1`;
+      return fetch(url).then(r=>r.ok?r.json():null).catch(()=>null);
+    });
+    const results = await Promise.all(requests);
+    let all = [];
+    results.forEach((data,i)=>{
+      if(data?.results){
+        all = all.concat(data.results.slice(0,3).map(a=>({
+          title:       a.title,
+          source:      a.source_id||'NewsData',
+          category:    cats[i]==='top'?'General':cats[i].charAt(0).toUpperCase()+cats[i].slice(1),
+          url:         a.link||'#',
+          image:       a.image_url||null,
+          full_content: a.full_content||a.content||null,
+          slug:        (a.title||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,60)
+        })));
+      }
+    });
+    return all;
+  }
+
+  // SOURCE 3: TheNewsAPI — parallel
+  async function fetchFromTheNewsAPI(){
+    const cats = ['general','entertainment','sports','tech','business','health','science'];
+    const requests = cats.map(cat =>
+      fetch(`https://api.thenewsapi.com/v1/news/top?api_token=${THENEWSAPI_KEY}&language=en&categories=${cat}&limit=3`)
+        .then(r=>r.ok?r.json():null).catch(()=>null)
+    );
+    const results = await Promise.all(requests);
+    let all = [];
+    results.forEach((data,i)=>{
+      if(data?.data){
+        all = all.concat(data.data.map(a=>({
+          title:    a.title,
+          source:   a.source||'TheNewsAPI',
+          category: cats[i]==='tech'?'Technology':cats[i].charAt(0).toUpperCase()+cats[i].slice(1),
+          url:      a.url,
+          image:    a.image_url||null,
+          slug:     (a.title||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,60)
+        })));
+      }
+    });
+    return all;
+  }
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:2000,
-        tools:[{type:'web_search_20250305',name:'web_search'}],
-        messages:[{role:'user',content:
-          `Today is ${today}. You MUST use the web_search tool to find the top trending news RIGHT NOW across all of these categories: ${catList}.
+    const [g, nd, tna] = await Promise.allSettled([
+      fetchFromGNews(),
+      fetchFromNewsData(),
+      fetchFromTheNewsAPI()
+    ]);
 
-Search for at least 3 stories per major category. Return ONLY a valid JSON array — no markdown, no explanation, no code fences — with exactly 40 objects. Each object must have:
-- title: string (engaging headline)
-- source: string (publication name)
-- category: string (MUST be one of: ${catList})
-- url: string (real article URL or "#")
-- slug: string (SEO-friendly URL slug, e.g. "taylor-swift-tour-2025")
+    let allNews = [];
+    if(g.status==='fulfilled')   allNews = allNews.concat(g.value||[]);
+    if(nd.status==='fulfilled')  allNews = allNews.concat(nd.value||[]);
+    if(tna.status==='fulfilled') allNews = allNews.concat(tna.value||[]);
 
-Example format (return ONLY the array, nothing else):
-[{"title":"...","source":"...","category":"General","url":"https://...","slug":"..."},...]`
-        }]
-      })
+    // Deduplicate by slug
+    const seen = new Set();
+    allNews = allNews.filter(a=>{
+      if(!a.title||seen.has(a.slug)) return false;
+      seen.add(a.slug); return true;
     });
 
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    if(!allNews.length) throw new Error('No articles returned from any API');
 
-    // Extract text from all content blocks
-    let raw='';
-    for(const b of (data.content||[])){
-      if(b.type==='text') raw+=b.text;
-    }
+    NEWS = allNews;
+    NEWS_PAGE = 0;
 
-    // Find JSON array in response
-    const match = raw.match(/\[[\s\S]*?\]/);
-    if(!match) throw new Error('No JSON array in response. Raw: '+raw.slice(0,200));
+    // Cache in localStorage
+    try {
+      localStorage.setItem('lh_news_cache', JSON.stringify(NEWS));
+      localStorage.setItem('lh_news_ts', String(Date.now()));
+    } catch(e){}
 
-    const parsed = JSON.parse(match[0]);
-    NEWS = parsed.filter(a=>a&&a.title).slice(0,40);
-
-    // Cache in Supabase
+    // Cache in Supabase (batch upsert top 40)
     if(SB){
-      for(const a of NEWS){
-        const sl = a.slug||slug(a.title);
+      const batch = NEWS.slice(0,40);
+      for(const a of batch){
         await SB.from('news_cache').upsert({
-          slug:sl, title:a.title, source:a.source,
+          slug:a.slug, title:a.title, source:a.source,
           category:a.category, url:a.url,
           updated_at:new Date().toISOString()
-        },{onConflict:'slug'});
+        },{onConflict:'slug'}).catch(()=>{});
       }
     }
 
@@ -1111,13 +1397,18 @@ Example format (return ONLY the array, nothing else):
 
   } catch(err){
     console.error('[News fetch error]', err);
+    // Fallback: try loading from localStorage even if stale
+    try {
+      const cached = JSON.parse(localStorage.getItem('lh_news_cache')||'[]');
+      if(cached.length){ NEWS=cached; NEWS_PAGE=0; renderCurrentNews(); dom('news-status').textContent='Cached'; dom('news-status').className='badge badge-orange'; return; }
+    } catch(e){}
     dom('news-status').textContent='Error';
     dom('news-status').className='badge badge-red';
     dom('news-list').innerHTML=`<div class="empty-state">
       <span class="empty-icon">⚠️</span>
       Could not load news.<br>
       <small style="color:var(--muted)">${esc(err.message)}</small><br><br>
-      <button class="btn btn-ghost" onclick="fetchNews()" style="margin:0 auto">↻ Retry</button>
+      <button class="btn btn-ghost" onclick="fetchNews(true)" style="margin:0 auto">↻ Retry</button>
     </div>`;
   }
 }
@@ -1133,22 +1424,44 @@ function switchCat(el, cat){
   renderCurrentNews();
 }
 
-function renderCurrentNews(){
-  const filtered = NEWS.filter(a=>ACTIVE_CAT==='General' ? true : a.category===ACTIVE_CAT);
-  renderNews(filtered.length ? filtered : NEWS.slice(0,20));
+function filterNews(q){
+  SEARCH_QUERY = q.toLowerCase();
+  NEWS_PAGE = 0;
+  renderCurrentNews();
 }
 
-function renderNews(articles){
+function renderCurrentNews(){
+  let articles = NEWS.filter(a=> !ACTIVE_CAT||ACTIVE_CAT==='General'||a.category===ACTIVE_CAT);
+  if(SEARCH_QUERY){
+    articles = articles.filter(a=>
+      (a.title||'').toLowerCase().includes(SEARCH_QUERY)||
+      (a.source||'').toLowerCase().includes(SEARCH_QUERY)||
+      (a.category||'').toLowerCase().includes(SEARCH_QUERY)
+    );
+  }
+  const total = articles.length;
+  const start = NEWS_PAGE * NEWS_PER_PAGE;
+  const page  = articles.slice(start, start + NEWS_PER_PAGE);
+  renderNews(page, total);
+}
+
+function renderNews(articles, total){
   const list = dom('news-list');
+  const pagEl = dom('news-pagination');
   if(!articles.length){
-    list.innerHTML=`<div class="empty-state"><span class="empty-icon">📰</span>No ${ACTIVE_CAT} news yet<br><button class="btn btn-ghost btn-sm" onclick="fetchNews()" style="margin:8px auto 0">↻ Load News</button></div>`;
+    list.innerHTML=`<div class="empty-state"><span class="empty-icon">📰</span>No ${ACTIVE_CAT||'news'} found<br><button class="btn btn-ghost btn-sm" onclick="fetchNews(true)" style="margin:8px auto 0">↻ Load News</button></div>`;
+    if(pagEl) pagEl.style.display='none';
     return;
   }
   list.innerHTML=articles.map((a,i)=>{
     const color=CAT_COLORS[a.category]||'#1a56db';
     const sl=a.slug||slug(a.title||'article');
-    return `<article class="news-item" onclick="openArticle(${NEWS.indexOf(a)},'${sl.replace(/'/g,"\\'")}')">
-      <span class="news-rank">${String(i+1).padStart(2,'0')}</span>
+    const globalIdx = NEWS.indexOf(a);
+    const thumb = a.image
+      ? `<img class="news-thumb" src="${esc(a.image)}" alt="${esc(a.title)}" loading="lazy" onerror="this.style.display='none'">`
+      : `<div class="news-thumb-placeholder">${getCatEmoji(a.category)}</div>`;
+    return `<article class="news-item" onclick="openArticle(${globalIdx},'${sl.replace(/'/g,"\\'")}')">
+      ${thumb}
       <div class="news-body">
         <div class="news-title">${esc(a.title)}</div>
         <div class="news-footer">
@@ -1156,13 +1469,36 @@ function renderNews(articles){
           <span class="news-cat" style="color:${color};background:${color}18;border:1px solid ${color}30">${esc(a.category)}</span>
           <span class="news-read-arrow">→</span>
           <div class="admin-news-btns">
-            <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openEdit(${NEWS.indexOf(a)})">✏️ Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteNews(${NEWS.indexOf(a)})">✕</button>
+            <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openEdit(${globalIdx})">✏️</button>
+            <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteNews(${globalIdx})">✕</button>
           </div>
         </div>
       </div>
     </article>`;
   }).join('');
+
+  // Pagination
+  if(pagEl && total > NEWS_PER_PAGE){
+    const totalPages = Math.ceil(total / NEWS_PER_PAGE);
+    pagEl.style.display='flex';
+    pagEl.innerHTML=`
+      <button onclick="changePage(-1)" ${NEWS_PAGE===0?'disabled':''}>← Prev</button>
+      <span class="news-page-info">Page ${NEWS_PAGE+1} of ${totalPages} (${total} stories)</span>
+      <button onclick="changePage(1)" ${NEWS_PAGE>=totalPages-1?'disabled':''}>Next →</button>`;
+  } else if(pagEl){
+    pagEl.style.display='none';
+  }
+}
+
+function changePage(dir){
+  NEWS_PAGE += dir;
+  renderCurrentNews();
+  dom('news-list').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function getCatEmoji(cat){
+  const map={General:'🌐',World:'🌍',Entertainment:'🎬',Sports:'⚽',Technology:'💻',Business:'📈',Health:'❤️',Science:'🔬',Streaming:'📺',Movies:'🎥'};
+  return map[cat]||'📰';
 }
 
 // ================================================================
@@ -1215,96 +1551,233 @@ async function openArticle(idx, sl){
   const article=NEWS[idx];
   if(!article) return;
   const overlay=dom('article-overlay');
-  const content=dom('article-content');
+  const ac=dom('article-content');
   overlay.classList.add('show');
+  document.body.classList.add('article-open');
   document.body.style.overflow='hidden';
   const color=CAT_COLORS[article.category]||'#1a56db';
 
-  // Update URL for SEO
+  // SEO meta updates
   history.pushState({idx,sl},article.title,`/news/${sl}`);
   document.title=`${article.title} — LinkHub`;
   dom('art-topbar-title').textContent=article.title;
+  const setMeta=(sel,attr,val)=>{ const el=document.querySelector(sel); if(el) el.setAttribute(attr,val); };
+  setMeta('meta[name="description"]','content',article.title+' — Read the full story on LinkHub.');
+  setMeta('meta[property="og:title"]','content',article.title);
+  setMeta('meta[property="og:description"]','content',article.title);
+  setMeta('link[rel="canonical"]','href',window.location.href);
+  if(article.image) setMeta('meta[property="og:image"]','content',article.image);
 
-  // Check Supabase cache first
+  // Supabase cache check
   if(SB){
-    const {data} = await SB.from('news_articles').select('*').eq('slug',sl).single();
-    if(data&&data.body){ renderArticle(data,color,article); return; }
+    const {data} = await SB.from('news_articles').select('*').eq('slug',sl).single().catch(()=>({data:null}));
+    if(data?.body){ renderArticle(data,color,article); return; }
   }
 
-  // Show skeleton
-  content.innerHTML=`
+  // Skeleton
+  ac.innerHTML=`
     <span class="article-cat-tag" style="color:${color};background:${color}18;border:1px solid ${color}30">${esc(article.category)}</span>
     <h1 class="article-h1">${esc(article.title)}</h1>
-    <div class="article-meta"><strong>${esc(article.source)}</strong><span>Loading full article…</span></div>
-    <div class="article-skel">
-      ${Array.from({length:5},()=>`<div class="skel-p" style="width:${60+Math.random()*35}%"></div>`).join('')}
-    </div>`;
+    <div class="article-meta"><strong>${esc(article.source)}</strong><span>Loading…</span></div>
+    <div class="article-skel">${Array.from({length:6},()=>`<div class="skel-p" style="width:${60+Math.random()*35}%"></div>`).join('')}</div>`;
 
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1500,
-        tools:[{type:'web_search_20250305',name:'web_search'}],
-        messages:[{role:'user',content:
-          `Search for this news story and write a comprehensive article. Story: "${article.title}" — from ${article.source}.
+  const published = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  let paras = [], articleImage = article.image||null;
 
-Return ONLY valid JSON (no markdown, no code fences):
-{"headline":"full title","byline":"By ${article.source} staff","published":"${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}","summary":"2-3 sentence summary of the story","body":"6 full paragraphs separated by \\n\\n — NO markdown, just plain text","key_points":["point 1","point 2","point 3"],"source_url":"best direct URL to story"}`
-        }]
-      })
-    });
-    const data=await res.json();
-    let raw='';
-    for(const b of(data.content||[])) if(b.type==='text') raw+=b.text;
-    const jm=raw.match(/\{[\s\S]*\}/);
-    if(!jm) throw new Error('No JSON');
-    const art=JSON.parse(jm[0]);
-
-    // Cache in Supabase
-    if(SB){
-      await SB.from('news_articles').upsert({
-        slug:sl,title:art.headline||article.title,category:article.category,
-        source:article.source,summary:art.summary,body:art.body,
-        source_url:art.source_url,updated_at:new Date().toISOString()
-      },{onConflict:'slug'});
-    }
-
-    renderArticle({...art,slug:sl},color,article);
-
-  } catch(err){
-    content.innerHTML=`
-      <span class="article-cat-tag" style="color:${color};background:${color}18">${esc(article.category)}</span>
-      <h1 class="article-h1">${esc(article.title)}</h1>
-      <div class="article-body"><p>Could not load the full article. <a href="${esc(article.url||'#')}" target="_blank" rel="noopener" style="color:var(--accent)">Read on ${esc(article.source)} ↗</a></p></div>`;
+  // STRATEGY 1: NewsData full_content field (already in article object)
+  if(article.full_content && article.full_content.length > 100){
+    const text = article.full_content.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+    paras = buildParas(text);
   }
+
+  // STRATEGY 2: Fetch via allorigins CORS proxy
+  if(paras.length < 2 && article.url && article.url !== '#'){
+    try {
+      const proxyRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(article.url)}`,{signal:AbortSignal.timeout(8000)});
+      if(proxyRes.ok){
+        const pd = await proxyRes.json();
+        const html = pd.contents||'';
+        // Try to extract image from og:image
+        const imgMatch = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i)
+                      || html.match(/<meta[^>]+content="([^"]+)"[^>]+property="og:image"/i);
+        if(imgMatch && !articleImage) articleImage = imgMatch[1];
+        // Extract article body — prioritise <article> or <main> tags
+        const articleTagMatch = html.match(/<article[^>]*>([\s\S]*?)<\/article>/i)
+                             || html.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
+        const bodyHtml = articleTagMatch ? articleTagMatch[1] : html;
+        const tmp = document.createElement('div');
+        tmp.innerHTML = bodyHtml
+          .replace(/<script[\s\S]*?<\/script>/gi,'')
+          .replace(/<style[\s\S]*?<\/style>/gi,'')
+          .replace(/<nav[\s\S]*?<\/nav>/gi,'')
+          .replace(/<header[\s\S]*?<\/header>/gi,'')
+          .replace(/<footer[\s\S]*?<\/footer>/gi,'')
+          .replace(/<aside[\s\S]*?<\/aside>/gi,'')
+          .replace(/<figure[\s\S]*?<\/figure>/gi,'')
+          .replace(/<[^>]+>/g,' ');
+        const text = tmp.textContent.replace(/\s+/g,' ').trim().slice(0,5000);
+        if(text.length > 200) paras = buildParas(text);
+      }
+    } catch(e){ console.warn('[Proxy]', e.message); }
+  }
+
+  // STRATEGY 3: Smart fallback using title + category context
+  if(paras.length < 2){
+    paras = [
+      `${article.title}. This story is currently developing and full details are still emerging from ${article.source}.`,
+      `The ${article.category} sector continues to see significant activity. Stay informed with LinkHub's real-time news feed, refreshed every hour with the latest stories from trusted global sources.`,
+      `For the complete and detailed coverage of this story, we recommend reading the original report directly from ${article.source}.`
+    ];
+  }
+
+  const key_points = paras.slice(0,3).map(p=>p.split(/[.!?]/)[0].trim()).filter(k=>k.length>15);
+  const summary = paras[0].slice(0,220)+(paras[0].length>220?'…':'');
+
+  const art = {
+    headline: article.title,
+    byline:   article.source,
+    published, summary,
+    body:     paras.join('\n\n'),
+    key_points,
+    source_url: article.url,
+    image:    articleImage,
+    slug:     sl
+  };
+
+  // Cache in Supabase
+  if(SB){
+    SB.from('news_articles').upsert({
+      slug:sl, title:art.headline, category:article.category,
+      source:article.source, summary:art.summary, body:art.body,
+      source_url:art.source_url, updated_at:new Date().toISOString()
+    },{onConflict:'slug'}).catch(()=>{});
+  }
+
+  renderArticle(art, color, article);
+}
+
+function buildParas(text){
+  const sentences = text.match(/[^.!?]{20,}[.!?]+/g)||[];
+  const paras = [];
+  for(let i=0; i<sentences.length && paras.length<7; i+=3){
+    const p = sentences.slice(i,i+3).join(' ').trim();
+    if(p.length>60) paras.push(p);
+  }
+  return paras;
 }
 
 function renderArticle(art, color, article){
-  const content=dom('article-content');
-  const paras=(art.body||'').split(/\n\n/).filter(Boolean).map(p=>`<p>${esc(p)}</p>`).join('');
+  const ac=dom('article-content');
+  const paras=(art.body||'').split(/\n\n/).filter(Boolean);
   const kp=(art.key_points||[]).map(k=>`<li>${esc(k)}</li>`).join('');
-  content.innerHTML=`
-    <span class="article-cat-tag" style="color:${color};background:${color}18;border:1px solid ${color}30">${esc(article?.category||'')}</span>
-    <h1 class="article-h1">${esc(art.headline||art.title||'')}</h1>
-    <div class="article-meta">
-      <strong>${esc(art.byline||art.source||'')}</strong>
-      <span>${esc(art.published||new Date().toLocaleDateString())}</span>
-    </div>
-    ${art.summary?`<p class="article-summary">${esc(art.summary)}</p>`:''}
-    ${kp?`<div class="article-key-points"><h3>Key Points</h3><ul>${kp}</ul></div>`:''}
-    <div class="article-body">${paras}</div>
-    ${art.source_url&&art.source_url!=='#'?`<a class="article-source-btn" href="${esc(art.source_url)}" target="_blank" rel="noopener">Read original on ${esc(article?.source||'source')} ↗</a>`:''}
-  `;
+  const cat   = esc(article?.category||art.category||'');
+  const title = esc(art.headline||art.title||'');
+  const byline= esc(art.byline||art.source||article?.source||'');
+  const pubdate=esc(art.published||new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}));
+  const imgSrc = art.image||article?.image||null;
+  const wordCount = (art.body||'').split(/\s+/).length;
+  const readMins = Math.max(1, Math.round(wordCount/200));
+  const articleUrl = window.location.href;
+  const isSaved = isBookmarked(art.slug||'');
+
+  // Update bookmark button state
+  const bBtn = dom('art-bookmark-btn');
+  if(bBtn){ bBtn.textContent = isSaved ? '🔖 Saved' : '🔖 Save'; bBtn.classList.toggle('saved', isSaved); }
+  CURRENT_ARTICLE = {art, article};
+
+  // JSON-LD structured data
+  let ld=document.getElementById('article-ld');
+  if(!ld){ld=document.createElement('script');ld.type='application/ld+json';ld.id='article-ld';document.head.appendChild(ld);}
+  ld.textContent=JSON.stringify({
+    "@context":"https://schema.org","@type":"NewsArticle",
+    "headline": art.headline||art.title||'',
+    "description": art.summary||'',
+    "image": imgSrc?[imgSrc]:[],
+    "datePublished": new Date().toISOString(),
+    "dateModified":  new Date().toISOString(),
+    "author":{"@type":"Organization","name":art.byline||article?.source||'LinkHub'},
+    "publisher":{"@type":"Organization","name":"LinkHub","logo":{"@type":"ImageObject","url":"https://yourdomain.com/icon-192.png"}},
+    "url": articleUrl,
+    "mainEntityOfPage": articleUrl,
+    "articleSection": article?.category||'',
+    "keywords":`${article?.category||''}, ${(art.headline||'').split(' ').slice(0,6).join(', ')}, news, breaking news, latest news`
+  });
+
+  // Body with subheading
+  let bodyHtml='';
+  paras.forEach((p,i)=>{
+    if(i===Math.floor(paras.length/2)&&paras.length>3){
+      const sub=(art.headline||'').includes(':')
+        ?esc((art.headline||'').split(':').slice(1).join(':').trim())
+        :'What You Need to Know';
+      bodyHtml+=`<h2 class="article-subhead">${sub}</h2>`;
+    }
+    bodyHtml+=`<p itemprop="articleBody">${esc(p)}</p>`;
+  });
+
+  // Share buttons
+  const twitterUrl=`https://twitter.com/intent/tweet?text=${encodeURIComponent(art.headline||'')}&url=${encodeURIComponent(articleUrl)}`;
+  const whatsappUrl=`https://api.whatsapp.com/send?text=${encodeURIComponent((art.headline||'')+' '+articleUrl)}`;
+  const facebookUrl=`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`;
+  const shareHtml=`<div class="article-share">
+    <span>Share:</span>
+    ${navigator.share?`<button class="share-btn" onclick="nativeShare('${esc(art.headline||'')}','${esc(articleUrl)}')">📤 Share</button>`:''}
+    <a class="share-btn twitter" href="${twitterUrl}" target="_blank" rel="noopener noreferrer">𝕏 Twitter</a>
+    <a class="share-btn whatsapp" href="${whatsappUrl}" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
+    <a class="share-btn facebook" href="${facebookUrl}" target="_blank" rel="noopener noreferrer">👍 Facebook</a>
+    <button class="share-btn copy-link" onclick="copyArticleLink('${esc(articleUrl)}')">🔗 Copy Link</button>
+  </div>`;
+
+  // Related articles
+  const related=NEWS.filter(n=>n.category===article?.category&&n.slug!==art.slug).slice(0,3);
+  const relatedHtml=related.length?`
+    <div class="related-articles">
+      <h3>More ${cat} Stories</h3>
+      ${related.map(r=>{
+        const ri=NEWS.indexOf(r);
+        const rsl=r.slug||slug(r.title||'');
+        return `<div class="related-item" onclick="closeArticle();setTimeout(()=>openArticle(${ri},'${rsl.replace(/'/g,"\\'")}'),100)">
+          ${r.image?`<img class="related-thumb" src="${esc(r.image)}" alt="${esc(r.title)}" loading="lazy" onerror="this.style.display='none'">`:`<div class="related-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.2rem">${getCatEmoji(r.category)}</div>`}
+          <div><div class="related-title">${esc(r.title)}</div><div class="related-source">${esc(r.source)}</div></div>
+        </div>`;
+      }).join('')}
+    </div>`:'';
+
+  ac.innerHTML=`
+    <div itemscope itemtype="https://schema.org/NewsArticle">
+      <span class="article-cat-tag" style="color:${color};background:${color}18;border:1px solid ${color}30" itemprop="articleSection">${cat}</span>
+      <h1 class="article-h1" itemprop="headline">${title}</h1>
+      <div class="article-meta">
+        <strong itemprop="author">${byline}</strong>
+        <span><time itemprop="datePublished" datetime="${new Date().toISOString()}">${pubdate}</time></span>
+        <span class="reading-time">⏱ ${readMins} min read</span>
+      </div>
+      ${imgSrc?`<img class="article-hero-img" src="${esc(imgSrc)}" alt="${title}" itemprop="image" onerror="this.style.display='none'">``:''}
+      ${art.summary?`<p class="article-summary" itemprop="description">${esc(art.summary)}</p>`:''}
+      ${kp?`<div class="article-key-points"><h3>Key Points</h3><ul>${kp}</ul></div>`:''}
+      <div class="article-body">${bodyHtml}</div>
+      ${shareHtml}
+      ${art.source_url&&art.source_url!=='#'?`<a class="article-source-btn" href="${esc(art.source_url)}" target="_blank" rel="noopener">Read original on ${byline} ↗</a>`:''}
+      ${relatedHtml}
+    </div>`;
+
+  // Reading progress bar
+  startReadingProgress();
 }
 
 function closeArticle(){
   dom('article-overlay').classList.remove('show');
+  document.body.classList.remove('article-open');
   document.body.style.overflow='';
   history.pushState({},'LinkHub','/');
   document.title='LinkHub — Live News & Curated Backlinks';
+  const setMeta=(sel,attr,val)=>{ const el=document.querySelector(sel); if(el) el.setAttribute(attr,val); };
+  setMeta('meta[name="description"]','content','Fresh trending news across entertainment, sports, celebrity, streaming, movies, and world news — updated every hour.');
+  setMeta('meta[property="og:title"]','content','LinkHub — Live News & Curated Backlinks');
+  setMeta('link[rel="canonical"]','href','https://yourdomain.com/');
+  const ld=document.getElementById('article-ld'); if(ld) ld.remove();
+  stopReadingProgress();
+  CURRENT_ARTICLE = null;
 }
 
 // ================================================================
@@ -1319,10 +1792,284 @@ setInterval(tick,1000); tick();
 // ================================================================
 // INIT
 // ================================================================
+
+// ================================================================
+// GLOBALS (additional)
+// ================================================================
+let CURRENT_ARTICLE = null;
+let PROGRESS_RAF    = null;
+let BOOKMARKS       = JSON.parse(localStorage.getItem('lh_bookmarks')||'[]');
+
+// ================================================================
+// READING PROGRESS BAR
+// ================================================================
+function startReadingProgress(){
+  const bar = dom('reading-progress');
+  if(!bar) return;
+  function update(){
+    const overlay = dom('article-overlay');
+    if(!overlay) return;
+    const h = overlay.scrollHeight - overlay.clientHeight;
+    const pct = h>0 ? Math.min(100, (overlay.scrollTop/h)*100) : 0;
+    bar.style.width = pct+'%';
+    PROGRESS_RAF = requestAnimationFrame(update);
+  }
+  cancelAnimationFrame(PROGRESS_RAF);
+  const overlay = dom('article-overlay');
+  if(overlay) overlay.onscroll = update;
+  PROGRESS_RAF = requestAnimationFrame(update);
+}
+function stopReadingProgress(){
+  cancelAnimationFrame(PROGRESS_RAF);
+  const bar = dom('reading-progress');
+  if(bar) bar.style.width='0%';
+  const overlay = dom('article-overlay');
+  if(overlay) overlay.onscroll = null;
+}
+
+// ================================================================
+// BACK TO TOP
+// ================================================================
+window.addEventListener('scroll',()=>{
+  const btn = dom('back-to-top');
+  if(btn) btn.classList.toggle('show', window.scrollY > 400);
+});
+
+// ================================================================
+// KEYBOARD NAVIGATION
+// ================================================================
+document.addEventListener('keydown', e=>{
+  if(dom('article-overlay')?.classList.contains('show')){
+    if(e.key==='Escape') closeArticle();
+    if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+      if(!CURRENT_ARTICLE) return;
+      const cur = NEWS.indexOf(CURRENT_ARTICLE.article);
+      const next = e.key==='ArrowRight' ? cur+1 : cur-1;
+      if(next>=0&&next<NEWS.length){
+        const a = NEWS[next];
+        openArticle(next, a.slug||slug(a.title||''));
+      }
+    }
+  }
+});
+
+// ================================================================
+// SHARE FUNCTIONS
+// ================================================================
+function nativeShare(title, url){
+  navigator.share({title, url}).catch(()=>{});
+}
+function copyArticleLink(url){
+  navigator.clipboard.writeText(url).then(()=>toast('🔗 Link copied!', '✓')).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=url; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    toast('🔗 Link copied!','✓');
+  });
+}
+
+// ================================================================
+// BOOKMARKS
+// ================================================================
+function isBookmarked(slug){ return BOOKMARKS.some(b=>b.slug===slug); }
+
+function toggleBookmark(){
+  if(!CURRENT_ARTICLE) return;
+  const {art, article} = CURRENT_ARTICLE;
+  const sl = art.slug||'';
+  if(isBookmarked(sl)){
+    BOOKMARKS = BOOKMARKS.filter(b=>b.slug!==sl);
+    toast('Bookmark removed','✕');
+  } else {
+    BOOKMARKS.unshift({
+      slug:sl, title:art.headline||art.title||'',
+      source:art.byline||article?.source||'', category:article?.category||'',
+      image:art.image||article?.image||null, savedAt:Date.now()
+    });
+    toast('🔖 Article saved!','✓');
+  }
+  localStorage.setItem('lh_bookmarks', JSON.stringify(BOOKMARKS));
+  const bBtn=dom('art-bookmark-btn');
+  if(bBtn){ bBtn.textContent=isBookmarked(sl)?'🔖 Saved':'🔖 Save'; bBtn.classList.toggle('saved',isBookmarked(sl)); }
+  renderBookmarks();
+  updateBookmarksBadge();
+}
+
+function renderBookmarks(){
+  const list=dom('bookmarks-list');
+  if(!list) return;
+  if(!BOOKMARKS.length){
+    list.innerHTML='<div class="bookmarks-empty">No saved articles yet.<br>Hit 🔖 Save on any article.</div>';
+    return;
+  }
+  list.innerHTML=BOOKMARKS.map((b,i)=>`
+    <div class="bookmark-item" onclick="openBookmark(${i})">
+      <div class="bookmark-item-title">${esc(b.title)}</div>
+      <div class="bookmark-item-meta">${esc(b.source)} · ${esc(b.category)} · ${new Date(b.savedAt).toLocaleDateString()}</div>
+    </div>`).join('');
+}
+
+function openBookmark(i){
+  const b = BOOKMARKS[i];
+  if(!b) return;
+  dom('bookmarks-panel').classList.remove('show');
+  const idx = NEWS.findIndex(n=>n.slug===b.slug);
+  if(idx>=0){ openArticle(idx,b.slug); }
+  else {
+    // Article not in current NEWS, open with cached data
+    const fakeArticle = {title:b.title,source:b.source,category:b.category,image:b.image,slug:b.slug,url:'#'};
+    NEWS.push(fakeArticle);
+    openArticle(NEWS.length-1,b.slug);
+  }
+}
+
+function toggleBookmarks(){
+  renderBookmarks();
+  dom('bookmarks-panel').classList.toggle('show');
+}
+
+function updateBookmarksBadge(){
+  const btn=dom('bookmarks-btn');
+  if(btn) btn.textContent = BOOKMARKS.length>0?`🔖${BOOKMARKS.length}`:'🔖';
+}
+
+// ================================================================
+// SITEMAP + GOOGLE PING
+// ================================================================
+async function generateAndPingSitemap(){
+  if(!SB) return;
+  try {
+    // Fetch all articles from Supabase
+    const {data:articles} = await SB.from('news_articles').select('slug,title,updated_at,category').order('updated_at',{ascending:false}).limit(1000);
+    const {data:cached}   = await SB.from('news_cache').select('slug,title,updated_at,category').order('updated_at',{ascending:false}).limit(1000);
+
+    const now = new Date().toISOString().split('T')[0];
+    const domain = 'https://yourdomain.com';
+
+    // Build news-sitemap.xml (Google News format — last 2 days only)
+    const twoDaysAgo = new Date(Date.now()-2*24*60*60*1000);
+    const recentArticles = (articles||[]).filter(a=>new Date(a.updated_at)>twoDaysAgo);
+
+    const newsSitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+${recentArticles.map(a=>`  <url>
+    <loc>${domain}/news/${esc(a.slug)}</loc>
+    <news:news>
+      <news:publication>
+        <news:name>LinkHub</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>${new Date(a.updated_at).toISOString()}</news:publication_date>
+      <news:title>${esc(a.title||'')}</news:title>
+      <news:keywords>${esc(a.category||'')}, news, latest</news:keywords>
+    </news:news>
+    <lastmod>${new Date(a.updated_at).toISOString()}</lastmod>
+  </url>`).join('\n')}
+</urlset>`;
+
+    // Build main sitemap.xml
+    const allSlugs = [...new Set([...(articles||[]).map(a=>a.slug), ...(cached||[]).map(a=>a.slug)])];
+    const mainSitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>${domain}/</loc><changefreq>hourly</changefreq><priority>1.0</priority><lastmod>${now}</lastmod></url>
+${allSlugs.map(sl=>`  <url>
+    <loc>${domain}/news/${esc(sl)}</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <lastmod>${now}</lastmod>
+  </url>`).join('\n')}
+</urlset>`;
+
+    // Store in Supabase as blobs (news_cache table with special slugs)
+    await SB.from('news_cache').upsert({slug:'__sitemap__',title:mainSitemap,source:'system',category:'sitemap',url:'/',updated_at:new Date().toISOString()},{onConflict:'slug'});
+    await SB.from('news_cache').upsert({slug:'__news_sitemap__',title:newsSitemap,source:'system',category:'sitemap',url:'/',updated_at:new Date().toISOString()},{onConflict:'slug'});
+
+    // Ping Google + Bing
+    await pingSearchEngines(domain);
+
+    console.log('[Sitemap] Generated and pinged search engines.');
+  } catch(e){ console.warn('[Sitemap error]', e); }
+}
+
+async function pingSearchEngines(domain){
+  const sitemapUrl = encodeURIComponent(`${domain}/sitemap.xml`);
+  const newsSitemapUrl = encodeURIComponent(`${domain}/news-sitemap.xml`);
+  const pings = [
+    `https://www.google.com/ping?sitemap=${sitemapUrl}`,
+    `https://www.google.com/ping?sitemap=${newsSitemapUrl}`,
+    `https://www.bing.com/ping?sitemap=${sitemapUrl}`,
+    `https://api.indexnow.org/indexnow?url=${encodeURIComponent(domain)}&key=linkhub`
+  ];
+  for(const url of pings){
+    try { await fetch(url,{mode:'no-cors'}); } catch(e){}
+  }
+  toast('📡 Search engines pinged!','✓');
+}
+
+// ================================================================
+// RSS FEED GENERATION
+// ================================================================
+async function generateRSS(){
+  if(!SB) return;
+  try {
+    const {data} = await SB.from('news_cache').select('*').order('updated_at',{ascending:false}).limit(50);
+    if(!data||!data.length) return;
+    const domain='https://yourdomain.com';
+    const rss=`<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>LinkHub — Live News Feed</title>
+    <link>${domain}</link>
+    <description>Fresh trending news updated every hour</description>
+    <language>en-us</language>
+    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+    <atom:link href="${domain}/rss.xml" rel="self" type="application/rss+xml"/>
+    <image><url>${domain}/icon-192.png</url><title>LinkHub</title><link>${domain}</link></image>
+${(data.filter(a=>!a.slug.startsWith('__'))).map(a=>`    <item>
+      <title>${esc(a.title||'')}</title>
+      <link>${domain}/news/${esc(a.slug)}</link>
+      <guid isPermaLink="true">${domain}/news/${esc(a.slug)}</guid>
+      <pubDate>${new Date(a.updated_at).toUTCString()}</pubDate>
+      <category>${esc(a.category||'General')}</category>
+      <source url="${esc(a.url||domain)}">${esc(a.source||'LinkHub')}</source>
+    </item>`).join('\n')}
+  </channel>
+</rss>`;
+    // Store RSS in Supabase
+    await SB.from('news_cache').upsert({slug:'__rss__',title:rss,source:'system',category:'rss',url:'/',updated_at:new Date().toISOString()},{onConflict:'slug'});
+    console.log('[RSS] Feed generated.');
+  } catch(e){ console.warn('[RSS error]', e); }
+}
+
+// ================================================================
+// AUTO-GENERATE SITEMAP + RSS AFTER EACH NEWS FETCH
+// ================================================================
+const _origFetchNews = fetchNews;
+fetchNews = async function(forceRefresh){
+  await _origFetchNews(forceRefresh);
+  // After news loads, regenerate sitemap + RSS + ping
+  setTimeout(()=>{
+    generateAndPingSitemap();
+    generateRSS();
+  }, 2000);
+};
+
 checkBanner();
 initSB();
 if(!SB) loadLocal();
-fetchNews();
+fetchNews(false);
+
+// On load, update bookmark badge
+updateBookmarksBadge();
+
+// Service Worker registration
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').then(()=>{
+    console.log('[SW] Registered');
+  }).catch(e=>console.warn('[SW] Failed:', e));
+}
+
 </script>
 </body>
 </html>

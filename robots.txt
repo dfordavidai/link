@@ -1,148 +1,22 @@
-# ============================================================
-# robots.txt — LinkHub
-# Max crawl frequency for all major search & AI bots
-# ============================================================
-
-# === GOOGLE ===
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 0
-
-User-agent: Googlebot-News
-Allow: /
-Crawl-delay: 0
-
-User-agent: Googlebot-Image
-Allow: /
-
-# === BING / MICROSOFT ===
-User-agent: Bingbot
-Allow: /
-Crawl-delay: 0
-
-User-agent: msnbot
-Allow: /
-
-# === OTHER SEARCH ENGINES ===
-User-agent: Slurp
-Allow: /
-Crawl-delay: 0
-
-User-agent: DuckDuckBot
-Allow: /
-Crawl-delay: 0
-
-User-agent: YandexBot
-Allow: /
-Crawl-delay: 0
-
-User-agent: Baiduspider
-Allow: /
-Crawl-delay: 0
-
-User-agent: Exabot
-Allow: /
-
-User-agent: ia_archiver
-Allow: /
-
-# === AI BOTS & LLM CRAWLERS ===
-
-# OpenAI / ChatGPT
-User-agent: GPTBot
-Allow: /
-Crawl-delay: 0
-
-User-agent: ChatGPT-User
-Allow: /
-Crawl-delay: 0
-
-User-agent: OAI-SearchBot
-Allow: /
-Crawl-delay: 0
-
-# Anthropic / Claude
-User-agent: ClaudeBot
-Allow: /
-Crawl-delay: 0
-
-User-agent: anthropic-ai
-Allow: /
-Crawl-delay: 0
-
-# Google AI / Gemini
-User-agent: Google-Extended
-Allow: /
-Crawl-delay: 0
-
-# Meta AI
-User-agent: Meta-ExternalAgent
-Allow: /
-Crawl-delay: 0
-
-User-agent: Meta-ExternalFetcher
-Allow: /
-Crawl-delay: 0
-
-# Perplexity AI
-User-agent: PerplexityBot
-Allow: /
-Crawl-delay: 0
-
-# You.com
-User-agent: YouBot
-Allow: /
-Crawl-delay: 0
-
-# Cohere AI
-User-agent: cohere-ai
-Allow: /
-Crawl-delay: 0
-
-# Common Crawl (AI training)
-User-agent: CCBot
-Allow: /
-Crawl-delay: 0
-
-# ByteDance / TikTok
-User-agent: Bytespider
-Allow: /
-Crawl-delay: 0
-
-# Apple
-User-agent: Applebot
-Allow: /
-Crawl-delay: 0
-
-# === SOCIAL PREVIEW BOTS ===
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: LinkedInBot
-Allow: /
-
-User-agent: WhatsApp
-Allow: /
-
-User-agent: TelegramBot
-Allow: /
-
-User-agent: Slackbot
-Allow: /
-
-User-agent: Discordbot
-Allow: /
-
-# === DEFAULT ===
 User-agent: *
 Allow: /
-Crawl-delay: 0
+Allow: /news/
+Disallow: /admin
+Disallow: /?admin=true
 
-# ============================================================
-# SITEMAPS — UPDATE yourdomain.com WITH YOUR REAL DOMAIN
-# ============================================================
+# Sitemaps
 Sitemap: https://yourdomain.com/sitemap.xml
 Sitemap: https://yourdomain.com/news-sitemap.xml
+
+# Google News
+User-agent: Googlebot-News
+Allow: /news/
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /
+
+# Crawl delay for generic bots
+User-agent: *
+Crawl-delay: 1
