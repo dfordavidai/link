@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  GOOGLE NEWS SITEMAP — LinkHub
+  ============================================================
+  Submit this URL to Google Search Console:
+  https://yourdomain.com/news-sitemap.xml
+
+  For a production site, generate this file dynamically from
+  your Supabase news_articles table using a serverless function
+  or API route that queries:
+
+    SELECT slug, title, updated_at FROM news_articles
+    WHERE updated_at > NOW() - INTERVAL '2 days'
+    ORDER BY updated_at DESC
+    LIMIT 1000;
+
+  Google News only indexes articles published within the last 2 days.
+  Regenerate this file every hour alongside your news fetch.
+  ============================================================
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+
+  <!--
+    Example article entry — replace with dynamically generated entries:
+
+    <url>
+      <loc>https://yourdomain.com/news/your-article-slug</loc>
+      <news:news>
+        <news:publication>
+          <news:name>LinkHub</news:name>
+          <news:language>en</news:language>
+        </news:publication>
+        <news:publication_date>2025-01-01T12:00:00+00:00</news:publication_date>
+        <news:title>Your Article Title Here</news:title>
+        <news:keywords>news, trending, keyword1, keyword2</news:keywords>
+      </news:news>
+      <changefreq>hourly</changefreq>
+      <priority>0.9</priority>
+    </url>
+  -->
+
+  <!-- Placeholder — replace with real dynamic entries -->
+  <url>
+    <loc>https://yourdomain.com/news/</loc>
+    <news:news>
+      <news:publication>
+        <news:name>LinkHub</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2025-01-01T00:00:00+00:00</news:publication_date>
+      <news:title>LinkHub — Trending News Updated Hourly</news:title>
+      <news:keywords>trending news, entertainment, sports, celebrity, streaming, movies, world news</news:keywords>
+    </news:news>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+</urlset>

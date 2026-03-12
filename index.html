@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>LinkHub — Live News & Curated Backlinks</title>
+<meta name="description" content="Fresh trending news across entertainment, sports, celebrity, streaming, movies, and world news — updated every hour. Curated do-follow backlinks.">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large">
+<meta name="revisit-after" content="1 hour">
+<meta name="rating" content="general">
+<meta name="language" content="en">
+<meta property="og:title" content="LinkHub — Live News & Curated Backlinks">
+<meta property="og:description" content="Fresh trending news updated every hour: entertainment, sports, celebrity, streaming, movies, world news and more.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://yourdomain.com/">
+<meta property="og:image" content="https://yourdomain.com/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="LinkHub — Live News & Curated Backlinks">
+<link rel="canonical" href="https://yourdomain.com/">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+<!-- Schema.org structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "LinkHub",
+  "url": "https://yourdomain.com",
+  "description": "Live trending news and curated backlinks, refreshed every hour",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://yourdomain.com/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ============================================================
+   DESIGN SYSTEM — WHITE / CLEAN / EDITORIAL
+   ============================================================ */
+:root {
+  --bg: #f8f9fc;
+  --white: #ffffff;
+  --surface: #ffffff;
+  --surface2: #f3f4f8;
+  --border: #e4e6ef;
+  --border2: #d0d3e0;
+  --accent: #1a56db;
+  --accent-light: #eff4ff;
+  --accent-dark: #1343b8;
+  --red: #e02424;
+  --green: #057a55;
+  --green-bg: #f3faf7;
+  --orange: #d03801;
+  --purple: #7e3af2;
+  --text: #111827;
+  --text2: #374151;
+  --muted: #6b7280;
+  --muted2: #9ca3af;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   SETUP BANNER
+   ============================================================ */
+#setup-banner {
+  background: linear-gradient(135deg, #1a56db, #7e3af2);
+  color: white;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 100;
+}
+#setup-banner.hidden { display: none; }
+#setup-banner span { font-size: 0.82rem; font-weight: 500; }
+#setup-banner input {
+  flex: 1; min-width: 240px; max-width: 380px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px; color: white;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8rem; padding: 7px 12px; outline: none;
+}
+#setup-banner input::placeholder { color: rgba(255,255,255,0.6); }
+.setup-btn {
+  background: white; color: #1a56db;
+  border: none; border-radius: 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem; font-weight: 700;
+  padding: 7px 14px; cursor: pointer; white-space: nowrap;
+}
+.setup-dismiss { background:none; border:none; color:rgba(255,255,255,0.7); cursor:pointer; font-size:0.75rem; }
+
+/* ============================================================
+   LOGIN MODAL
+   ============================================================ */
+#login-overlay {
+  display:none; position:fixed; inset:0; z-index:9999;
+  background: rgba(17,24,39,0.7);
+  backdrop-filter: blur(6px);
+  align-items:center; justify-content:center;
+  padding: 20px;
+}
+#login-overlay.show { display:flex; }
+.login-box {
+  background: white; border-radius: 20px;
+  padding: 40px 36px; width:100%; max-width:400px;
+  box-shadow: var(--shadow-lg);
+  animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn { from{opacity:0;transform:scale(0.94)} to{opacity:1;transform:scale(1)} }
+.login-logo { font-size:1.5rem; font-weight:800; color:var(--accent); margin-bottom:6px; }
+.login-sub { font-size:0.82rem; color:var(--muted); margin-bottom:24px; }
+.login-field { margin-bottom:14px; }
+.login-field label { display:block; font-size:0.72rem; font-weight:600; color:var(--text2); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em; }
+.login-field input {
+  width:100%; border:1.5px solid var(--border2);
+  border-radius:10px; color:var(--text);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:0.88rem; padding:10px 14px; outline:none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.login-field input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(26,86,219,0.1); }
+.login-error { color:var(--red); font-size:0.75rem; margin-bottom:10px; min-height:18px; }
+.btn-login {
+  width:100%; background:var(--accent); color:#fff;
+  font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem;
+  font-weight:700; padding:12px; border:none; border-radius:10px;
+  cursor:pointer; transition:all 0.15s;
+}
+.btn-login:hover { background:var(--accent-dark); }
+.login-hint { margin-top:14px; font-size:0.72rem; color:var(--muted); text-align:center; }
+
+/* ============================================================
+   ARTICLE READER OVERLAY
+   ============================================================ */
+#article-overlay {
+  display:none; position:fixed; inset:0; z-index:8000;
+  background:white; overflow-y:auto;
+  animation:slideUp 0.25s ease;
+}
+#article-overlay.show { display:block; }
+@keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:none;opacity:1} }
+.article-topbar {
+  position:sticky; top:0; z-index:10;
+  background:white; border-bottom:1px solid var(--border);
+  padding:14px 20px; display:flex; align-items:center; gap:12px;
+}
+.article-back-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--surface2); border:none; border-radius:8px;
+  color:var(--text2); font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:0.8rem; font-weight:600; padding:7px 14px; cursor:pointer;
+  transition:background 0.15s;
+}
+.article-back-btn:hover { background:var(--border); }
+.article-topbar-title { font-size:0.82rem; color:var(--muted); flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.article-page { max-width:720px; margin:0 auto; padding:40px 20px 80px; }
+.article-cat-tag {
+  display:inline-block; font-size:0.68rem; padding:3px 10px;
+  border-radius:999px; margin-bottom:16px;
+  font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
+}
+.article-h1 {
+  font-family:'Merriweather',serif;
+  font-size:clamp(1.4rem,4vw,2.2rem);
+  font-weight:700; line-height:1.2; color:var(--text);
+  margin-bottom:16px;
+}
+.article-meta { display:flex; gap:16px; font-size:0.78rem; color:var(--muted); margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--border); flex-wrap:wrap; align-items:center; }
+.article-meta strong { color:var(--text2); }
+.article-summary {
+  font-size:1rem; color:var(--text2); line-height:1.7;
+  border-left:3px solid var(--accent); padding-left:16px;
+  margin-bottom:28px; font-style:italic;
+}
+.article-key-points {
+  background:var(--accent-light); border:1px solid #c3dafe;
+  border-radius:12px; padding:18px 20px; margin-bottom:28px;
+}
+.article-key-points h3 { font-size:0.78rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px; }
+.article-key-points ul { padding-left:18px; }
+.article-key-points li { font-size:0.88rem; color:var(--text2); line-height:1.6; margin-bottom:6px; }
+.article-body { font-family:'Merriweather',serif; font-size:0.95rem; line-height:1.9; color:var(--text2); }
+.article-body p { margin-bottom:20px; }
+.article-body h2 { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text); margin:28px 0 12px; }
+.article-source-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--accent); color:white; text-decoration:none;
+  border-radius:10px; padding:10px 20px; font-size:0.82rem; font-weight:700;
+  margin-top:28px; transition:background 0.15s;
+}
+.article-source-btn:hover { background:var(--accent-dark); }
+.article-skel { animation:shimmer 1.5s ease-in-out infinite; }
+.skel-h { height:18px; background:#f0f0f5; border-radius:4px; margin-bottom:10px; }
+.skel-p { height:12px; background:#f0f0f5; border-radius:4px; margin-bottom:8px; }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+header {
+  background:white; border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:50;
+  box-shadow: var(--shadow);
+}
+.header-inner {
+  max-width:1340px; margin:0 auto; padding:0 20px;
+  display:flex; align-items:center; gap:16px;
+  height:60px;
+}
+.logo { font-size:1.3rem; font-weight:800; color:var(--accent); text-decoration:none; white-space:nowrap; }
+.logo em { color:var(--text); font-style:normal; }
+.header-spacer { flex:1; }
+.live-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--green-bg); border:1px solid #a7f3d0;
+  border-radius:999px; padding:4px 12px; font-size:0.72rem; font-weight:600; color:var(--green);
+}
+.live-dot { width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(5,122,85,0.4)} 50%{opacity:.7;box-shadow:0 0 0 5px rgba(5,122,85,0)} }
+.header-clock { font-size:0.75rem; color:var(--muted); font-weight:500; display:none; }
+@media(min-width:640px){.header-clock{display:block}}
+.btn-admin {
+  background:var(--surface2); border:1.5px solid var(--border2);
+  border-radius:8px; color:var(--text2);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:0.75rem; font-weight:600; padding:6px 14px;
+  cursor:pointer; transition:all 0.15s; white-space:nowrap;
+}
+.btn-admin:hover { background:var(--border); }
+.btn-admin.active { background:var(--accent); color:white; border-color:var(--accent); }
+.btn-settings {
+  background:none; border:none; cursor:pointer;
+  color:var(--muted); font-size:1.1rem; padding:6px; line-height:1;
+}
+
+/* ============================================================
+   SETTINGS PANEL
+   ============================================================ */
+#settings-panel {
+  display:none; background:white;
+  border-bottom:1px solid var(--border);
+  box-shadow:var(--shadow-md);
+}
+#settings-panel.show { display:block; }
+.settings-inner { max-width:1340px;margin:0 auto;padding:20px; }
+.settings-title { font-size:0.82rem;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px; }
+.settings-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px; }
+.sf label { display:block;font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px; }
+.sf input {
+  width:100%;border:1.5px solid var(--border2);border-radius:9px;
+  color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:0.8rem;padding:8px 12px;outline:none;transition:border-color .2s;
+}
+.sf input:focus{border-color:var(--accent);}
+.settings-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+.settings-note{margin-top:12px;padding:12px 16px;background:var(--accent-light);border:1px solid #c3dafe;border-radius:10px;font-size:0.75rem;color:var(--text2);line-height:1.7;}
+.settings-status{margin-top:8px;font-size:0.75rem;color:var(--green);min-height:18px;}
+.settings-status.err{color:var(--red);}
+.db-badge{display:inline-flex;align-items:center;gap:5px;font-size:0.68rem;font-weight:600;padding:2px 8px;border-radius:999px;}
+.db-badge.ok{background:var(--green-bg);color:var(--green);}
+.db-badge.bad{background:#fdf2f2;color:var(--red);}
+.db-badge.pending{background:#fffbeb;color:#92400e;}
+
+/* ============================================================
+   CATEGORY TABS
+   ============================================================ */
+.cat-bar {
+  background:white; border-bottom:1px solid var(--border);
+  overflow-x:auto; -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.cat-bar::-webkit-scrollbar{display:none;}
+.cat-inner { max-width:1340px;margin:0 auto;padding:0 20px;display:flex;gap:4px;white-space:nowrap; }
+.cat-tab {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:12px 14px; font-size:0.8rem; font-weight:600;
+  color:var(--muted); border-bottom:2.5px solid transparent;
+  cursor:pointer; transition:all 0.15s; background:none; border-top:none; border-left:none; border-right:none;
+  font-family:'Plus Jakarta Sans',sans-serif; white-space:nowrap;
+  text-transform:none;
+}
+.cat-tab:hover{color:var(--text);}
+.cat-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.cat-tab .cat-icon{font-size:1rem;}
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
+.page-wrap { max-width:1340px;margin:0 auto;padding:24px 20px; }
+.main-grid {
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:24px;
+  align-items:start;
+}
+@media(max-width:960px){.main-grid{grid-template-columns:1fr;}}
+
+/* ============================================================
+   CARD / PANEL
+   ============================================================ */
+.card {
+  background:white; border:1px solid var(--border);
+  border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;
+}
+.card-header {
+  padding:16px 20px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.card-title { font-size:0.88rem;font-weight:700;color:var(--text); }
+.badge {
+  font-size:0.68rem;font-weight:700;padding:3px 10px;
+  border-radius:999px; white-space:nowrap;
+}
+.badge-blue{background:var(--accent-light);color:var(--accent);}
+.badge-green{background:var(--green-bg);color:var(--green);}
+.badge-red{background:#fdf2f2;color:var(--red);}
+.badge-orange{background:#fff7ed;color:var(--orange);}
+
+/* ============================================================
+   BACKLINKS
+   ============================================================ */
+.input-area{padding:16px 20px;border-bottom:1px solid var(--border);}
+.input-label{font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;}
+textarea {
+  width:100%;border:1.5px solid var(--border2);border-radius:10px;
+  color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:0.82rem;padding:10px 14px;resize:vertical;
+  min-height:90px;outline:none;transition:border-color .2s,box-shadow .2s;line-height:1.6;
+  background:var(--bg);
+}
+textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,0.08);}
+textarea::placeholder{color:var(--muted2);}
+.btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.btn{
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:0.78rem;font-weight:600;
+  padding:8px 16px;border-radius:8px;border:none;cursor:pointer;
+  transition:all 0.15s;display:inline-flex;align-items:center;gap:5px;
+}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent-dark);}
+.btn-ghost{background:var(--surface2);color:var(--text2);border:1.5px solid var(--border2);}
+.btn-ghost:hover{background:var(--border);}
+.btn-danger{background:#fdf2f2;color:var(--red);border:1.5px solid #fecaca;}
+.btn-danger:hover{background:#fee2e2;}
+.btn-sm{padding:5px 10px;font-size:0.72rem;}
+
+/* LINKS LIST */
+.links-list{overflow-y:auto;}
+.links-list .inner{max-height:420px;overflow-y:auto;}
+.links-list .inner::-webkit-scrollbar{width:4px;}
+.links-list .inner::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.link-item {
+  display:flex;align-items:center;gap:10px;
+  padding:10px 20px;border-bottom:1px solid var(--border);
+  transition:background 0.12s;
+}
+.link-item:hover{background:var(--bg);}
+.link-item:last-child{border-bottom:none;}
+.link-num{font-size:0.65rem;color:var(--accent);min-width:24px;font-weight:700;opacity:.6;}
+.link-favicon{width:16px;height:16px;border-radius:3px;flex-shrink:0;}
+.link-content{flex:1;overflow:hidden;}
+.link-domain{font-size:0.8rem;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.link-full{font-size:0.65rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;}
+.link-actions{display:flex;gap:4px;opacity:0;transition:opacity .15s;flex-shrink:0;}
+.link-item:hover .link-actions{opacity:1;}
+@media(max-width:600px){.link-actions{opacity:1;}}
+.link-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:0.7rem;padding:4px 6px;border-radius:5px;transition:all .15s;}
+.link-btn:hover{background:var(--surface2);color:var(--text);}
+.link-btn.del:hover{background:#fdf2f2;color:var(--red);}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);font-size:0.82rem;line-height:2;}
+.empty-icon{font-size:2rem;margin-bottom:8px;opacity:.4;display:block;}
+.stats-bar{padding:10px 20px;border-top:1px solid var(--border);display:flex;gap:16px;background:var(--bg);flex-wrap:wrap;}
+.stat{font-size:0.7rem;color:var(--muted);}
+.stat strong{color:var(--text);font-weight:700;}
+
+/* DO-FOLLOW NOTICE */
+.dofollow-notice {
+  padding:10px 20px;background:var(--green-bg);border-bottom:1px solid #a7f3d0;
+  font-size:0.72rem;color:var(--green);font-weight:600;
+  display:flex;align-items:center;gap:6px;
+}
+
+/* ============================================================
+   NEWS PANEL
+   ============================================================ */
+.news-panel-header{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.news-timer{font-size:0.72rem;color:var(--muted);display:flex;align-items:center;gap:6px;}
+#countdown{color:var(--green);font-weight:700;}
+.news-list-wrap{}
+.news-item {
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px 20px;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background 0.12s;
+  text-decoration:none;color:inherit;
+}
+.news-item:hover{background:var(--accent-light);}
+.news-item:last-child{border-bottom:none;}
+.news-rank{font-size:0.65rem;font-weight:700;color:var(--muted2);min-width:22px;padding-top:3px;}
+.news-body{flex:1;min-width:0;}
+.news-title{font-size:0.88rem;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:6px;transition:color .15s;}
+.news-item:hover .news-title{color:var(--accent);}
+.news-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.news-source{font-size:0.68rem;color:var(--muted);font-weight:500;}
+.news-cat{font-size:0.62rem;font-weight:700;padding:2px 7px;border-radius:999px;text-transform:uppercase;letter-spacing:0.04em;}
+.news-read-arrow{font-size:0.7rem;color:var(--accent);margin-left:auto;opacity:0;transition:opacity .15s;flex-shrink:0;}
+.news-item:hover .news-read-arrow{opacity:1;}
+.admin-news-btns{display:none;gap:4px;margin-left:auto;flex-shrink:0;}
+.admin-active .admin-news-btns{display:flex;}
+.news-skel{padding:14px 20px;border-bottom:1px solid var(--border);}
+.sk{height:11px;background:var(--surface2);border-radius:4px;margin-bottom:8px;animation:shimmer 1.5s ease-in-out infinite;}
+.sk.w80{width:80%;} .sk.w50{width:50%;height:8px;}
+@keyframes shimmer{0%,100%{opacity:.5}50%{opacity:1}}
+
+/* EDIT NEWS MODAL */
+#edit-modal {
+  display:none;position:fixed;inset:0;z-index:9000;
+  background:rgba(17,24,39,.6);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;padding:20px;
+}
+#edit-modal.show{display:flex;}
+.edit-box{background:white;border-radius:16px;padding:28px;width:100%;max-width:520px;box-shadow:var(--shadow-lg);animation:popIn .2s ease;}
+.edit-box h3{font-size:1rem;font-weight:700;margin-bottom:18px;}
+.edit-field{margin-bottom:14px;}
+.edit-field label{display:block;font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;}
+.edit-field input,.edit-field select,.edit-field textarea{
+  width:100%;border:1.5px solid var(--border2);border-radius:8px;
+  color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:0.82rem;padding:9px 12px;outline:none;transition:border-color .2s;
+}
+.edit-field input:focus,.edit-field select:focus,.edit-field textarea:focus{border-color:var(--accent);}
+.edit-field textarea{min-height:80px;resize:vertical;}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer{background:white;border-top:1px solid var(--border);padding:28px 20px;margin-top:40px;}
+.footer-inner{max-width:1340px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.footer-copy{font-size:0.72rem;color:var(--muted);}
+.footer-links{display:flex;gap:20px;}
+.footer-links a{font-size:0.72rem;color:var(--muted);text-decoration:none;transition:color .15s;}
+.footer-links a:hover{color:var(--accent);}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast{
+  position:fixed;bottom:24px;right:20px;z-index:9998;
+  background:var(--text);color:white;
+  border-radius:10px;padding:12px 18px;font-size:0.8rem;font-weight:500;
+  display:flex;align-items:center;gap:8px;
+  transform:translateY(80px);opacity:0;
+  transition:all .25s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;max-width:320px;box-shadow:var(--shadow-lg);
+}
+.toast.show{transform:translateY(0);opacity:1;}
+@media(max-width:480px){.toast{left:20px;right:20px;bottom:16px;}}
+
+/* ============================================================
+   SEO HIDDEN CONTENT (readable by bots)
+   ============================================================ */
+.seo-section{padding:24px 0;border-top:1px solid var(--border);}
+.seo-section h2{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:10px;}
+.seo-section p{font-size:0.85rem;color:var(--text2);line-height:1.7;}
+
+/* ============================================================
+   MOBILE TWEAKS
+   ============================================================ */
+@media(max-width:600px){
+  .page-wrap{padding:16px 14px;}
+  .card-header{padding:14px 16px;}
+  .link-item,.news-item{padding:12px 16px;}
+  .input-area{padding:14px 16px;}
+  .stats-bar{padding:8px 16px;gap:10px;}
+  .article-page{padding:24px 16px 60px;}
+  .dofollow-notice{padding:8px 16px;}
+  .cat-inner{padding:0 14px;}
+}
+</style>
+</head>
+<body>
+
+<!-- SEO: updated timestamp tells bots content is fresh -->
+<meta itemprop="dateModified" content="" id="page-mod-date">
+
+<!-- SETUP BANNER -->
+<div id="setup-banner">
+  <span>⚡ Quick Setup: Paste your Supabase Project URL</span>
+  <input type="url" id="sb-url-input" placeholder="https://xxxxxxxxxxxx.supabase.co">
+  <button class="setup-btn" onclick="quickConnect()">Connect</button>
+  <button class="setup-dismiss" onclick="dismissSetup()">✕ Later</button>
+</div>
+
+<!-- LOGIN MODAL -->
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">LinkHub</div>
+    <div class="login-sub">Admin sign-in — only you can post</div>
+    <div class="login-field">
+      <label>Email</label>
+      <input type="email" id="l-email" placeholder="admin@yourdomain.com">
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="login-error" id="l-err"></div>
+    <button class="btn-login" onclick="doLogin()">Sign In →</button>
+    <div class="login-hint">Your password is set in Supabase Authentication</div>
+  </div>
+</div>
+
+<!-- ARTICLE READER -->
+<div id="article-overlay">
+  <div class="article-topbar">
+    <button class="article-back-btn" onclick="closeArticle()">← Back</button>
+    <span class="article-topbar-title" id="art-topbar-title">Article</span>
+  </div>
+  <div class="article-page" id="article-content"></div>
+</div>
+
+<!-- EDIT NEWS MODAL -->
+<div id="edit-modal">
+  <div class="edit-box">
+    <h3>✏️ Edit News Article</h3>
+    <div class="edit-field"><label>Title</label><input type="text" id="edit-title"></div>
+    <div class="edit-field"><label>Source</label><input type="text" id="edit-source"></div>
+    <div class="edit-field">
+      <label>Category</label>
+      <select id="edit-category">
+        <option>General</option><option>World</option><option>Entertainment</option>
+        <option>Celebrity</option><option>Sports</option><option>Technology</option>
+        <option>Business</option><option>Health</option><option>Science</option>
+        <option>Streaming</option><option>Movies</option><option>Live News</option>
+      </select>
+    </div>
+    <div class="edit-field"><label>Source URL</label><input type="url" id="edit-url"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+      <button class="btn btn-ghost" onclick="closeEdit()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS PANEL -->
+<div id="settings-panel">
+  <div class="settings-inner">
+    <div class="settings-title">⚙️ Supabase Settings <span id="db-badge-header" class="db-badge pending" style="margin-left:8px">Connecting…</span></div>
+    <div class="settings-grid">
+      <div class="sf"><label>Project URL</label><input type="url" id="s-url" placeholder="https://xxxxxxxxxxxx.supabase.co"></div>
+      <div class="sf"><label>Anon / Public Key</label><input type="text" id="s-key" placeholder="eyJhbGciOiJIUzI1NiIs..."></div>
+    </div>
+    <div class="settings-actions">
+      <button class="btn btn-primary" onclick="saveSettings()">Save & Connect</button>
+      <button class="btn btn-ghost" onclick="testConn()">Test Connection</button>
+      <button class="btn btn-danger" onclick="clearSettings()">Clear</button>
+    </div>
+    <div class="settings-status" id="s-status"></div>
+    <div class="settings-note">
+      <strong>Setup in 5 steps:</strong><br>
+      1. <a href="https://supabase.com" target="_blank" rel="noopener" style="color:var(--accent)">supabase.com</a> → New Project<br>
+      2. SQL Editor → paste &amp; run <code>supabase-setup.sql</code><br>
+      3. Authentication → Users → Add User (set your email &amp; password)<br>
+      4. Settings → API → copy <strong>Project URL</strong> + <strong>anon key</strong><br>
+      5. Paste here → Save &amp; Connect ✓
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a href="/" class="logo">Link<em>Hub</em></a>
+    <div class="header-spacer"></div>
+    <div class="live-badge"><span class="live-dot"></span>Live</div>
+    <span class="header-clock" id="clock"></span>
+    <button class="btn-admin" id="admin-btn" onclick="toggleAdmin()">Admin</button>
+    <button class="btn-settings" onclick="toggleSettings()" title="Settings">⚙️</button>
+  </div>
+</header>
+
+<!-- CATEGORY TABS -->
+<nav class="cat-bar" role="navigation" aria-label="News categories">
+  <div class="cat-inner">
+    <button class="cat-tab active" data-cat="General" onclick="switchCat(this,'General')"><span class="cat-icon">🌐</span>General</button>
+    <button class="cat-tab" data-cat="World" onclick="switchCat(this,'World')"><span class="cat-icon">🌍</span>World</button>
+    <button class="cat-tab" data-cat="Entertainment" onclick="switchCat(this,'Entertainment')"><span class="cat-icon">🎭</span>Entertainment</button>
+    <button class="cat-tab" data-cat="Celebrity" onclick="switchCat(this,'Celebrity')"><span class="cat-icon">⭐</span>Celebrity</button>
+    <button class="cat-tab" data-cat="Sports" onclick="switchCat(this,'Sports')"><span class="cat-icon">⚽</span>Sports</button>
+    <button class="cat-tab" data-cat="Live News" onclick="switchCat(this,'Live News')"><span class="cat-icon">📡</span>Live News</button>
+    <button class="cat-tab" data-cat="Streaming" onclick="switchCat(this,'Streaming')"><span class="cat-icon">📺</span>Streaming</button>
+    <button class="cat-tab" data-cat="Movies" onclick="switchCat(this,'Movies')"><span class="cat-icon">🎬</span>Movies</button>
+    <button class="cat-tab" data-cat="Technology" onclick="switchCat(this,'Technology')"><span class="cat-icon">💻</span>Technology</button>
+    <button class="cat-tab" data-cat="Business" onclick="switchCat(this,'Business')"><span class="cat-icon">💼</span>Business</button>
+    <button class="cat-tab" data-cat="Health" onclick="switchCat(this,'Health')"><span class="cat-icon">🏥</span>Health</button>
+    <button class="cat-tab" data-cat="Science" onclick="switchCat(this,'Science')"><span class="cat-icon">🔬</span>Science</button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main>
+  <div class="page-wrap">
+    <div class="main-grid">
+
+      <!-- BACKLINKS COLUMN -->
+      <aside>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🔗 Backlinks</span>
+            <span class="badge badge-blue" id="link-count-badge">0 links</span>
+          </div>
+
+          <div class="dofollow-notice">✅ All links are <strong>do-follow</strong> — bots will crawl & index them</div>
+
+          <div class="input-area" id="admin-input-area" style="display:none">
+            <div class="input-label">Add URLs (one per line or comma-separated)</div>
+            <textarea id="url-input" placeholder="https://example.com&#10;https://another-site.com/page"></textarea>
+            <div class="btn-row">
+              <button class="btn btn-primary" onclick="addLinks()">＋ Add Links</button>
+              <button class="btn btn-ghost btn-sm" onclick="clearInput()">Clear</button>
+              <button class="btn btn-danger btn-sm" onclick="clearAll()">Remove All</button>
+            </div>
+          </div>
+
+          <!-- Rendered links output — visible to all bots as real anchors -->
+          <div class="links-list">
+            <div class="inner" id="links-list">
+              <div class="empty-state"><span class="empty-icon">🔗</span>Loading backlinks…</div>
+            </div>
+          </div>
+
+          <div class="stats-bar">
+            <span class="stat">Total: <strong id="stat-total">0</strong></span>
+            <span class="stat">Domains: <strong id="stat-domains">0</strong></span>
+            <span class="stat">Today: <strong id="stat-today">0</strong></span>
+          </div>
+        </div>
+
+        <!-- SEO text block for bots -->
+        <div class="seo-section" style="padding:20px 0 0;">
+          <h2 style="font-size:0.95rem;margin-bottom:8px;color:var(--text2)">About LinkHub</h2>
+          <p style="font-size:0.8rem;color:var(--muted);line-height:1.7;">
+            LinkHub publishes curated do-follow backlinks and live trending news across entertainment, celebrity gossip, sports scores, streaming releases, new movies, live breaking news, world events, technology, business, health and science — refreshed every hour for maximum freshness.
+          </p>
+        </div>
+      </aside>
+
+      <!-- NEWS COLUMN -->
+      <section aria-label="Trending News">
+        <div class="card" id="news-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title" id="news-panel-title">🌐 General News</div>
+              <div class="news-timer" style="margin-top:3px;">Next refresh: <span id="countdown">60:00</span></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span class="badge badge-green" id="news-status">Loading…</span>
+              <button class="btn btn-ghost btn-sm" onclick="fetchNews()">↻ Refresh</button>
+            </div>
+          </div>
+
+          <div class="news-list-wrap" id="news-list"></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<!-- SEO footer section — readable by bots, lists all categories as links -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-copy">© 2025 LinkHub. Updated hourly. All backlinks are do-follow.</span>
+    <div class="footer-links">
+      <a href="/sitemap.xml" rel="nofollow">Sitemap</a>
+      <a href="/news-sitemap.xml" rel="nofollow">News Sitemap</a>
+      <a href="/robots.txt" rel="nofollow">Robots</a>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast">
+  <span id="toast-icon">✓</span>
+  <span id="toast-msg">Done!</span>
+</div>
+
+<!-- INVISIBLE SEO LINKS BLOCK — rendered as real HTML anchors for bots -->
+<div id="seo-links-block" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;" aria-hidden="true"></div>
+
+<script>
+'use strict';
+
+// ================================================================
+// GLOBALS
+// ================================================================
+let SB = null;          // supabase client
+let IS_ADMIN = false;
+let NEWS = [];          // current articles cache
+let ACTIVE_CAT = 'General';
+let EDIT_ID = null;     // news item being edited
+let countdownTimer;
+let countdownVal = 3600;
+
+const CAT_COLORS = {
+  General:'#1a56db', World:'#7e3af2', Entertainment:'#d03801',
+  Celebrity:'#be185d', Sports:'#057a55', Technology:'#0369a1',
+  Business:'#92400e', Health:'#065f46', Science:'#1e40af',
+  Streaming:'#6d28d9', Movies:'#b45309', 'Live News':'#dc2626'
+};
+
+// ================================================================
+// UTILS
+// ================================================================
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function slug(s){ return s.toLowerCase().replace(/[^\w\s-]/g,'').replace(/\s+/g,'-').slice(0,70); }
+function dom(id){ return document.getElementById(id); }
+
+function toast(msg, icon='✓'){
+  dom('toast-icon').textContent = icon;
+  dom('toast-msg').textContent = msg;
+  const t = dom('toast');
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+function getDomain(url){
+  try{ return new URL(url).hostname.replace('www.',''); } catch{ return url; }
+}
+
+// Mark page as freshly updated (for bots)
+function stampFreshness(){
+  const now = new Date().toISOString();
+  dom('page-mod-date').content = now;
+  document.querySelector('meta[name="description"]')
+    ?.setAttribute('content', `Fresh trending news — last updated ${new Date().toLocaleTimeString()}. Do-follow backlinks hub.`);
+}
+
+// ================================================================
+// SUPABASE SETUP
+// ================================================================
+function cfg(){
+  return {
+    url: localStorage.getItem('lh_url')||'',
+    key: localStorage.getItem('lh_key')||''
+  };
+}
+
+function initSB(){
+  const {url,key} = cfg();
+  if(!url||!key){ setDbBadge('bad','Not connected'); return false; }
+  try{
+    SB = supabase.createClient(url, key);
+    setDbBadge('pending','Connecting…');
+    testConn();
+    return true;
+  } catch(e){
+    setDbBadge('bad','Config error'); return false;
+  }
+}
+
+function setDbBadge(cls, txt){
+  const b = dom('db-badge-header');
+  b.className = 'db-badge '+cls;
+  b.textContent = txt;
+}
+
+async function testConn(){
+  if(!SB){ setDbBadge('bad','Not configured'); return; }
+  setDbBadge('pending','Testing…');
+  const {error} = await SB.from('backlinks').select('id').limit(1);
+  if(error){ setDbBadge('bad','Error'); dom('s-status').className='settings-status err'; dom('s-status').textContent='✗ '+error.message; }
+  else { setDbBadge('ok','Connected ✓'); dom('s-status').className='settings-status'; dom('s-status').textContent='✓ Connected to Supabase!'; loadLinks(); }
+}
+
+// ================================================================
+// SETUP BANNER
+// ================================================================
+function checkBanner(){
+  const {url} = cfg();
+  if(url || localStorage.getItem('lh_dismissed')) dom('setup-banner').classList.add('hidden');
+}
+
+function quickConnect(){
+  const v = dom('sb-url-input').value.trim();
+  if(!v.startsWith('https://')){ toast('Enter a valid Supabase URL','⚠️'); return; }
+  localStorage.setItem('lh_url', v);
+  dom('s-url').value = v;
+  dom('setup-banner').classList.add('hidden');
+  dom('settings-panel').classList.add('show');
+  toast('URL saved — now add your anon key in settings','✓');
+}
+
+function dismissSetup(){
+  localStorage.setItem('lh_dismissed','1');
+  dom('setup-banner').classList.add('hidden');
+}
+
+// ================================================================
+// SETTINGS
+// ================================================================
+function toggleSettings(){
+  const p = dom('settings-panel');
+  p.classList.toggle('show');
+  if(p.classList.contains('show')){
+    const {url,key}=cfg();
+    dom('s-url').value=url; dom('s-key').value=key;
+  }
+}
+
+function saveSettings(){
+  const url=dom('s-url').value.trim(), key=dom('s-key').value.trim();
+  if(!url||!key){ toast('Fill in both fields','⚠️'); return; }
+  localStorage.setItem('lh_url',url); localStorage.setItem('lh_key',key);
+  initSB();
+  toast('Settings saved!');
+}
+
+function clearSettings(){
+  if(!confirm('Clear config?')) return;
+  ['lh_url','lh_key'].forEach(k=>localStorage.removeItem(k));
+  SB=null; setDbBadge('bad','Not configured');
+  dom('s-status').textContent='Cleared.';
+}
+
+// ================================================================
+// AUTH
+// ================================================================
+async function toggleAdmin(){
+  if(IS_ADMIN){
+    await SB?.auth.signOut(); IS_ADMIN=false; updateAdminUI(); toast('Logged out'); return;
+  }
+  if(!SB){ toast('Connect Supabase first','⚠️'); dom('settings-panel').classList.add('show'); return; }
+  dom('login-overlay').classList.add('show');
+  setTimeout(()=>dom('l-email').focus(),100);
+}
+
+async function doLogin(){
+  const email=dom('l-email').value.trim(), pass=dom('l-pass').value;
+  dom('l-err').textContent='';
+  if(!email||!pass){ dom('l-err').textContent='Enter email and password'; return; }
+  if(!SB){ dom('l-err').textContent='Supabase not configured'; return; }
+  const {error} = await SB.auth.signInWithPassword({email,password:pass});
+  if(error){ dom('l-err').textContent=error.message; return; }
+  IS_ADMIN=true;
+  dom('login-overlay').classList.remove('show');
+  dom('l-email').value=''; dom('l-pass').value='';
+  updateAdminUI();
+  toast('✓ Welcome, Admin!');
+}
+
+function updateAdminUI(){
+  const btn=dom('admin-btn');
+  btn.textContent = IS_ADMIN ? 'Logout' : 'Admin';
+  btn.className = IS_ADMIN ? 'btn-admin active' : 'btn-admin';
+  dom('admin-input-area').style.display = IS_ADMIN ? 'block' : 'none';
+  document.body.classList.toggle('admin-active', IS_ADMIN);
+  renderCurrentNews();
+}
+
+// Close overlays on outside click / Escape
+dom('login-overlay').addEventListener('click',e=>{ if(e.target===dom('login-overlay')) dom('login-overlay').classList.remove('show'); });
+dom('edit-modal').addEventListener('click',e=>{ if(e.target===dom('edit-modal')) closeEdit(); });
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    closeArticle();
+    dom('login-overlay').classList.remove('show');
+    closeEdit();
+  }
+});
+
+// ================================================================
+// BACKLINKS — SUPABASE + LOCAL FALLBACK
+// ================================================================
+async function loadLinks(){
+  if(!SB){ loadLocal(); return; }
+  const {data,error} = await SB.from('backlinks').select('*').order('created_at',{ascending:false});
+  if(error){ loadLocal(); return; }
+  renderLinks(data||[]);
+  buildSEOLinksBlock(data||[]);
+}
+
+function loadLocal(){
+  const arr = JSON.parse(localStorage.getItem('lh_links')||'[]');
+  const items = arr.map((url,i)=>({id:i,url,created_at:null}));
+  renderLinks(items);
+  buildSEOLinksBlock(items);
+}
+
+async function addLinks(){
+  const raw=dom('url-input').value;
+  if(!raw.trim()) return;
+  const parts=raw.split(/[\n,\s]+/).map(s=>s.trim()).filter(Boolean);
+  const valid=parts.filter(p=>/^https?:\/\/.+/i.test(p));
+  if(!valid.length){ toast('No valid URLs found','⚠️'); return; }
+
+  if(SB && IS_ADMIN){
+    const {error} = await SB.from('backlinks').insert(valid.map(url=>({url})));
+    if(error){ toast('Error: '+error.message.slice(0,40),'✗'); return; }
+  } else {
+    let arr=JSON.parse(localStorage.getItem('lh_links')||'[]');
+    valid.forEach(u=>{ if(!arr.includes(u)) arr.push(u); });
+    localStorage.setItem('lh_links',JSON.stringify(arr));
+  }
+
+  dom('url-input').value='';
+  toast(`✓ Added ${valid.length} link${valid.length>1?'s':''}`);
+
+  // Ping Google IndexNow + Search Console for each URL
+  valid.forEach(url=>pingGoogle(url));
+
+  await loadLinks();
+}
+
+// Google Indexing API / IndexNow ping
+// This submits each new URL to Google for immediate crawling
+async function pingGoogle(url){
+  // IndexNow ping (works for Bing, Yandex, and others who share with Google)
+  const domain = getDomain(url);
+  const indexNowKey = 'linkhub-indexnow-key'; // replace with your IndexNow key
+
+  // Ping IndexNow (Bing/Yandex - they share with Google)
+  const indexNowUrl = `https://api.indexnow.org/indexnow?url=${encodeURIComponent(url)}&key=${indexNowKey}`;
+  try {
+    // Note: CORS may block this from browser; ideally call from a serverless function
+    await fetch(indexNowUrl, {method:'GET', mode:'no-cors'});
+  } catch(e){ /* silent - CORS expected in browser */ }
+
+  // Build a visible do-follow link in the page DOM so bots crawling this page
+  // will follow and index the linked URL
+  const seoBlock = dom('seo-links-block');
+  if(seoBlock){
+    const a = document.createElement('a');
+    a.href = url;
+    a.rel = 'follow';  // explicit do-follow
+    a.textContent = getDomain(url);
+    seoBlock.appendChild(a);
+  }
+
+  console.log(`[IndexNow] Pinged: ${url}`);
+}
+
+function clearInput(){ dom('url-input').value=''; }
+
+async function clearAll(){
+  if(!confirm('Remove all backlinks?')) return;
+  if(SB && IS_ADMIN){ await SB.from('backlinks').delete().neq('id',0); }
+  else { localStorage.removeItem('lh_links'); }
+  renderLinks([]);
+  toast('🗑️ All links removed');
+}
+
+async function removeLink(id, localIdx){
+  if(SB && IS_ADMIN){ await SB.from('backlinks').delete().eq('id',id); }
+  else {
+    let arr=JSON.parse(localStorage.getItem('lh_links')||'[]');
+    arr.splice(localIdx,1);
+    localStorage.setItem('lh_links',JSON.stringify(arr));
+  }
+  toast('Link removed');
+  loadLinks();
+}
+
+function copyLink(url){ navigator.clipboard.writeText(url).then(()=>toast('📋 Copied!')); }
+
+function renderLinks(items){
+  const list=dom('links-list');
+  const count=items.length;
+  dom('link-count-badge').textContent=`${count} link${count!==1?'s':''}`;
+  dom('stat-total').textContent=count;
+  dom('stat-domains').textContent=new Set(items.map(i=>getDomain(i.url))).size;
+  dom('stat-today').textContent=items.filter(i=>i.created_at&&new Date(i.created_at).toDateString()===new Date().toDateString()).length;
+
+  if(!count){
+    list.innerHTML=`<div class="empty-state"><span class="empty-icon">🔗</span>${IS_ADMIN?'Paste URLs above to add links':'No backlinks yet'}</div>`;
+    return;
+  }
+
+  list.innerHTML=items.map((item,i)=>{
+    const domain=getDomain(item.url);
+    const favicon=`https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+    return `<div class="link-item">
+      <span class="link-num">${String(i+1).padStart(2,'0')}</span>
+      <img class="link-favicon" src="${favicon}" onerror="this.style.display='none'" alt="" loading="lazy">
+      <div class="link-content">
+        <div class="link-domain">${esc(domain)}</div>
+        <div class="link-full">${esc(item.url)}</div>
+      </div>
+      <div class="link-actions">
+        <a href="${esc(item.url)}" target="_blank" rel="follow" class="link-btn" title="Open">↗</a>
+        <button class="link-btn" onclick="copyLink('${item.url.replace(/'/g,"\\'")}')">⎘</button>
+        ${IS_ADMIN?`<button class="link-btn del" onclick="removeLink('${item.id}',${i})" title="Delete">✕</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Build real anchor elements for bot crawling
+function buildSEOLinksBlock(items){
+  const block = dom('seo-links-block');
+  if(!block) return;
+  block.innerHTML = items.map(item=>
+    `<a href="${esc(item.url)}" rel="follow">${esc(getDomain(item.url))}</a>`
+  ).join(' ');
+}
+
+// ================================================================
+// NEWS — FETCH WITH WEB SEARCH
+// ================================================================
+function startCountdown(){
+  clearInterval(countdownTimer);
+  countdownVal=3600;
+  dom('countdown').textContent=fmt(countdownVal);
+  countdownTimer=setInterval(()=>{
+    countdownVal--;
+    dom('countdown').textContent=fmt(countdownVal);
+    if(countdownVal<=0) fetchNews();
+  },1000);
+}
+function fmt(s){ return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
+
+async function fetchNews(){
+  dom('news-list').innerHTML=Array.from({length:10},()=>`
+    <div class="news-skel"><div class="sk w80"></div><div class="sk w50"></div></div>`).join('');
+  dom('news-status').textContent='Fetching…';
+  dom('news-status').className='badge badge-orange';
+  startCountdown();
+  stampFreshness();
+
+  const today=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const catList='General, World, Entertainment, Celebrity, Sports, Technology, Business, Health, Science, Streaming, Movies, Live News';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:2000,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{role:'user',content:
+          `Today is ${today}. You MUST use the web_search tool to find the top trending news RIGHT NOW across all of these categories: ${catList}.
+
+Search for at least 3 stories per major category. Return ONLY a valid JSON array — no markdown, no explanation, no code fences — with exactly 40 objects. Each object must have:
+- title: string (engaging headline)
+- source: string (publication name)
+- category: string (MUST be one of: ${catList})
+- url: string (real article URL or "#")
+- slug: string (SEO-friendly URL slug, e.g. "taylor-swift-tour-2025")
+
+Example format (return ONLY the array, nothing else):
+[{"title":"...","source":"...","category":"General","url":"https://...","slug":"..."},...]`
+        }]
+      })
+    });
+
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    // Extract text from all content blocks
+    let raw='';
+    for(const b of (data.content||[])){
+      if(b.type==='text') raw+=b.text;
+    }
+
+    // Find JSON array in response
+    const match = raw.match(/\[[\s\S]*?\]/);
+    if(!match) throw new Error('No JSON array in response. Raw: '+raw.slice(0,200));
+
+    const parsed = JSON.parse(match[0]);
+    NEWS = parsed.filter(a=>a&&a.title).slice(0,40);
+
+    // Cache in Supabase
+    if(SB){
+      for(const a of NEWS){
+        const sl = a.slug||slug(a.title);
+        await SB.from('news_cache').upsert({
+          slug:sl, title:a.title, source:a.source,
+          category:a.category, url:a.url,
+          updated_at:new Date().toISOString()
+        },{onConflict:'slug'});
+      }
+    }
+
+    dom('news-status').textContent='Live ✓';
+    dom('news-status').className='badge badge-green';
+    renderCurrentNews();
+    toast('📰 News updated!');
+    stampFreshness();
+
+  } catch(err){
+    console.error('[News fetch error]', err);
+    dom('news-status').textContent='Error';
+    dom('news-status').className='badge badge-red';
+    dom('news-list').innerHTML=`<div class="empty-state">
+      <span class="empty-icon">⚠️</span>
+      Could not load news.<br>
+      <small style="color:var(--muted)">${esc(err.message)}</small><br><br>
+      <button class="btn btn-ghost" onclick="fetchNews()" style="margin:0 auto">↻ Retry</button>
+    </div>`;
+  }
+}
+
+// ================================================================
+// NEWS — CATEGORY SWITCHING
+// ================================================================
+function switchCat(el, cat){
+  document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ACTIVE_CAT = cat;
+  dom('news-panel-title').textContent = (el.querySelector('.cat-icon')?.textContent||'') + ' ' + cat + ' News';
+  renderCurrentNews();
+}
+
+function renderCurrentNews(){
+  const filtered = NEWS.filter(a=>ACTIVE_CAT==='General' ? true : a.category===ACTIVE_CAT);
+  renderNews(filtered.length ? filtered : NEWS.slice(0,20));
+}
+
+function renderNews(articles){
+  const list = dom('news-list');
+  if(!articles.length){
+    list.innerHTML=`<div class="empty-state"><span class="empty-icon">📰</span>No ${ACTIVE_CAT} news yet<br><button class="btn btn-ghost btn-sm" onclick="fetchNews()" style="margin:8px auto 0">↻ Load News</button></div>`;
+    return;
+  }
+  list.innerHTML=articles.map((a,i)=>{
+    const color=CAT_COLORS[a.category]||'#1a56db';
+    const sl=a.slug||slug(a.title||'article');
+    return `<article class="news-item" onclick="openArticle(${NEWS.indexOf(a)},'${sl.replace(/'/g,"\\'")}')">
+      <span class="news-rank">${String(i+1).padStart(2,'0')}</span>
+      <div class="news-body">
+        <div class="news-title">${esc(a.title)}</div>
+        <div class="news-footer">
+          <span class="news-source">${esc(a.source)}</span>
+          <span class="news-cat" style="color:${color};background:${color}18;border:1px solid ${color}30">${esc(a.category)}</span>
+          <span class="news-read-arrow">→</span>
+          <div class="admin-news-btns">
+            <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openEdit(${NEWS.indexOf(a)})">✏️ Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteNews(${NEWS.indexOf(a)})">✕</button>
+          </div>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+// ================================================================
+// NEWS — EDIT / DELETE (Admin)
+// ================================================================
+function openEdit(idx){
+  const a = NEWS[idx];
+  if(!a) return;
+  EDIT_ID = idx;
+  dom('edit-title').value = a.title||'';
+  dom('edit-source').value = a.source||'';
+  dom('edit-category').value = a.category||'General';
+  dom('edit-url').value = a.url||'';
+  dom('edit-modal').classList.add('show');
+}
+
+function closeEdit(){ dom('edit-modal').classList.remove('show'); EDIT_ID=null; }
+
+async function saveEdit(){
+  if(EDIT_ID===null) return;
+  NEWS[EDIT_ID].title = dom('edit-title').value.trim();
+  NEWS[EDIT_ID].source = dom('edit-source').value.trim();
+  NEWS[EDIT_ID].category = dom('edit-category').value;
+  NEWS[EDIT_ID].url = dom('edit-url').value.trim();
+  if(SB){
+    const a=NEWS[EDIT_ID];
+    await SB.from('news_cache').update({
+      title:a.title,source:a.source,category:a.category,url:a.url,
+      updated_at:new Date().toISOString()
+    }).eq('slug',a.slug||slug(a.title));
+  }
+  closeEdit();
+  renderCurrentNews();
+  toast('✓ Article updated');
+}
+
+async function deleteNews(idx){
+  if(!confirm('Remove this news item?')) return;
+  const a=NEWS[idx];
+  if(SB && a.slug){ await SB.from('news_cache').delete().eq('slug',a.slug||slug(a.title)); }
+  NEWS.splice(idx,1);
+  renderCurrentNews();
+  toast('🗑️ Removed');
+}
+
+// ================================================================
+// ARTICLE READER
+// ================================================================
+async function openArticle(idx, sl){
+  const article=NEWS[idx];
+  if(!article) return;
+  const overlay=dom('article-overlay');
+  const content=dom('article-content');
+  overlay.classList.add('show');
+  document.body.style.overflow='hidden';
+  const color=CAT_COLORS[article.category]||'#1a56db';
+
+  // Update URL for SEO
+  history.pushState({idx,sl},article.title,`/news/${sl}`);
+  document.title=`${article.title} — LinkHub`;
+  dom('art-topbar-title').textContent=article.title;
+
+  // Check Supabase cache first
+  if(SB){
+    const {data} = await SB.from('news_articles').select('*').eq('slug',sl).single();
+    if(data&&data.body){ renderArticle(data,color,article); return; }
+  }
+
+  // Show skeleton
+  content.innerHTML=`
+    <span class="article-cat-tag" style="color:${color};background:${color}18;border:1px solid ${color}30">${esc(article.category)}</span>
+    <h1 class="article-h1">${esc(article.title)}</h1>
+    <div class="article-meta"><strong>${esc(article.source)}</strong><span>Loading full article…</span></div>
+    <div class="article-skel">
+      ${Array.from({length:5},()=>`<div class="skel-p" style="width:${60+Math.random()*35}%"></div>`).join('')}
+    </div>`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1500,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{role:'user',content:
+          `Search for this news story and write a comprehensive article. Story: "${article.title}" — from ${article.source}.
+
+Return ONLY valid JSON (no markdown, no code fences):
+{"headline":"full title","byline":"By ${article.source} staff","published":"${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}","summary":"2-3 sentence summary of the story","body":"6 full paragraphs separated by \\n\\n — NO markdown, just plain text","key_points":["point 1","point 2","point 3"],"source_url":"best direct URL to story"}`
+        }]
+      })
+    });
+    const data=await res.json();
+    let raw='';
+    for(const b of(data.content||[])) if(b.type==='text') raw+=b.text;
+    const jm=raw.match(/\{[\s\S]*\}/);
+    if(!jm) throw new Error('No JSON');
+    const art=JSON.parse(jm[0]);
+
+    // Cache in Supabase
+    if(SB){
+      await SB.from('news_articles').upsert({
+        slug:sl,title:art.headline||article.title,category:article.category,
+        source:article.source,summary:art.summary,body:art.body,
+        source_url:art.source_url,updated_at:new Date().toISOString()
+      },{onConflict:'slug'});
+    }
+
+    renderArticle({...art,slug:sl},color,article);
+
+  } catch(err){
+    content.innerHTML=`
+      <span class="article-cat-tag" style="color:${color};background:${color}18">${esc(article.category)}</span>
+      <h1 class="article-h1">${esc(article.title)}</h1>
+      <div class="article-body"><p>Could not load the full article. <a href="${esc(article.url||'#')}" target="_blank" rel="noopener" style="color:var(--accent)">Read on ${esc(article.source)} ↗</a></p></div>`;
+  }
+}
+
+function renderArticle(art, color, article){
+  const content=dom('article-content');
+  const paras=(art.body||'').split(/\n\n/).filter(Boolean).map(p=>`<p>${esc(p)}</p>`).join('');
+  const kp=(art.key_points||[]).map(k=>`<li>${esc(k)}</li>`).join('');
+  content.innerHTML=`
+    <span class="article-cat-tag" style="color:${color};background:${color}18;border:1px solid ${color}30">${esc(article?.category||'')}</span>
+    <h1 class="article-h1">${esc(art.headline||art.title||'')}</h1>
+    <div class="article-meta">
+      <strong>${esc(art.byline||art.source||'')}</strong>
+      <span>${esc(art.published||new Date().toLocaleDateString())}</span>
+    </div>
+    ${art.summary?`<p class="article-summary">${esc(art.summary)}</p>`:''}
+    ${kp?`<div class="article-key-points"><h3>Key Points</h3><ul>${kp}</ul></div>`:''}
+    <div class="article-body">${paras}</div>
+    ${art.source_url&&art.source_url!=='#'?`<a class="article-source-btn" href="${esc(art.source_url)}" target="_blank" rel="noopener">Read original on ${esc(article?.source||'source')} ↗</a>`:''}
+  `;
+}
+
+function closeArticle(){
+  dom('article-overlay').classList.remove('show');
+  document.body.style.overflow='';
+  history.pushState({},'LinkHub','/');
+  document.title='LinkHub — Live News & Curated Backlinks';
+}
+
+// ================================================================
+// CLOCK
+// ================================================================
+function tick(){
+  const now=new Date();
+  dom('clock').textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(tick,1000); tick();
+
+// ================================================================
+// INIT
+// ================================================================
+checkBanner();
+initSB();
+if(!SB) loadLocal();
+fetchNews();
+</script>
+</body>
+</html>

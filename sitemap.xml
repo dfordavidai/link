@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Homepage -->
+  <url>
+    <loc>https://yourdomain.com/</loc>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- News category pages -->
+  <url><loc>https://yourdomain.com/news/general/</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://yourdomain.com/news/world/</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://yourdomain.com/news/entertainment/</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://yourdomain.com/news/celebrity/</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://yourdomain.com/news/sports/</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://yourdomain.com/news/live-news/</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://yourdomain.com/news/streaming/</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://yourdomain.com/news/movies/</loc><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://yourdomain.com/news/technology/</loc><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://yourdomain.com/news/business/</loc><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://yourdomain.com/news/health/</loc><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://yourdomain.com/news/science/</loc><changefreq>hourly</changefreq><priority>0.8</priority></url>
+
+  <!-- Backlinks page -->
+  <url>
+    <loc>https://yourdomain.com/links/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!--
+    NOTE: Article-level URLs (/news/article-slug) should be generated
+    dynamically from your Supabase news_articles table.
+    See news-sitemap.xml for the Google News sitemap.
+  -->
+
+</urlset>
