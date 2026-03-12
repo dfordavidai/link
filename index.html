@@ -1670,78 +1670,94 @@ function renderArticle(art, color, article){
   const ac=dom('article-content');
   const paras=(art.body||'').split(/\n\n/).filter(Boolean);
   const kp=(art.key_points||[]).map(k=>`<li>${esc(k)}</li>`).join('');
-  const cat   = esc(article?.category||art.category||'');
-  const title = esc(art.headline||art.title||'');
-  const byline= esc(art.byline||art.source||article?.source||'');
-  const pubdate=esc(art.published||new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}));
+  const cat    = esc(article?.category||art.category||'');
+  const title  = esc(art.headline||art.title||'');
+  const byline = esc(art.byline||art.source||article?.source||'');
+  const pubdate= esc(art.published||new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}));
   const imgSrc = art.image||article?.image||null;
   const wordCount = (art.body||'').split(/\s+/).length;
-  const readMins = Math.max(1, Math.round(wordCount/200));
+  const readMins  = Math.max(1, Math.round(wordCount/200));
   const articleUrl = window.location.href;
   const isSaved = isBookmarked(art.slug||'');
 
-  // Update bookmark button state
+  // Update bookmark button
   const bBtn = dom('art-bookmark-btn');
-  if(bBtn){ bBtn.textContent = isSaved ? '🔖 Saved' : '🔖 Save'; bBtn.classList.toggle('saved', isSaved); }
+  if(bBtn){ bBtn.textContent=isSaved?'🔖 Saved':'🔖 Save'; bBtn.classList.toggle('saved',isSaved); }
   CURRENT_ARTICLE = {art, article};
 
-  // JSON-LD structured data
+  // JSON-LD
   let ld=document.getElementById('article-ld');
   if(!ld){ld=document.createElement('script');ld.type='application/ld+json';ld.id='article-ld';document.head.appendChild(ld);}
   ld.textContent=JSON.stringify({
     "@context":"https://schema.org","@type":"NewsArticle",
-    "headline": art.headline||art.title||'',
-    "description": art.summary||'',
-    "image": imgSrc?[imgSrc]:[],
-    "datePublished": new Date().toISOString(),
-    "dateModified":  new Date().toISOString(),
+    "headline":art.headline||art.title||'',
+    "description":art.summary||'',
+    "image":imgSrc?[imgSrc]:[],
+    "datePublished":new Date().toISOString(),
+    "dateModified":new Date().toISOString(),
     "author":{"@type":"Organization","name":art.byline||article?.source||'LinkHub'},
     "publisher":{"@type":"Organization","name":"LinkHub","logo":{"@type":"ImageObject","url":"https://234news.vercel.app/icon-192.png"}},
-    "url": articleUrl,
-    "mainEntityOfPage": articleUrl,
-    "articleSection": article?.category||'',
+    "url":articleUrl,
+    "mainEntityOfPage":articleUrl,
+    "articleSection":article?.category||'',
     "keywords":`${article?.category||''}, ${(art.headline||'').split(' ').slice(0,6).join(', ')}, news, breaking news, latest news`
   });
 
-  // Body with subheading
+  // Article body with mid subheading
   let bodyHtml='';
   paras.forEach((p,i)=>{
     if(i===Math.floor(paras.length/2)&&paras.length>3){
       const sub=(art.headline||'').includes(':')
-        ?esc((art.headline||'').split(':').slice(1).join(':').trim())
-        :'What You Need to Know';
+        ? esc((art.headline).split(':').slice(1).join(':').trim())
+        : 'What You Need to Know';
       bodyHtml+=`<h2 class="article-subhead">${sub}</h2>`;
     }
     bodyHtml+=`<p itemprop="articleBody">${esc(p)}</p>`;
   });
 
   // Share buttons
-  const twitterUrl=`https://twitter.com/intent/tweet?text=${encodeURIComponent(art.headline||'')}&url=${encodeURIComponent(articleUrl)}`;
-  const whatsappUrl=`https://api.whatsapp.com/send?text=${encodeURIComponent((art.headline||'')+' '+articleUrl)}`;
-  const facebookUrl=`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`;
+  const tw=`https://twitter.com/intent/tweet?text=${encodeURIComponent(art.headline||'')}&url=${encodeURIComponent(articleUrl)}`;
+  const wa=`https://api.whatsapp.com/send?text=${encodeURIComponent((art.headline||'')+' '+articleUrl)}`;
+  const fb=`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`;
+  const nativeBtn = navigator.share
+    ? `<button class="share-btn" onclick="nativeShare(${JSON.stringify(art.headline||'')},${JSON.stringify(articleUrl)})">📤 Share</button>`
+    : '';
   const shareHtml=`<div class="article-share">
     <span>Share:</span>
-    ${navigator.share?`<button class="share-btn" onclick="nativeShare('${esc(art.headline||'')}','${esc(articleUrl)}')">📤 Share</button>`:''}
-    <a class="share-btn twitter" href="${twitterUrl}" target="_blank" rel="noopener noreferrer">𝕏 Twitter</a>
-    <a class="share-btn whatsapp" href="${whatsappUrl}" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
-    <a class="share-btn facebook" href="${facebookUrl}" target="_blank" rel="noopener noreferrer">👍 Facebook</a>
-    <button class="share-btn copy-link" onclick="copyArticleLink('${esc(articleUrl)}')">🔗 Copy Link</button>
+    ${nativeBtn}
+    <a class="share-btn twitter" href="${tw}" target="_blank" rel="noopener">𝕏 Twitter</a>
+    <a class="share-btn whatsapp" href="${wa}" target="_blank" rel="noopener">💬 WhatsApp</a>
+    <a class="share-btn facebook" href="${fb}" target="_blank" rel="noopener">👍 Facebook</a>
+    <button class="share-btn copy-link" onclick="copyArticleLink(${JSON.stringify(articleUrl)})">🔗 Copy Link</button>
   </div>`;
 
   // Related articles
   const related=NEWS.filter(n=>n.category===article?.category&&n.slug!==art.slug).slice(0,3);
-  const relatedHtml=related.length?`
-    <div class="related-articles">
-      <h3>More ${cat} Stories</h3>
-      ${related.map(r=>{
-        const ri=NEWS.indexOf(r);
-        const rsl=r.slug||slug(r.title||'');
-        return `<div class="related-item" onclick="closeArticle();setTimeout(()=>openArticle(${ri},'${rsl.replace(/'/g,"\\'")}'),100)">
-          ${r.image?`<img class="related-thumb" src="${esc(r.image)}" alt="${esc(r.title)}" loading="lazy" onerror="this.style.display='none'">`:`<div class="related-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.2rem">${getCatEmoji(r.category)}</div>`}
-          <div><div class="related-title">${esc(r.title)}</div><div class="related-source">${esc(r.source)}</div></div>
-        </div>`;
-      }).join('')}
-    </div>`:'';
+  let relatedHtml='';
+  if(related.length){
+    const relItems=related.map(r=>{
+      const ri=NEWS.indexOf(r);
+      const rsl=r.slug||slug(r.title||'');
+      const thumb=r.image
+        ? `<img class="related-thumb" src="${esc(r.image)}" alt="${esc(r.title)}" loading="lazy" onerror="this.style.display='none'">`
+        : `<div class="related-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.2rem">${getCatEmoji(r.category)}</div>`;
+      return `<div class="related-item" onclick="closeArticle();setTimeout(()=>openArticle(${ri},${JSON.stringify(rsl)}),100)">
+        ${thumb}
+        <div><div class="related-title">${esc(r.title)}</div><div class="related-source">${esc(r.source)}</div></div>
+      </div>`;
+    }).join('');
+    relatedHtml=`<div class="related-articles"><h3>More ${cat} Stories</h3>${relItems}</div>`;
+  }
+
+  // Hero image
+  const heroImg = imgSrc
+    ? `<img class="article-hero-img" src="${esc(imgSrc)}" alt="${title}" itemprop="image" onerror="this.style.display='none'">`
+    : '';
+
+  // Source button
+  const srcBtn = (art.source_url&&art.source_url!=='#')
+    ? `<a class="article-source-btn" href="${esc(art.source_url)}" target="_blank" rel="noopener">Read original on ${byline} ↗</a>`
+    : '';
 
   ac.innerHTML=`
     <div itemscope itemtype="https://schema.org/NewsArticle">
@@ -1752,16 +1768,15 @@ function renderArticle(art, color, article){
         <span><time itemprop="datePublished" datetime="${new Date().toISOString()}">${pubdate}</time></span>
         <span class="reading-time">⏱ ${readMins} min read</span>
       </div>
-      ${imgSrc?`<img class="article-hero-img" src="${esc(imgSrc)}" alt="${title}" itemprop="image" onerror="this.style.display='none'">``:''}
-      ${art.summary?`<p class="article-summary" itemprop="description">${esc(art.summary)}</p>`:''}
-      ${kp?`<div class="article-key-points"><h3>Key Points</h3><ul>${kp}</ul></div>`:''}
+      ${heroImg}
+      ${art.summary ? `<p class="article-summary" itemprop="description">${esc(art.summary)}</p>` : ''}
+      ${kp ? `<div class="article-key-points"><h3>Key Points</h3><ul>${kp}</ul></div>` : ''}
       <div class="article-body">${bodyHtml}</div>
       ${shareHtml}
-      ${art.source_url&&art.source_url!=='#'?`<a class="article-source-btn" href="${esc(art.source_url)}" target="_blank" rel="noopener">Read original on ${byline} ↗</a>`:''}
+      ${srcBtn}
       ${relatedHtml}
     </div>`;
 
-  // Reading progress bar
   startReadingProgress();
 }
 
