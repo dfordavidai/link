@@ -3819,13 +3819,33 @@ async function openArticle(idx, sl){
   setMeta('link[rel="canonical"]','href',window.location.href);
   if(article.image) setMeta('meta[property="og:image"]','content',article.image);
 
-  // Supabase cache check
+  // STRATEGY 1: Use body/summary already in news_cache — works for ALL post types
+  const _hasBody    = article.body    && article.body.trim().length > 0;
+  const _hasSummary = article.summary && article.summary.trim().length > 0;
+  if(_hasBody || _hasSummary){
+    const art = {
+      headline:   article.headline || article.title,
+      byline:     article.byline   || article.source || '',
+      published:  new Date(article.created_at||article.updated_at||Date.now())
+                    .toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}),
+      summary:    article.summary  || '',
+      body:       article.body     || article.summary || '',
+      key_points: article.key_points || [],
+      source_url: article.url      || '',
+      image:      article.image    || null,
+      slug:       sl
+    };
+    renderArticle(art, color, article);
+    return;
+  }
+
+  // STRATEGY 2: Check news_articles cache table
   if(SB){
     const {data} = await SB.from('news_articles').select('*').eq('slug',sl).single().catch(()=>({data:null}));
     if(data?.body){ renderArticle(data,color,article); return; }
   }
 
-  // Skeleton
+  // Skeleton while fetching
   ac.innerHTML=`
     <span class="article-cat-tag" style="color:${color};background:${color}18;border:1px solid ${color}30">${esc(article.category)}</span>
     <h1 class="article-h1">${esc(article.title)}</h1>
@@ -3835,24 +3855,27 @@ async function openArticle(idx, sl){
   const published = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   let paras = [], articleImage = article.image||null;
 
-  // STRATEGY 1: NewsData full_content field (already in article object)
+  // STRATEGY 3: full_content field
   if(article.full_content && article.full_content.length > 100){
     const text = article.full_content.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
     paras = buildParas(text);
   }
 
-  // STRATEGY 2: Fetch via allorigins CORS proxy
+  // STRATEGY 4: summary as fallback content
+  if(paras.length < 2 && article.summary && article.summary.length > 50){
+    paras = buildParas(article.summary);
+  }
+
+  // STRATEGY 5: Fetch via CORS proxy (may fail on desktop — last resort)
   if(paras.length < 2 && article.url && article.url !== '#'){
     try {
       const proxyRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(article.url)}`,{signal:AbortSignal.timeout(8000)});
       if(proxyRes.ok){
         const pd = await proxyRes.json();
         const html = pd.contents||'';
-        // Try to extract image from og:image
         const imgMatch = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i)
                       || html.match(/<meta[^>]+content="([^"]+)"[^>]+property="og:image"/i);
         if(imgMatch && !articleImage) articleImage = imgMatch[1];
-        // Extract article body — prioritise <article> or <main> tags
         const articleTagMatch = html.match(/<article[^>]*>([\s\S]*?)<\/article>/i)
                              || html.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
         const bodyHtml = articleTagMatch ? articleTagMatch[1] : html;
@@ -3864,7 +3887,6 @@ async function openArticle(idx, sl){
           .replace(/<header[\s\S]*?<\/header>/gi,'')
           .replace(/<footer[\s\S]*?<\/footer>/gi,'')
           .replace(/<aside[\s\S]*?<\/aside>/gi,'')
-          .replace(/<figure[\s\S]*?<\/figure>/gi,'')
           .replace(/<[^>]+>/g,' ');
         const text = tmp.textContent.replace(/\s+/g,' ').trim().slice(0,5000);
         if(text.length > 200) paras = buildParas(text);
@@ -3872,12 +3894,12 @@ async function openArticle(idx, sl){
     } catch(e){ console.warn('[Proxy]', e.message); }
   }
 
-  // STRATEGY 3: Smart fallback using title + category context
+  // STRATEGY 6: Minimal fallback
   if(paras.length < 2){
     paras = [
-      `${article.title}. This story is currently developing and full details are still emerging from ${article.source}.`,
-      `The ${article.category} sector continues to see significant activity. Stay informed with 234News's real-time news feed, refreshed every hour with the latest stories from trusted global sources.`,
-      `For the complete and detailed coverage of this story, we recommend reading the original report directly from ${article.source}.`
+      `${article.title}. This story is currently developing. Full details are still emerging from ${article.source}.`,
+      `Stay informed with 234News's real-time feed, refreshed every hour with the latest stories from trusted sources.`,
+      `For complete coverage of this story, read the original report directly from ${article.source}.`
     ];
   }
 
@@ -3921,10 +3943,11 @@ function renderArticle(art, color, article){
   const ac=dom('article-content');
   const sl = art.slug||article?.slug||'';
   const cat   = esc(article?.category||art.category||'');
-  const catColor = CAT_COLORS[article?.category||art.category||'General']||'#cc0000';
-  const title = esc(art.headline||art.title||'');
-  const byline= esc(art.byline||art.source||article?.source||'');
-  const pubdate = art.published||new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  const catColor = CAT_COLORS[article?.category||art.category||'general']||'#cc0000';
+  // Support both manually created posts (title/source) and enriched posts (headline/byline)
+  const title = esc(art.headline||art.title||article?.title||'');
+  const byline= esc(art.byline||art.source||article?.source||'234News');
+  const pubdate = art.published||new Date(article?.created_at||article?.updated_at||Date.now()).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
   const timeAgo = relTime(article?.updated_at||art.updated_at||'');
   const imgSrc  = art.image||article?.image||null;
   const wordCount = (art.body||'').split(/\s+/).filter(Boolean).length;
@@ -3942,21 +3965,35 @@ function renderArticle(art, color, article){
   if(!ld){ld=document.createElement('script');ld.type='application/ld+json';ld.id='article-ld';document.head.appendChild(ld);}
   ld.textContent=JSON.stringify({"@context":"https://schema.org","@type":"NewsArticle","headline":art.headline||art.title||"","description":art.summary||"","image":imgSrc?[imgSrc]:[],"datePublished":new Date().toISOString(),"author":{"@type":"Organization","name":byline},"publisher":{"@type":"Organization","name":"234News"},"url":articleUrl,"articleSection":cat});
 
-  // Build body HTML — Nairaland OP post style
+  // Build body HTML — handle HTML, multi-para, and single-line text
   const rawBody = art.body||art.summary||'';
   let bodyHtml='';
-  if(rawBody.includes('<p>')||rawBody.includes('<h')){
-    // Already HTML
-    bodyHtml = rawBody;
+  if(!rawBody.trim()){
+    bodyHtml='<p style="color:#777">No content available for this post.</p>';
+  } else if(rawBody.includes('<p')||rawBody.includes('<h')||rawBody.includes('<div')||rawBody.includes('<br')){
+    // Already HTML — render as-is but sanitize scripts
+    bodyHtml = rawBody.replace(/<script[\s\S]*?<\/script>/gi,'');
   } else {
-    const paras = rawBody.split(/\n\n+/).filter(Boolean);
-    paras.forEach((p,i)=>{
-      if(i>0&&i===Math.floor(paras.length/2)&&paras.length>3){
-        const sub=(art.headline||'').includes(':')?esc((art.headline||'').split(':').slice(1).join(':').trim()):'Background';
-        bodyHtml+=`<h2>${sub}</h2>`;
+    // Plain text — split on double or single newlines
+    const paras = rawBody.split(/\n+/).map(p=>p.trim()).filter(p=>p.length>0);
+    if(paras.length===1){
+      // Single block — split into sentences for readability
+      const sentences = paras[0].match(/[^.!?]{20,}[.!?]+/g)||[paras[0]];
+      const chunks=[];
+      for(let i=0;i<sentences.length;i+=3){
+        const chunk=sentences.slice(i,i+3).join(' ').trim();
+        if(chunk) chunks.push(chunk);
       }
-      bodyHtml+=`<p>${esc(p)}</p>`;
-    });
+      bodyHtml = chunks.map(c=>`<p>${esc(c)}</p>`).join('');
+    } else {
+      paras.forEach((p,i)=>{
+        if(i>0&&i===Math.floor(paras.length/2)&&paras.length>3){
+          const sub=(art.headline||art.title||'').includes(':')?esc((art.headline||art.title||'').split(':').slice(1).join(':').trim()):'More Details';
+          bodyHtml+=`<h2>${sub}</h2>`;
+        }
+        bodyHtml+=`<p>${esc(p)}</p>`;
+      });
+    }
   }
 
   // Key points
