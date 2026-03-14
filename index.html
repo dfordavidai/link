@@ -1893,7 +1893,13 @@ footer{background:#f5f5f5;border-top:2px solid #cc0000;padding:10px;margin-top:0
           <div class="wp-meta-box">
             <div class="wp-meta-box-title" onclick="toggleMetaBox('cat-box')">Category <span>▾</span></div>
             <div class="wp-meta-box-body" id="cat-box">
-              <div id="wpa-cat-radios"><!-- loaded from Supabase --></div>
+              <div id="wpa-cat-radios">
+                <label class="wp-cat-item"><input type="radio" name="adm-cat" value="World" checked> World</label>
+                <label class="wp-cat-item"><input type="radio" name="adm-cat" value="Celebrity"> Celebrity</label>
+                <label class="wp-cat-item"><input type="radio" name="adm-cat" value="Sports"> Sports</label>
+                <label class="wp-cat-item"><input type="radio" name="adm-cat" value="Live"> Live</label>
+                <label class="wp-cat-item"><input type="radio" name="adm-cat" value="Movies"> Movies</label>
+              </div>
               <div style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px">
                 <div class="wp-btn-link" onclick="toggleMetaBox('add-cat-mini')" style="font-size:0.78rem">+ Add New Category</div>
                 <div id="add-cat-mini" style="display:none;margin-top:6px;display:none">
@@ -4479,11 +4485,11 @@ async function loadCategoriesIntoHeader(){
 
 function populateCategoryDropdowns(cats){
   // Update the admin post editor category radio list
-  const radioWrap = dom('wp-cat-checkboxes');
+  const radioWrap = dom('wpa-cat-radios');
   if(radioWrap && cats.length){
     radioWrap.innerHTML = cats.map((c,i)=>`
       <label class="wp-cat-item">
-        <input type="radio" name="post-category" value="${esc(c.name)}" ${i===0?'checked':''}> ${esc(c.label||c.name)}
+        <input type="radio" name="adm-cat" value="${esc(c.name)}" ${i===0?'checked':''}> ${esc(c.label||c.name)}
       </label>`).join('');
   }
   // Update the old edit-category select (quick-edit modal)
@@ -6197,6 +6203,14 @@ syncCatColorMap();
 function syncCatDropdowns(){
   // Update all category dropdowns across the admin
   const opts = CUSTOM_CATS.map(c=>`<option value="${esc(c.name)}">${c.icon||''} ${esc(c.name)}</option>`).join('');
+  // Also update the Add New Post category radios
+  const catRadios = dom('wpa-cat-radios');
+  if(catRadios && CUSTOM_CATS.length){
+    catRadios.innerHTML = CUSTOM_CATS.map((c,i)=>`
+      <label class="wp-cat-item">
+        <input type="radio" name="adm-cat" value="${esc(c.name)}" ${i===0?'checked':''}> ${esc(c.name)}
+      </label>`).join('');
+  }
   ['adm-post-cat','wpa-rss-cat'].forEach(id=>{
     const el = dom(id);
     if(!el) return;
