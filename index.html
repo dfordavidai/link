@@ -4461,57 +4461,33 @@ window.addEventListener('popstate', e => {
 // CATEGORIES — Load from Supabase and inject into header nav
 // ================================================================
 async function loadCategoriesIntoHeader(){
-  if(!SB) return;
   const inner = dom('cat-tabs-inner');
   if(!inner) return;
 
-  let cats = [];
-
-  // Try categories table first
-  try {
-    const {data, error} = await SB.from('categories').select('*').eq('visible',true).order('sort_order',{ascending:true});
-    if(!error && data && data.length) cats = data;
-  } catch(e){}
-
-  // Fallback: build categories from distinct values in news_cache
-  if(!cats.length){
-    try {
-      const {data} = await SB.from('news_cache')
-        .select('category')
-        .eq('status','published')
-        .not('slug','like','__%');
-      if(data && data.length){
-        const seen = new Set();
-        data.forEach(r => { if(r.category) seen.add(r.category); });
-        // Use our defined order, only show cats that exist in posts
-        const ORDER = ['World','Celebrity','Sports','Live','Movies'];
-        const orderedSeen = [...ORDER.filter(c => seen.has(c) || seen.has(c.toLowerCase())),
-          ...[...seen].filter(c => !ORDER.includes(c) && !ORDER.map(x=>x.toLowerCase()).includes(c.toLowerCase()))];
-        cats = orderedSeen.map((name,i) => ({
-          name, label: name.charAt(0).toUpperCase()+name.slice(1),
-          color: CAT_COLORS[name]||CAT_COLORS[name.toLowerCase()]||'#003399', visible:true, sort_order:i
-        }));
-      }
-    } catch(e){ console.warn('[loadCategoriesIntoHeader fallback]', e); }
-  }
-
-  if(!cats.length) return;
+  // FIXED category list — only these 5, in this order
+  const CATS = [
+    { name:'World',     label:'World',     color:'#7e3af2' },
+    { name:'Celebrity', label:'Celebrity', color:'#be185d' },
+    { name:'Sports',    label:'Sports',    color:'#057a55' },
+    { name:'Live',      label:'Live',      color:'#dc2626' },
+    { name:'Movies',    label:'Movies',    color:'#b45309' },
+  ];
 
   // Remove previously injected tabs
   inner.querySelectorAll('.cat-tab[data-dynamic]').forEach(el=>el.remove());
 
-  cats.forEach(cat => {
+  CATS.forEach(cat => {
     const btn = document.createElement('button');
     btn.className = 'cat-tab';
     btn.dataset.cat = cat.name;
     btn.dataset.dynamic = '1';
-    btn.textContent = cat.label || cat.name;
+    btn.textContent = cat.label;
     btn.onclick = () => switchCat(btn, cat.name);
     inner.appendChild(btn);
   });
 
   // Update admin dropdowns
-  populateCategoryDropdowns(cats);
+  populateCategoryDropdowns(CATS);
 }
 
 function populateCategoryDropdowns(cats){
