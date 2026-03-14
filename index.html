@@ -1424,8 +1424,8 @@ footer{background:#f5f5f5;border-top:2px solid #cc0000;padding:10px;margin-top:0
 <!-- SEO: updated timestamp tells bots content is fresh -->
 <meta itemprop="dateModified" content="" id="page-mod-date">
 
-<!-- SETUP BANNER -->
-
+<!-- SETUP BANNER — hidden because credentials are hardcoded -->
+<div id="setup-banner" class="hidden" style="display:none!important"></div>
 
 <!-- LOGIN MODAL -->
 <div id="login-overlay">
@@ -1708,7 +1708,7 @@ footer{background:#f5f5f5;border-top:2px solid #cc0000;padding:10px;margin-top:0
       <div class="wp-editor-topbar">
         <div class="wp-editor-topbar-left">
           <span class="wp-editor-label">📝 Add New Post</span>
-          <span class="wp-post-status-badge" id="wp-status-badge">Draft</span>
+          <span class="wp-post-status-badge" id="wp-status-badge">Published</span>
         </div>
         <div class="wp-editor-topbar-right">
           <button class="wp-btn wp-btn-secondary" onclick="admPreviewPost()">👁 Preview</button>
@@ -1722,13 +1722,12 @@ footer{background:#f5f5f5;border-top:2px solid #cc0000;padding:10px;margin-top:0
         <div class="wp-editor-main">
 
           <!-- Title -->
-          <input type="text" id="adm-post-title" class="wp-title-input" placeholder="Add title…" oninput="wpAutoSlug(this.value)">
+          <input type="text" id="adm-post-title" oninput="admUpdateSlugFromTitle(this.value)" class="wp-title-input" placeholder="Add title…" oninput="wpAutoSlug(this.value)">
 
           <!-- Permalink row -->
           <div class="wp-permalink-row">
             <span style="color:var(--muted);font-size:0.78rem">Permalink:</span>
-            <span class="wp-permalink-slug" id="wp-permalink-display">https://234news.vercel.app/news/</span>
-            <span class="wp-permalink-editable" id="wp-slug-display" contenteditable="true" oninput="dom('adm-edit-slug').value=this.textContent.trim()"></span>
+            <span class="wp-permalink-slug" id="wp-permalink-display">https://234news.vercel.app/news/<span id="wp-slug-display" style="color:var(--accent-dark);font-weight:bold"></span></span>
             <button class="wp-btn-link" onclick="dom('wp-slug-display').focus()">Edit</button>
           </div>
 
@@ -1853,8 +1852,8 @@ footer{background:#f5f5f5;border-top:2px solid #cc0000;padding:10px;margin-top:0
               <div class="wp-publish-row">
                 <span>Status:</span>
                 <select id="adm-post-status" class="wp-publish-select" onchange="updateStatusBadge(this.value)">
-                  <option value="published">Published</option>
-                  <option value="draft" selected>Draft</option>
+                  <option value="published" selected>Published</option>
+                  <option value="draft">Draft</option>
                   <option value="scheduled">Scheduled</option>
                   <option value="pending">Pending Review</option>
                 </select>
@@ -3141,10 +3140,14 @@ let countdownTimer;
 let countdownVal = 3600;
 
 const CAT_COLORS = {
-  General:'#1a56db', World:'#7e3af2', Entertainment:'#d03801',
-  Celebrity:'#be185d', Sports:'#057a55', Technology:'#0369a1',
-  Business:'#92400e', Health:'#065f46', Science:'#1e40af',
-  Streaming:'#6d28d9', Movies:'#b45309', 'Live News':'#dc2626'
+  'Front Page':'#cc0000', 'World':'#7e3af2', 'Celebrity':'#be185d',
+  'Sports':'#057a55', 'Live':'#dc2626', 'Movies':'#b45309',
+  // lowercase variants
+  'front page':'#cc0000', 'world':'#7e3af2', 'celebrity':'#be185d',
+  'sports':'#057a55', 'live':'#dc2626', 'movies':'#b45309',
+  // legacy/fallback
+  'General':'#003399', 'general':'#003399', 'Entertainment':'#d03801',
+  'entertainment':'#d03801', 'Technology':'#0369a1', 'technology':'#0369a1'
 };
 
 // ================================================================
@@ -3152,6 +3155,17 @@ const CAT_COLORS = {
 // ================================================================
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function slug(s){ return s.toLowerCase().replace(/[^\w\s-]/g,'').replace(/\s+/g,'-').slice(0,70); }
+
+// Auto-update slug + permalink as title is typed
+function admUpdateSlugFromTitle(titleVal){
+  const sl = slug(titleVal);
+  const slugInput = dom('adm-edit-slug');
+  const slugDisplay = dom('wp-slug-display');
+  const seoUrl = dom('rm-serp-url');
+  if(slugInput && !slugInput.dataset.manualEdit) slugInput.value = sl;
+  if(slugDisplay) slugDisplay.textContent = sl || 'post-slug';
+  if(seoUrl) seoUrl.textContent = 'https://234news.vercel.app/news/' + (sl||'post-slug');
+}
 function dom(id){ return document.getElementById(id); }
 
 function toast(msg, icon='✓'){
@@ -4448,31 +4462,56 @@ window.addEventListener('popstate', e => {
 // ================================================================
 async function loadCategoriesIntoHeader(){
   if(!SB) return;
+  const inner = dom('cat-tabs-inner');
+  if(!inner) return;
+
+  let cats = [];
+
+  // Try categories table first
   try {
     const {data, error} = await SB.from('categories').select('*').eq('visible',true).order('sort_order',{ascending:true});
-    if(error || !data || !data.length) return;
+    if(!error && data && data.length) cats = data;
+  } catch(e){}
 
-    const inner = dom('cat-tabs-inner');
-    if(!inner) return;
+  // Fallback: build categories from distinct values in news_cache
+  if(!cats.length){
+    try {
+      const {data} = await SB.from('news_cache')
+        .select('category')
+        .eq('status','published')
+        .not('slug','like','__%');
+      if(data && data.length){
+        const seen = new Set();
+        data.forEach(r => { if(r.category) seen.add(r.category); });
+        // Use our defined order, only show cats that exist in posts
+        const ORDER = ['World','Celebrity','Sports','Live','Movies'];
+        const orderedSeen = [...ORDER.filter(c => seen.has(c) || seen.has(c.toLowerCase())),
+          ...[...seen].filter(c => !ORDER.includes(c) && !ORDER.map(x=>x.toLowerCase()).includes(c.toLowerCase()))];
+        cats = orderedSeen.map((name,i) => ({
+          name, label: name.charAt(0).toUpperCase()+name.slice(1),
+          color: CAT_COLORS[name]||CAT_COLORS[name.toLowerCase()]||'#003399', visible:true, sort_order:i
+        }));
+      }
+    } catch(e){ console.warn('[loadCategoriesIntoHeader fallback]', e); }
+  }
 
-    // Keep the "Front Page" button, add dynamic ones
-    // Remove any previously injected tabs
-    inner.querySelectorAll('.cat-tab[data-dynamic]').forEach(el=>el.remove());
+  if(!cats.length) return;
 
-    data.forEach(cat => {
-      const btn = document.createElement('button');
-      btn.className = 'cat-tab';
-      btn.dataset.cat = cat.name;
-      btn.dataset.dynamic = '1';
-      btn.textContent = cat.label || cat.name;
-      btn.onclick = () => switchCat(btn, cat.name);
-      inner.appendChild(btn);
-    });
+  // Remove previously injected tabs
+  inner.querySelectorAll('.cat-tab[data-dynamic]').forEach(el=>el.remove());
 
-    // Also update the category select dropdowns in the admin post editor
-    populateCategoryDropdowns(data);
+  cats.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-tab';
+    btn.dataset.cat = cat.name;
+    btn.dataset.dynamic = '1';
+    btn.textContent = cat.label || cat.name;
+    btn.onclick = () => switchCat(btn, cat.name);
+    inner.appendChild(btn);
+  });
 
-  } catch(e){ console.warn('[loadCategoriesIntoHeader]', e); }
+  // Update admin dropdowns
+  populateCategoryDropdowns(cats);
 }
 
 function populateCategoryDropdowns(cats){
@@ -4800,6 +4839,15 @@ async function admSavePost(){
 }
 
 function admClearPostForm(){
+  // Reset slug display and status
+  const slugDisp = dom('wp-slug-display');
+  if(slugDisp) slugDisp.textContent = '';
+  const statusSel = dom('adm-post-status');
+  if(statusSel) statusSel.value = 'published';
+  const badge = dom('wp-status-badge');
+  if(badge) badge.textContent = 'Published';
+  const slugInp = dom('adm-edit-slug');
+  if(slugInp){ slugInp.value=''; delete slugInp.dataset.manualEdit; }
   ['adm-post-title','adm-post-source','adm-post-url','adm-post-image','adm-post-summary','adm-post-body','adm-post-meta-title','adm-post-meta-desc','adm-edit-slug'].forEach(id=>{ const el=dom(id); if(el) el.value=''; });
 }
 
@@ -6078,12 +6126,13 @@ admSavePost = async function(statusOverride){
     updated_at: new Date().toISOString()
   };
   if(SB) await SB.from('news_cache').upsert(payload,{onConflict:'slug'});
-  if(status==='published'){
-    const idx = NEWS.findIndex(a=>a.slug===sl);
-    if(idx>=0) NEWS[idx]={...NEWS[idx],...payload};
-    else NEWS.unshift(payload);
-    renderCurrentNews();
-  }
+  // Always update in-memory NEWS array and re-render regardless of status
+  const idx = NEWS.findIndex(a=>a.slug===sl);
+  if(idx>=0) NEWS[idx]={...NEWS[idx],...payload};
+  else if(status==='published') NEWS.unshift(payload);
+  renderCurrentNews();
+  // Reload from Supabase to confirm post is saved and visible
+  if(SB && status==='published') await loadPosts(true);
   const msg=dom('adm-post-msg');
   if(msg){ msg.textContent=`✓ Post ${status==='draft'?'saved as draft':'published'}!`; msg.style.color='var(--green)'; setTimeout(()=>msg.textContent='',4000); }
   if(status==='published'&&PLUGINS.sitemap) setTimeout(()=>{ generateAndPingSitemap(); generateRSS(); },2000);
