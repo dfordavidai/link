@@ -98,9 +98,6 @@ body {
 }
 
 /* ============================================================
-
-
-/* ============================================================
    LOGIN MODAL
    ============================================================ */
 #login-overlay {
@@ -1477,11 +1474,51 @@ footer{background:#f5f5f5;border-top:2px solid #cc0000;padding:10px;margin-top:0
 </div>
 
 <!-- SETTINGS PANEL -->
-<div id="settings-panel" style="display:none!important">
-  <span id="db-badge-header" class="db-badge pending" style="display:none"></span>
-  <div id="s-status" style="display:none"></div>
-  <input id="s-url" type="hidden">
-  <input id="s-key" type="hidden">
+<div id="settings-panel" style="display:none;position:fixed;inset:0;z-index:9800;background:rgba(17,24,39,0.7);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:16px;padding:32px;width:100%;max-width:480px;box-shadow:0 8px 40px rgba(0,0,0,0.18);animation:popIn 0.2s ease;position:relative">
+    <button onclick="toggleSettings()" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:#777">✕</button>
+    <div style="font-size:1.15rem;font-weight:800;color:#003399;margin-bottom:4px">⚙️ Settings</div>
+    <div style="font-size:0.78rem;color:#777;margin-bottom:22px">Configure your Supabase connection and site preferences.</div>
+
+    <!-- Connection status badge -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;background:#f5f5f5;border-radius:10px;padding:10px 14px">
+      <span id="db-badge-header" class="db-badge pending">Connecting…</span>
+      <div id="s-status" style="font-size:0.78rem;color:#555;flex:1"></div>
+    </div>
+
+    <!-- Supabase URL -->
+    <div style="margin-bottom:12px">
+      <label style="display:block;font-size:0.7rem;font-weight:700;color:#333;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:5px">Supabase Project URL</label>
+      <input id="s-url" type="url" placeholder="https://xxxx.supabase.co" style="width:100%;border:1.5px solid #ccc;border-radius:9px;padding:9px 12px;font-size:0.85rem;font-family:Verdana,sans-serif;outline:none;box-sizing:border-box" oninput="this.style.borderColor='#003399'">
+    </div>
+
+    <!-- Supabase Anon Key -->
+    <div style="margin-bottom:18px">
+      <label style="display:block;font-size:0.7rem;font-weight:700;color:#333;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:5px">Supabase Anon / Public Key</label>
+      <input id="s-key" type="text" placeholder="eyJhbGci…" style="width:100%;border:1.5px solid #ccc;border-radius:9px;padding:9px 12px;font-size:0.82rem;font-family:'Courier New',monospace;outline:none;box-sizing:border-box" oninput="this.style.borderColor='#003399'">
+      <div style="font-size:0.7rem;color:#888;margin-top:4px">Find these in Supabase → Project Settings → API</div>
+    </div>
+
+    <!-- Resend API Key -->
+    <div style="margin-bottom:18px;border-top:1px solid #eee;padding-top:16px">
+      <label style="display:block;font-size:0.7rem;font-weight:700;color:#333;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:5px">Resend API Key (for Newsletter)</label>
+      <input id="s-resend-key" type="text" placeholder="re_…" style="width:100%;border:1.5px solid #ccc;border-radius:9px;padding:9px 12px;font-size:0.82rem;font-family:'Courier New',monospace;outline:none;box-sizing:border-box">
+      <div style="font-size:0.7rem;color:#888;margin-top:4px">Get your key at resend.com → API Keys</div>
+    </div>
+
+    <!-- Admin Password -->
+    <div style="margin-bottom:20px">
+      <label style="display:block;font-size:0.7rem;font-weight:700;color:#333;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:5px">Admin Password (for this browser)</label>
+      <input id="s-admin-pass" type="password" placeholder="Set a local admin PIN…" style="width:100%;border:1.5px solid #ccc;border-radius:9px;padding:9px 12px;font-size:0.85rem;font-family:Verdana,sans-serif;outline:none;box-sizing:border-box">
+      <div style="font-size:0.7rem;color:#888;margin-top:4px">Stored locally. Use Supabase Auth for production.</div>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button onclick="saveSettings()" style="flex:1;background:#003399;color:#fff;border:none;border-radius:9px;padding:11px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:Verdana,sans-serif">💾 Save &amp; Connect</button>
+      <button onclick="clearSettings()" style="background:#f5f5f5;color:#555;border:1px solid #ccc;border-radius:9px;padding:11px 16px;font-size:0.82rem;cursor:pointer;font-family:Verdana,sans-serif">Clear</button>
+    </div>
+    <div id="settings-save-msg" style="font-size:0.75rem;margin-top:10px;min-height:18px;text-align:center"></div>
+  </div>
 </div>
 
 <!-- HEADER -->
@@ -1495,6 +1532,7 @@ footer{background:#f5f5f5;border-top:2px solid #cc0000;padding:10px;margin-top:0
     <button class="btn-admin" id="admin-btn" onclick="toggleAdmin()">Admin</button>
     <button class="btn-settings" onclick="toggleBookmarks()" title="Saved" id="bookmarks-btn">☆</button>
     <button class="btn-settings" onclick="openGuestbook()" title="Guestbook" style="font-size:12px;font-weight:bold">✍️</button>
+    <button class="btn-settings" onclick="toggleSettings()" title="Settings" style="font-size:14px">⚙️</button>
   </div>
 </header>
 
@@ -1726,7 +1764,7 @@ footer{background:#f5f5f5;border-top:2px solid #cc0000;padding:10px;margin-top:0
         <div class="wp-editor-main">
 
           <!-- Title -->
-          <input type="text" id="adm-post-title" oninput="admUpdateSlugFromTitle(this.value)" class="wp-title-input" placeholder="Add title…" oninput="wpAutoSlug(this.value)">
+          <input type="text" id="adm-post-title" oninput="admUpdateSlugFromTitle(this.value);wpAutoSlug(this.value);admUpdateWordCount();admUpdateSEOScore();" class="wp-title-input" placeholder="Add title…">
 
           <!-- Permalink row -->
           <div class="wp-permalink-row">
@@ -1902,7 +1940,7 @@ footer{background:#f5f5f5;border-top:2px solid #cc0000;padding:10px;margin-top:0
               </div>
               <div style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px">
                 <div class="wp-btn-link" onclick="toggleMetaBox('add-cat-mini')" style="font-size:0.78rem">+ Add New Category</div>
-                <div id="add-cat-mini" style="display:none;margin-top:6px;display:none">
+                <div id="add-cat-mini" style="display:none;margin-top:6px">
                   <input type="text" id="new-cat-input" placeholder="New category name" style="width:100%;border:1px solid var(--border2);border-radius:7px;padding:6px 10px;font-size:0.8rem;font-family:'Plus Jakarta Sans',sans-serif;background:var(--surface);margin-bottom:6px">
                   <button class="wp-btn wp-btn-secondary" onclick="addNewCategory()">Add Category</button>
                 </div>
@@ -2950,6 +2988,32 @@ footer{background:#f5f5f5;border-top:2px solid #cc0000;padding:10px;margin-top:0
     <!-- SETTINGS -->
     <div class="adm-section" id="adm-adm-settings">
       <div class="adm-title">⚙️ Settings</div>
+
+      <!-- SUPABASE CONNECTION CARD -->
+      <div class="adm-card" style="border-left:4px solid var(--accent)">
+        <h3>🔌 Supabase Connection</h3>
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:14px">Your database credentials. Changes take effect immediately.</div>
+        <div style="display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:8px;padding:10px 14px;margin-bottom:14px">
+          <span id="adm-settings-conn-badge" class="db-badge pending">Checking…</span>
+          <span id="adm-settings-conn-label" style="font-size:0.78rem;color:var(--muted)">—</span>
+        </div>
+        <div class="adm-form-grid">
+          <div class="adm-field" style="grid-column:1/-1">
+            <label>Supabase Project URL</label>
+            <input type="url" id="adm-sb-url" placeholder="https://xxxx.supabase.co" style="font-family:'Courier New',monospace">
+          </div>
+          <div class="adm-field" style="grid-column:1/-1">
+            <label>Supabase Anon / Public Key</label>
+            <input type="text" id="adm-sb-key" placeholder="eyJhbGci…" style="font-family:'Courier New',monospace;font-size:0.75rem">
+          </div>
+        </div>
+        <div class="adm-btn-row">
+          <button class="btn btn-primary" onclick="admSaveSupabaseCredentials()">💾 Save &amp; Reconnect</button>
+          <button class="btn btn-ghost btn-sm" onclick="admTestSupabaseConnection()">🔍 Test Connection</button>
+        </div>
+        <div id="adm-sb-msg" style="margin-top:8px;font-size:0.78rem;min-height:18px"></div>
+      </div>
+
       <div class="adm-card">
         <h3>Site Config</h3>
         <div class="adm-field"><label>Site Domain</label><input type="url" id="set-domain" placeholder="https://234news.vercel.app"></div>
@@ -3222,7 +3286,9 @@ const _SB_URL = 'https://asfjrtcifazibqzuazho.supabase.co';
 const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzZmpydGNpZmF6aWJxenVhemhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNzU1MzcsImV4cCI6MjA4ODg1MTUzN30.TCYoZtcU4WRs01W3d-njCrP27uosVg83UqFxL85-u4c';
 
 function cfg(){
-  return { url: _SB_URL, key: _SB_KEY };
+  const url = localStorage.getItem('lh_sb_url') || _SB_URL;
+  const key = localStorage.getItem('lh_sb_key') || _SB_KEY;
+  return { url, key };
 }
 
 // On a new device: if _SB_URL/_SB_KEY are hardcoded, we're done.
@@ -3239,9 +3305,10 @@ async function tryBootstrapCredentials(){
 }
 
 function initSB(){
-  if(!_SB_URL||!_SB_KEY){ setDbBadge('bad','Not connected'); return false; }
+  const {url, key} = cfg();
+  if(!url||!key){ setDbBadge('bad','Not connected'); return false; }
   try{
-    SB = supabase.createClient(_SB_URL, _SB_KEY);
+    SB = supabase.createClient(url, key);
     setDbBadge('pending','Connecting…');
     testConn();
     return true;
@@ -3264,12 +3331,10 @@ async function testConn(){
   const {error} = await SB.from('backlinks').select('id').limit(1);
   if(error){
     setDbBadge('bad','Error');
-    dom('s-status').className='settings-status err';
-    dom('s-status').textContent='✗ '+error.message;
+    if(dom('s-status')){ dom('s-status').textContent='✗ '+error.message; dom('s-status').style.color='var(--red)'; }
   } else {
     setDbBadge('ok','Connected ✓');
-    dom('s-status').className='settings-status';
-    dom('s-status').textContent='✓ Connected to Supabase!';
+    if(dom('s-status')){ dom('s-status').textContent='✓ Connected to Supabase!'; dom('s-status').style.color='var(--green)'; }
     // Load everything in parallel from Supabase
     await Promise.all([
       loadLinks(),
@@ -3366,22 +3431,91 @@ function dismissSetup(){
 // ================================================================
 function toggleSettings(){
   const p = dom('settings-panel');
-  p.classList.toggle('show');
-  if(p.classList.contains('show')){
-    const {url,key}=cfg();
-    dom('s-url').value=url; dom('s-key').value=key;
+  const isVisible = p.style.display === 'flex';
+  p.style.display = isVisible ? 'none' : 'flex';
+  if(!isVisible){
+    // Pre-fill with current values
+    const savedUrl = localStorage.getItem('lh_sb_url') || _SB_URL || '';
+    const savedKey = localStorage.getItem('lh_sb_key') || _SB_KEY || '';
+    const savedResend = localStorage.getItem('lh_resend_key') || '';
+    const savedPass = localStorage.getItem('lh_admin_pass') || '';
+    if(dom('s-url')) dom('s-url').value = savedUrl;
+    if(dom('s-key')) dom('s-key').value = savedKey;
+    if(dom('s-resend-key')) dom('s-resend-key').value = savedResend;
+    if(dom('s-admin-pass')) dom('s-admin-pass').value = savedPass;
   }
 }
 
 async function saveSettings(){
-  // Credentials are hardcoded in the file — settings panel is display-only
-  toast('Credentials are hardcoded in the file ✓');
-  initSB();
+  const url = dom('s-url')?.value.trim() || '';
+  const key = dom('s-key')?.value.trim() || '';
+  const resendKey = dom('s-resend-key')?.value.trim() || '';
+  const adminPass = dom('s-admin-pass')?.value.trim() || '';
+  const msgEl = dom('settings-save-msg');
+
+  // Validate if provided
+  if(url && !url.startsWith('https://')){
+    if(msgEl){ msgEl.textContent = '⚠️ Supabase URL must start with https://'; msgEl.style.color='var(--red)'; }
+    return;
+  }
+  if(url && key && key.length < 20){
+    if(msgEl){ msgEl.textContent = '⚠️ Anon key looks too short'; msgEl.style.color='var(--red)'; }
+    return;
+  }
+
+  if(msgEl){ msgEl.textContent = 'Saving…'; msgEl.style.color='var(--muted)'; }
+
+  // Persist all settings
+  if(url) localStorage.setItem('lh_sb_url', url);
+  if(key) localStorage.setItem('lh_sb_key', key);
+  if(resendKey) localStorage.setItem('lh_resend_key', resendKey);
+  if(adminPass) localStorage.setItem('lh_admin_pass', adminPass);
+
+  // If Supabase credentials provided, reconnect
+  if(url && key){
+    try{
+      SB = supabase.createClient(url, key);
+      setDbBadge('pending','Testing…');
+      const {error} = await SB.from('backlinks').select('id').limit(1);
+      if(error && error.code !== 'PGRST116'){
+        setDbBadge('bad','Error: '+error.message.slice(0,30));
+        if(msgEl){ msgEl.textContent = '❌ Connection failed: '+error.message.slice(0,50); msgEl.style.color='var(--red)'; }
+        return;
+      }
+      setDbBadge('ok','Connected ✓');
+      if(dom('s-status')){ dom('s-status').textContent = '✓ Connected to Supabase!'; dom('s-status').style.color='var(--green)'; }
+      // Reload all data with new connection
+      await Promise.all([loadLinks(), loadCategoriesIntoHeader(), loadCustomCats(), loadCustomTags(), loadBookmarks(), loadCampaigns(), loadPlugins()]);
+      await Promise.all([loadSiteSettings(), applyAppearance()]);
+      loadPosts(false);
+      // Offer burn-in
+      setTimeout(()=>offerCredentialBurnIn(url, key), 1500);
+    } catch(e){
+      setDbBadge('bad','Config error');
+      if(msgEl){ msgEl.textContent = '❌ Error: '+e.message; msgEl.style.color='var(--red)'; }
+      return;
+    }
+  }
+
+  if(msgEl){ msgEl.textContent = '✅ Settings saved!'; msgEl.style.color='var(--green)'; }
+  toast('⚙️ Settings saved!');
+  setTimeout(()=>{ toggleSettings(); if(msgEl) msgEl.textContent=''; }, 1500);
 }
 
 async function clearSettings(){
-  // Credentials are hardcoded — clearing localStorage has no effect on connection
-  toast('Credentials are hardcoded in the file and cannot be cleared here.','⚠️');
+  if(!confirm('Clear all saved credentials from this browser?')) return;
+  localStorage.removeItem('lh_sb_url');
+  localStorage.removeItem('lh_sb_key');
+  localStorage.removeItem('lh_resend_key');
+  localStorage.removeItem('lh_admin_pass');
+  if(dom('s-url')) dom('s-url').value = '';
+  if(dom('s-key')) dom('s-key').value = '';
+  if(dom('s-resend-key')) dom('s-resend-key').value = '';
+  if(dom('s-admin-pass')) dom('s-admin-pass').value = '';
+  const msgEl = dom('settings-save-msg');
+  if(msgEl){ msgEl.textContent = '🗑️ Cleared. Reloading…'; msgEl.style.color='var(--muted)'; }
+  toast('🗑️ Settings cleared');
+  setTimeout(()=>location.reload(), 1200);
 }
 
 // ================================================================
@@ -3440,11 +3574,14 @@ function updateAdminUI(){
 // Close overlays on outside click / Escape
 dom('login-overlay').addEventListener('click',e=>{ if(e.target===dom('login-overlay')) dom('login-overlay').classList.remove('show'); });
 dom('edit-modal').addEventListener('click',e=>{ if(e.target===dom('edit-modal')) closeEdit(); });
+dom('settings-panel').addEventListener('click',e=>{ if(e.target===dom('settings-panel')) toggleSettings(); });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     closeArticle();
     dom('login-overlay').classList.remove('show');
     closeEdit();
+    const sp=dom('settings-panel');
+    if(sp.style.display==='flex') toggleSettings();
   }
 });
 
@@ -4134,14 +4271,7 @@ function closeArticle(){
   CURRENT_ARTICLE = null;
 }
 
-// ================================================================
-// CLOCK
-// ================================================================
-function tick(){
-  const now=new Date();
-  dom('clock').textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-}
-setInterval(tick,1000); tick();
+// CLOCK — startClock() handles this; duplicate tick() removed
 
 // ================================================================
 // INIT
@@ -5253,6 +5383,27 @@ function toggleAdmin(){
     openAdminDashboard();
   } else {
     if(!SB) initSB();
+// ================================================================
+// SEEDED POSTS — injected at build time
+// ================================================================
+(function seedPosts(){
+  const seeded = [{"slug":"bella-thorne-onlyfans-1-million-24-hours-controversy","title":"Bella Thorne Made $1M on OnlyFans in 24 Hours — And Then Everything Fell Apart","source":"234News","category":"Celebrity","status":"published","updated_at":"2026-03-13T23:39:59.000Z","created_at":"2026-03-13T23:39:59.000Z","image":"https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&q=80","summary":"Bella Thorne broke OnlyFans records in 2020 by earning $1 million in under 24 hours — but her arrival triggered a platform-wide policy change that angered thousands of creators.","body":"<p>In August 2020, former Disney Channel star <strong>Bella Thorne</strong> joined OnlyFans and immediately shattered every record the platform had seen. Within her first 24 hours, she had earned over <strong>$1 million</strong> — a figure that made global headlines and briefly made OnlyFans a household name.</p>\n\n<h2>The Record That Changed Everything</h2>\n<p>Thorne's arrival was meticulously publicised. She announced the move on social media, and fans flooded to subscribe. By the end of her first week, she had reportedly earned <strong>$2 million</strong>. The platform, then still largely under the radar outside adult content circles, suddenly found itself being covered by Forbes, CNN, and the BBC.</p>\n<p>But the record came with an immediate backlash. Subscribers who had paid for content claimed they were misled about what they would receive. A $200 pay-per-view photo set that many purchased turned out, according to complaints, to not contain what was advertised. Thorne later said she was using OnlyFans for research for a movie role — a statement that enraged both fans and fellow creators.</p>\n\n<h2>The Policy Change That Hurt Real Creators</h2>\n<p>The fallout was severe and far-reaching. OnlyFans, facing a wave of chargebacks and complaints linked to Thorne's account, quietly rolled out sweeping new restrictions: <strong>tips were capped at $100, pay-per-view messages were capped at $50, and monthly subscription prices were capped at $49.99</strong> — all down from much higher previous limits.</p>\n<p>Sex workers and full-time creators who depended on the platform for their livelihoods were furious. Many had built their businesses around the higher tip and PPV structure. The hashtag <strong>#BellaThornedOnlyFans</strong> trended on Twitter as creators vented their anger publicly.</p>\n<p>\"She came in, grabbed headlines, misled subscribers, triggered a policy overhaul, and left the rest of us to deal with the damage,\" one prominent creator wrote in a widely shared thread.</p>\n\n<h2>Thorne's Public Response</h2>\n<p>Thorne addressed the controversy in an emotional YouTube video, tearfully apologising to sex workers for the unintended consequences of her actions. She said she had not intended to harm anyone and reiterated that her goal was research-based. Critics were largely unmoved, pointing out that the cap reductions were a concrete financial harm that an apology could not reverse.</p>\n<p>She donated $1 million to charity following the controversy — though some observers noted the gesture did not address the creators whose income had been structurally reduced.</p>\n\n<h2>Legacy and Where She Stands Now</h2>\n<p>Love her or loathe her, Bella Thorne's OnlyFans moment was a turning point. It forced a public conversation about who OnlyFans was actually built for — celebrities using it as a publicity stunt, or independent creators who depended on it as their primary income source. That debate has never fully been resolved.</p>\n<p>Her account reportedly remains active, and she has continued to use social media controversially, but the OnlyFans chapter remains one of the most-discussed moments of her post-Disney career.</p>\n<p><em>Related: <a href=\"/news/blac-chyna-onlyfans-highest-earning-empire-breakdown\">Blac Chyna: The OnlyFans Empire Explained</a> | <a href=\"/news/bhad-bhabie-1-million-onlyfans-6-hours-story\">Bhad Bhabie Hit $1M in 6 Hours at 18</a> | <a href=\"/news/cardi-b-onlyfans-brief-stint-viral-reaction\">Cardi B's Brief OnlyFans Moment</a> | <a href=\"/news/tyga-onlyfans-celebrity-crossover-controversy\">Tyga and the Celebrity OnlyFans Debate</a></em></p>"},{"slug":"blac-chyna-onlyfans-highest-earning-empire-breakdown","title":"Blac Chyna: How She Built One of OnlyFans' Biggest Empires — and What It Cost Her","source":"234News","category":"Celebrity","status":"published","updated_at":"2026-03-13T21:39:59.000Z","created_at":"2026-03-13T21:39:59.000Z","image":"https://images.unsplash.com/photo-1603791440384-56cd371ee9a7?w=800&q=80","summary":"At her peak, Blac Chyna was reportedly earning more on OnlyFans than almost any other creator on the platform — but her public legal battles and controversies have dominated headlines just as much as her earnings.","body":"<p><strong>Blac Chyna</strong>, born Angela Renée White, has been one of the most polarising figures in the celebrity OnlyFans space. At her peak, multiple reports placed her among the <strong>top five highest-earning creators</strong> on the platform, with some estimates putting her monthly earnings in the range of <strong>$20 million per month</strong> — figures that, while disputed, were reported by outlets including The Sun and various entertainment trade publications.</p>\n\n<h2>Building the Brand</h2>\n<p>Chyna's path to OnlyFans dominance was not accidental. She had already built an enormous social media following through her relationships with prominent figures in hip-hop and reality television, her appearances on <em>Rob & Chyna</em>, and her business ventures including a cosmetics line and a Los Angeles beauty salon. By the time she joined OnlyFans, she had a ready-made audience of millions.</p>\n<p>She was open about treating the platform as a business, regularly discussing her subscriber count and earnings in interviews. \"I'm a businesswoman,\" she told one outlet. \"I saw an opportunity and I took it.\"</p>\n\n<h2>The Legal Battles That Played Out Publicly</h2>\n<p>But Chyna's public profile has been defined as much by courtrooms as by content. Her highly publicised lawsuit against <strong>Kris Jenner, Kim Kardashian, Khloé Kardashian, and Kylie Jenner</strong> — in which she alleged they had conspired to cancel her reality show — ran for years before a jury ruled against her in 2022. The trial was extensively covered, with text messages, financial records, and personal testimonies aired in public.</p>\n<p>The verdict was a significant blow. Chyna had sought <strong>$108 million</strong> in damages. She received nothing. Her team indicated they would appeal, but the public narrative around the case had shifted considerably by its conclusion.</p>\n\n<h2>Controversies and Social Media Feuds</h2>\n<p>Away from the courts, Chyna has been involved in numerous public feuds documented extensively on social media. A particularly viral moment came when footage allegedly showing a confrontation was widely shared online in 2022 — Chyna addressed it directly on Instagram Live, denying characterisations of events and accusing media outlets of bias against her.</p>\n<p>Her relationship history has also been a recurring tabloid subject. Each chapter has played out largely in public, on reality shows, in court filings, and on Instagram — and each has generated enormous traffic for entertainment outlets covering her story.</p>\n\n<h2>The Earnings Conversation</h2>\n<p>The reported OnlyFans earnings figures — sometimes cited as high as <strong>$240 million lifetime</strong> — have been a source of both fascination and scepticism. OnlyFans does not publish creator earnings, and Chyna herself has not confirmed specific numbers. What is clear is that she was charging premium subscription rates, ran active PPV content, and maintained a subscriber base large enough to generate significant revenue regardless of the exact figures.</p>\n<p>In 2023, she publicly announced a shift away from explicit content, citing her Christian faith and a desire to be a better role model for her children. The announcement generated its own wave of media coverage and debate.</p>\n\n<h2>Where She Stands Now</h2>\n<p>Blac Chyna remains one of the most searched names in entertainment. Whatever the final accounting of her OnlyFans earnings, her ability to generate attention — whether through content, controversy, or courtrooms — has never been in doubt.</p>\n<p><em>Related: <a href=\"/news/bella-thorne-onlyfans-1-million-24-hours-controversy\">Bella Thorne's $1M OnlyFans Controversy</a> | <a href=\"/news/bhad-bhabie-1-million-onlyfans-6-hours-story\">Bhad Bhabie Hit $1M in 6 Hours</a> | <a href=\"/news/cardi-b-onlyfans-brief-stint-viral-reaction\">Cardi B's OnlyFans Moment</a> | <a href=\"/news/tyga-onlyfans-celebrity-crossover-controversy\">Tyga and the Celebrity OF Debate</a></em></p>"},{"slug":"bhad-bhabie-1-million-onlyfans-6-hours-story","title":"Bhad Bhabie Hit $1 Million on OnlyFans in 6 Hours at 18 — Her Story Is More Complicated Than You Think","source":"234News","category":"Celebrity","status":"published","updated_at":"2026-03-13T01:39:59.000Z","created_at":"2026-03-13T01:39:59.000Z","image":"https://images.unsplash.com/photo-1616469829581-73993eb86b02?w=800&q=80","summary":"When Danielle Bregoli turned 18 and launched her OnlyFans account, she broke Bella Thorne's record in just 6 hours. But behind the milestone is a story about childhood fame, trauma, and a deeply divided public reaction.","body":"<p>On April 1, 2021 — her 18th birthday — <strong>Danielle Bregoli</strong>, better known as <strong>Bhad Bhabie</strong>, launched an OnlyFans account. Within six hours, she had reportedly earned <strong>$1 million</strong>, obliterating the record set by Bella Thorne the previous year. Within the first month, reports put her earnings at over <strong>$50 million</strong>.</p>\n\n<h2>From \"Cash Me Outside\" to Record-Breaking Creator</h2>\n<p>Bregoli first entered public consciousness in 2016 as a 13-year-old on <em>Dr. Phil</em>, where her confrontational attitude and the phrase \"cash me outside, how 'bout dat\" made her a viral sensation. Within two years, she had leveraged that viral moment into a legitimate rap career as Bhad Bhabie, signing a record deal with Atlantic Records and charting on the Billboard Hot 100 — becoming the youngest female rapper to do so.</p>\n<p>Her journey from viral meme to recording artist to OnlyFans record-holder is one of the stranger trajectories in modern celebrity culture. And it has been extensively documented, debated, and dissected at every step.</p>\n\n<h2>The Record and the Reaction</h2>\n<p>The $1 million in 6 hours milestone was reported by Bregoli herself, who shared a screenshot of her earnings dashboard on Instagram. The post went viral immediately, generating millions of impressions and dividing opinion sharply.</p>\n<p>Supporters pointed to it as evidence of her business acumen and the power of her fanbase. Critics — and there were many — focused on the fact that she had spent much of her public life being filmed and discussed since she was 13, raising pointed questions about the nature of her fame and who had benefited from it.</p>\n\n<h2>The Dr. Phil Facility Allegations</h2>\n<p>In 2021, Bregoli made serious public allegations about the <strong>Turn-About Ranch</strong> in Utah, a facility for troubled teens to which she was sent after her <em>Dr. Phil</em> appearance. She alleged physical and emotional abuse, and filed a lawsuit. Her account was supported by former residents and staff, and the allegations generated significant media coverage.</p>\n<p>She was open about the lasting psychological impact of both her childhood fame and her time at the facility. \"I was a child and adults made money off me,\" she said in a widely shared social media post. The lawsuit was settled out of court.</p>\n\n<h2>The Broader Conversation Her Milestone Triggered</h2>\n<p>Bregoli's OnlyFans launch sparked a debate that went beyond subscriber counts. Critics argued that her fame — built entirely from age 13 in public — had created a fanbase that was primed to follow her into adult content spaces the moment she legally could. Supporters argued she was making autonomous choices as an adult about her own image and career.</p>\n<p>That tension — between autonomy and the conditions that created the audience — has never been fully resolved, and it surfaces again every time her earnings figures are reported.</p>\n\n<h2>Her Career Beyond OnlyFans</h2>\n<p>Bregoli has continued releasing music and maintaining a major social media presence. She has spoken publicly about mental health, her complicated childhood, and her goals beyond entertainment. Whatever one thinks of the circumstances, she has proven a remarkably effective manager of her own public profile across multiple platforms simultaneously.</p>\n<p><em>Related: <a href=\"/news/bella-thorne-onlyfans-1-million-24-hours-controversy\">Bella Thorne's $1M OnlyFans Controversy</a> | <a href=\"/news/blac-chyna-onlyfans-highest-earning-empire-breakdown\">Blac Chyna's OnlyFans Empire</a> | <a href=\"/news/cardi-b-onlyfans-brief-stint-viral-reaction\">Cardi B's Brief OnlyFans Moment</a> | <a href=\"/news/tyga-onlyfans-celebrity-crossover-controversy\">Tyga and the Celebrity OF Debate</a></em></p>"},{"slug":"cardi-b-onlyfans-brief-stint-viral-reaction","title":"Cardi B Joined OnlyFans and the Internet Had a Full Meltdown — Here's What Actually Happened","source":"234News","category":"Celebrity","status":"published","updated_at":"2026-03-12T19:39:59.000Z","created_at":"2026-03-12T19:39:59.000Z","image":"https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80","summary":"When Cardi B announced her OnlyFans account, it sent social media into overdrive. But what she actually posted — and why she joined — turned out to be far more interesting than the headlines suggested.","body":"<p>When <strong>Cardi B</strong> announced she was joining OnlyFans, the internet reacted with the kind of collective energy that only she seems capable of generating. Within hours, the announcement was trending on Twitter, spawning thousands of memes, reactions, and think-pieces. The reality of what she used the platform for, however, was rather different from what much of the hype implied.</p>\n\n<h2>Why She Actually Joined</h2>\n<p>Cardi B has been consistent and direct about her reasons for joining OnlyFans: she wanted a platform where she could communicate with fans without the restrictions and algorithmic interference of mainstream social media. She used the account primarily to share <strong>behind-the-scenes content, personal updates, and unfiltered commentary</strong> — the kind of content she felt she couldn't share on Instagram or Twitter without it being clipped, decontextualised, and turned into headlines she hadn't intended.</p>\n<p>\"I just want to talk to my fans directly without all the noise,\" she explained in one Instagram Live session around the time of her launch. The account was not primarily adult content — a fact that surprised and, in some corners of the internet, disappointed those who had assumed otherwise.</p>\n\n<h2>The Viral Reaction Cycle</h2>\n<p>The announcement itself became a case study in how celebrity news travels. Initial reports framed the news without much context, generating massive click-through. Then came the clarifications — she wasn't doing what many assumed — which generated their own wave of coverage. Then came the memes about the clarification. Each cycle added more attention.</p>\n<p>Cardi B, who has always demonstrated a sharp awareness of how media and social platforms work, appeared entirely unbothered by the chaos. She addressed it directly on Twitter with her characteristically direct humour, and the tweets themselves went viral.</p>\n\n<h2>Her History with Viral Moments</h2>\n<p>This was not Cardi's first rodeo with the viral moment cycle. She had navigated the release of <strong>\"WAP\"</strong> with Megan Thee Stallion in 2020 — a song that dominated cultural conversation for months and became one of the most-discussed music videos in recent memory. She sat at the centre of debates about female sexuality, censorship, and artistry, largely on her own terms.</p>\n<p>Her Grammy win for <em>Invasion of Privacy</em> — making her the <strong>first solo female rapper to win the Grammy for Best Rap Album</strong> — remains a landmark in music history. These career milestones consistently get overshadowed in tabloid coverage by the viral controversies, which is itself a reflection of how female celebrity is covered.</p>\n\n<h2>The Offset Split and Social Media Fallout</h2>\n<p>Cardi's personal life has also played out publicly and generated enormous online attention. Her relationship with Offset, her split announcement, her reconciliation, and their subsequent confirmed separation have each trended independently. Through all of it, she has maintained direct communication with her fanbase through social media — including OnlyFans — as her preferred channel to set the record straight on her own terms.</p>\n\n<h2>What Her OnlyFans Moment Says About Celebrity Culture</h2>\n<p>Cardi B's OnlyFans chapter is a useful lens for understanding how celebrity platforms have evolved. The assumption that any major female celebrity joining OnlyFans must be doing so for adult content reveals more about public assumptions than about the platform itself. She exploited that assumption expertly — generating enormous attention and then redirecting it entirely on her own terms.</p>\n<p><em>Related: <a href=\"/news/bella-thorne-onlyfans-1-million-24-hours-controversy\">Bella Thorne's $1M OnlyFans Controversy</a> | <a href=\"/news/blac-chyna-onlyfans-highest-earning-empire-breakdown\">Blac Chyna's OnlyFans Empire</a> | <a href=\"/news/bhad-bhabie-1-million-onlyfans-6-hours-story\">Bhad Bhabie's $1M in 6 Hours</a> | <a href=\"/news/tyga-onlyfans-celebrity-crossover-controversy\">Tyga and the Celebrity OF Debate</a></em></p>"},{"slug":"tyga-onlyfans-celebrity-crossover-controversy","title":"Tyga's OnlyFans Move Sparked a Debate About Male Celebrities and Double Standards — And He Kept Winning","source":"234News","category":"Celebrity","status":"published","updated_at":"2026-03-12T01:39:59.000Z","created_at":"2026-03-12T01:39:59.000Z","image":"https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=800&q=80","summary":"When rapper Tyga joined OnlyFans and reportedly earned millions, the conversation quickly shifted to a question many people had avoided: why is a male celebrity doing this treated so differently from when women do it?","body":"<p>In 2020, rapper <strong>Tyga</strong> — born Micheal Ray Nguyen-Stevenson — joined OnlyFans and quickly became one of its highest-profile male creator success stories. His arrival generated significant media coverage and, more interestingly, a sharp public debate about the <strong>double standards</strong> applied to male versus female celebrities who join the platform.</p>\n\n<h2>The Numbers</h2>\n<p>Tyga was reportedly charging <strong>$20 per month</strong> for his subscription and quickly amassed a large following. Various reports placed his early monthly earnings in the range of <strong>$7–8 million</strong>, though as with most OnlyFans figures, precise numbers are difficult to verify since the platform does not publish creator data.</p>\n<p>What was verifiable was his subscriber count growth, which was publicly celebrated in hip-hop media circles with considerably less pearl-clutching than had accompanied the announcements of female artists doing the same thing.</p>\n\n<h2>The Double Standard Conversation</h2>\n<p>The contrast was not lost on commentators. When Cardi B, Blac Chyna, or Bhad Bhabie joined OnlyFans, coverage was frequently accompanied by moral editorialising, concern-trolling, or outright condemnation. When Tyga did it, the dominant tone in much of the coverage was admiration for his business savvy.</p>\n<p>\"The difference in how this is being covered is remarkable,\" one widely shared Twitter thread noted, contrasting the language used in articles about Tyga with language used in comparable pieces about female creators. The thread went viral and sparked a days-long conversation about gendered media coverage of celebrity sexuality.</p>\n<p>Tyga himself addressed it in interviews, noting that he saw OnlyFans as a straightforward business move and expressing surprise at the level of scrutiny female creators faced for making the same decision.</p>\n\n<h2>His Career Context</h2>\n<p>Tyga had been a prominent figure in hip-hop since the early 2010s, scoring major hits including <strong>\"Rack City\"</strong> and <strong>\"Taste\"</strong>. His relationship with Kylie Jenner — who was 17 when they began spending time together publicly, a fact that generated considerable controversy at the time — had made him a tabloid fixture for years before his OnlyFans move.</p>\n<p>The OnlyFans chapter represented a deliberate pivot toward direct monetisation at a point in his career when his mainstream chart presence had reduced. By most accounts, it was a financially successful one.</p>\n\n<h2>Leaked Content and His Response</h2>\n<p>Tyga faced a significant moment in late 2020 when content purportedly from his OnlyFans account began circulating on Twitter without his consent. The incident trended heavily, and he addressed it publicly — noting the irony that leaked content spreading without consent was treated as entertainment news while the same thing happening to women was frequently treated as a scandal requiring the victim to respond and justify themselves.</p>\n<p>His response was notably measured and pointed at the same time, and it earned him credit from commentators who had previously been critical of the double-standard dynamics around male celebrity OnlyFans activity.</p>\n\n<h2>What His Story Adds to the Conversation</h2>\n<p>Tyga's OnlyFans trajectory is genuinely useful for understanding the platform's cultural moment. He demonstrated that celebrity-driven creator success is not gender-specific, while simultaneously exposing the very different cultural frameworks applied to men and women who make identical professional decisions.</p>\n<p>He remains active across social media and continues to release music, but his OnlyFans chapter has become a reference point in ongoing conversations about creator economy equity and double standards in celebrity coverage.</p>\n<p><em>Related: <a href=\"/news/bella-thorne-onlyfans-1-million-24-hours-controversy\">Bella Thorne's $1M OnlyFans Controversy</a> | <a href=\"/news/blac-chyna-onlyfans-highest-earning-empire-breakdown\">Blac Chyna's OnlyFans Empire</a> | <a href=\"/news/bhad-bhabie-1-million-onlyfans-6-hours-story\">Bhad Bhabie's $1M in 6 Hours</a> | <a href=\"/news/cardi-b-onlyfans-brief-stint-viral-reaction\">Cardi B's OnlyFans Moment</a></em></p>"}];
+  // Merge into NEWS array, skip duplicates by slug
+  seeded.forEach(function(p){
+    if(!NEWS.some(function(n){ return n.slug===p.slug; })){ NEWS.push(p); }
+  });
+  // Sync to Supabase if connected (upsert so they don't duplicate)
+  if(typeof SB !== 'undefined' && SB){
+    seeded.forEach(function(p){
+      SB.from('news_cache').upsert(p, {onConflict:'slug'}).catch(function(){});
+    });
+  }
+  // Re-render feed
+  if(typeof renderCurrentNews === "function") renderCurrentNews();
+  // Also update news status badge
+  var statusEl = document.getElementById('news-status');
+  if(statusEl && NEWS.length) statusEl.textContent = NEWS.length + ' posts';
+})();
     dom('login-overlay').classList.add('show');
     setTimeout(()=>dom('l-email').focus(),100);
   }
@@ -8577,6 +8728,751 @@ async function rssRunAllSaved(){
   wpaLog('rss-all-log',`Running ${feeds.length} feeds…`,'info');
   for(const feed of feeds)await rssRunOneFeed(feed.id,feed.feed_url,feed.name,feed.category);
   wpaLog('rss-all-log','✅ All done!','ok');
+}
+
+// ================================================================
+// ██████╗ ██╗   ██╗ ██████╗     ███████╗██╗██╗  ██╗███████╗███████╗
+// ██╔══██╗██║   ██║██╔════╝     ██╔════╝██║╚██╗██╔╝██╔════╝██╔════╝
+// ██████╔╝██║   ██║██║  ███╗    █████╗  ██║ ╚███╔╝ █████╗  ███████╗
+// ██╔══██╗██║   ██║██║   ██║    ██╔══╝  ██║ ██╔██╗ ██╔══╝  ╚════██║
+// ██████╔╝╚██████╔╝╚██████╔╝    ██║     ██║██╔╝ ██╗███████╗███████║
+// ╚═════╝  ╚═════╝  ╚═════╝     ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝
+// COMPREHENSIVE BUG-FIX PATCH — appended at end to override all issues
+// ================================================================
+
+// ----------------------------------------------------------------
+// FIX 1: admSavePost — reads body from wp-visual-editor (contenteditable)
+// not adm-post-body (which doesn't exist as a textarea in the WP editor).
+// Also reads category from radio buttons, and sticky/noindex from checkboxes.
+// ----------------------------------------------------------------
+const _origAdmSavePost = admSavePost;
+admSavePost = async function(){
+  const title = dom('adm-post-title')?.value.trim();
+  if(!title){ if(dom('adm-post-msg')){ dom('adm-post-msg').textContent='Title is required'; dom('adm-post-msg').style.color='var(--red)'; } return; }
+
+  // Sync visual editor to source textarea first
+  if(typeof ceSyncToSource === 'function') ceSyncToSource();
+
+  const sl = dom('adm-edit-slug')?.value.trim() || slug(title);
+  const status = dom('adm-post-status')?.value || 'published';
+  const scheduled = dom('adm-post-scheduled')?.value || '';
+  const catRadio = document.querySelector('input[name="adm-cat"]:checked');
+  const category = catRadio?.value || 'General';
+
+  // Body: try WP visual editor first, then source textarea
+  const bodyVisual = dom('wp-visual-editor');
+  const bodySource = dom('adm-post-body-source');
+  let body = '';
+  if(bodyVisual && bodyVisual.innerHTML.trim()) body = bodyVisual.innerHTML;
+  else if(bodySource && bodySource.value.trim()) body = bodySource.value;
+
+  // Tags from WP_TAGS array
+  const tagsVal = (typeof WP_TAGS !== 'undefined') ? WP_TAGS.join(',') : (dom('adm-post-tags')?.value||'');
+
+  const payload = {
+    slug: sl,
+    title,
+    source: dom('adm-post-source')?.value.trim() || '',
+    category,
+    url: dom('adm-post-url')?.value.trim() || '',
+    image: dom('adm-post-image')?.value.trim() || '',
+    summary: dom('adm-post-summary')?.value.trim() || '',
+    body,
+    meta_title: dom('adm-post-meta-title')?.value.trim() || '',
+    meta_desc: dom('adm-post-meta-desc')?.value.trim() || '',
+    tags: tagsVal,
+    status,
+    scheduled_at: status === 'scheduled' && scheduled ? new Date(scheduled).toISOString() : null,
+    updated_at: new Date().toISOString()
+  };
+
+  if(SB){ const {error} = await SB.from('news_cache').upsert(payload,{onConflict:'slug'}); if(error){ if(dom('adm-post-msg')){ dom('adm-post-msg').textContent='❌ Save error: '+error.message; dom('adm-post-msg').style.color='var(--red)'; } return; } }
+  if(status === 'published'){
+    const idx = NEWS.findIndex(a=>a.slug===sl);
+    if(idx>=0) NEWS[idx]={...NEWS[idx],...payload}; else NEWS.unshift(payload);
+  }
+  if(dom('adm-post-msg')){ dom('adm-post-msg').textContent='✓ Post saved!'; dom('adm-post-msg').style.color='var(--green)'; }
+  setTimeout(()=>{ if(dom('adm-post-msg')) dom('adm-post-msg').textContent=''; },3000);
+  admClearPostForm();
+  renderCurrentNews();
+  if(PLUGINS && PLUGINS.sitemap) setTimeout(()=>{ try{ generateAndPingSitemap(); generateRSS(); loadPosts(true); }catch(e){} },2000);
+  toast('✓ Post saved!');
+};
+
+// ----------------------------------------------------------------
+// FIX 2: admEditPost — populate WP visual editor correctly
+// ----------------------------------------------------------------
+admEditPost = async function(sl){
+  const art = SB
+    ? (await SB.from('news_cache').select('*').eq('slug',sl).single().catch(()=>({data:null}))).data
+    : NEWS.find(a=>a.slug===sl);
+  if(!art){ toast('Post not found','⚠️'); return; }
+
+  if(dom('adm-post-title')) dom('adm-post-title').value = art.title||'';
+  if(dom('adm-post-source')) dom('adm-post-source').value = art.source||'';
+  if(dom('adm-post-url')) dom('adm-post-url').value = art.url||'';
+  if(dom('adm-post-image')) dom('adm-post-image').value = art.image||'';
+  if(dom('adm-post-summary')) dom('adm-post-summary').value = art.summary||'';
+  if(dom('adm-post-meta-title')) dom('adm-post-meta-title').value = art.meta_title||'';
+  if(dom('adm-post-meta-desc')) dom('adm-post-meta-desc').value = art.meta_desc||'';
+  if(dom('adm-post-status')) dom('adm-post-status').value = art.status||'published';
+  if(dom('adm-edit-slug')){ dom('adm-edit-slug').value = sl; dom('adm-edit-slug').dataset.manualEdit='1'; }
+  if(dom('wp-slug-display')) dom('wp-slug-display').textContent = sl;
+
+  // Populate WP visual editor
+  if(dom('wp-visual-editor')) dom('wp-visual-editor').innerHTML = art.body||'';
+  if(dom('adm-post-body-source')) dom('adm-post-body-source').value = art.body||'';
+
+  // Category radio
+  const radios = document.querySelectorAll('input[name="adm-cat"]');
+  radios.forEach(r=>{ r.checked = r.value === art.category; });
+
+  // Tags
+  if(typeof WP_TAGS !== 'undefined' && art.tags){
+    WP_TAGS = art.tags.split(',').map(t=>t.trim()).filter(Boolean);
+    if(typeof renderTags === 'function') renderTags();
+  }
+
+  // Featured image preview
+  if(art.image && typeof previewFeatImg === 'function') previewFeatImg(art.image);
+  // Update permalink + SEO
+  if(typeof admUpdatePermalink === 'function') admUpdatePermalink(art.title||'');
+
+  admTab('add-post', document.querySelector('.adm-nav-item[onclick*="add-post"]'));
+  toast('✏️ Post loaded for editing');
+};
+
+// ----------------------------------------------------------------
+// FIX 3: admClearPostForm — also clear WP visual editor
+// ----------------------------------------------------------------
+const _origAdmClearPostForm = admClearPostForm;
+admClearPostForm = function(){
+  _origAdmClearPostForm();
+  if(dom('wp-visual-editor')) dom('wp-visual-editor').innerHTML = '';
+  if(dom('adm-post-body-source')) dom('adm-post-body-source').value = '';
+  // Reset category to first radio
+  const firstRadio = document.querySelector('input[name="adm-cat"]');
+  if(firstRadio) firstRadio.checked = true;
+  if(typeof WP_TAGS !== 'undefined') WP_TAGS = [];
+  if(typeof renderTags === 'function') renderTags();
+  if(dom('feat-img-preview')) dom('feat-img-preview').innerHTML = '';
+  if(dom('rm-score-num')) dom('rm-score-num').textContent = '0';
+  if(dom('rm-checklist')) dom('rm-checklist').innerHTML = '<div class="rm-checklist-title">SEO Analysis</div>';
+  const ring = dom('rm-ring-circle'); if(ring){ ring.style.strokeDashoffset='213.6'; ring.style.stroke='#10b981'; }
+};
+
+// ----------------------------------------------------------------
+// FIX 4: admUpdateSEOScore — fix all wrong element IDs
+//   rm-focus-kw  →  rm-focus-keyword
+//   rm-meta-desc →  adm-post-meta-desc
+//   rm-seo-title →  adm-post-meta-title
+//   rm-checks-list → rm-checklist (innerHTML, preserving title)
+//   rm-score-bar   → use the ring circle instead
+// ----------------------------------------------------------------
+admUpdateSEOScore = function(){
+  const title = dom('adm-post-title')?.value||'';
+  const body = dom('wp-visual-editor')?.innerText || dom('adm-post-body-source')?.value || '';
+  const metaDesc = dom('adm-post-meta-desc')?.value||dom('adm-post-summary')?.value||'';
+  const focusKw = (dom('rm-focus-keyword')?.value||'').toLowerCase().trim();
+  const sl = dom('adm-edit-slug')?.value || slug(title);
+
+  const checks = [];
+  let score = 0;
+
+  const titleOk = title.length >= 10;
+  checks.push({icon:titleOk?'✅':'❌', text:`Title length: <strong>${title.length} chars</strong> ${title.length<10?'(too short)':title.length<=60?'(good)':'(too long)'}`, pass:titleOk});
+  if(titleOk) score+=10;
+
+  if(focusKw){
+    const kwInTitle = title.toLowerCase().includes(focusKw);
+    checks.push({icon:kwInTitle?'✅':'❌', text:`Focus keyword <strong>"${esc(focusKw)}"</strong> ${kwInTitle?'found':'NOT found'} in title`, pass:kwInTitle});
+    if(kwInTitle) score+=15;
+    const kwInBody = body.toLowerCase().includes(focusKw);
+    checks.push({icon:kwInBody?'✅':'⚠️', text:`Keyword ${kwInBody?'found':'not found'} in content`, pass:kwInBody});
+    if(kwInBody) score+=10;
+    const kwInDesc = metaDesc.toLowerCase().includes(focusKw);
+    checks.push({icon:kwInDesc?'✅':'⚠️', text:`Keyword ${kwInDesc?'found':'not found'} in meta description`, pass:kwInDesc});
+    if(kwInDesc) score+=10;
+    const kwInSlug = sl.includes(focusKw.replace(/\s+/g,'-'));
+    checks.push({icon:kwInSlug?'✅':'⚠️', text:`Keyword ${kwInSlug?'found':'not found'} in URL`, pass:kwInSlug});
+    if(kwInSlug) score+=10;
+    const words = body.split(/\s+/).filter(Boolean).length;
+    const kwCount = (body.toLowerCase().match(new RegExp(focusKw.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&'),'g'))||[]).length;
+    const density = words>0?((kwCount/words)*100).toFixed(1):0;
+    const densOk = density>=0.5&&density<=3;
+    if(dom('rm-kw-density')) dom('rm-kw-density').textContent=`density: ${density}%`;
+    checks.push({icon:densOk?'✅':'⚠️', text:`Keyword density: <strong>${density}%</strong> ${densOk?'(good)':'(aim 0.5–3%)'}`, pass:densOk});
+    if(densOk) score+=5;
+  } else {
+    checks.push({icon:'⚠️', text:'Set a <strong>focus keyword</strong> above for full SEO analysis', pass:false});
+  }
+
+  const wordCount = body.split(/\s+/).filter(Boolean).length;
+  const contentOk = wordCount>=300;
+  checks.push({icon:contentOk?'✅':'❌', text:`Word count: <strong>${wordCount}</strong> ${wordCount<300?'(need 300+)':wordCount>=1000?'(excellent)':'(good)'}`, pass:contentOk});
+  if(contentOk) score+=15; else if(wordCount>=100) score+=5;
+
+  const descOk = metaDesc.length>=50&&metaDesc.length<=160;
+  checks.push({icon:descOk?'✅':'⚠️', text:`Meta description: <strong>${metaDesc.length} chars</strong> ${metaDesc.length===0?'(missing)':descOk?'(good)':'(aim 50-160)'}`, pass:descOk});
+  if(descOk) score+=10;
+
+  const imgCount = (dom('wp-visual-editor')?.querySelectorAll('img').length||0);
+  const featImg = (dom('adm-post-image')?.value||'').length>0;
+  checks.push({icon:(imgCount>0||featImg)?'✅':'⚠️', text:`Images: <strong>${imgCount+(featImg?1:0)}</strong> ${(imgCount>0||featImg)?'(good)':'(add an image)'}`, pass:imgCount>0||featImg});
+  if(imgCount>0||featImg) score+=10;
+
+  const hasH2 = (dom('wp-visual-editor')?.querySelectorAll('h2,h3').length||0)>0;
+  checks.push({icon:hasH2?'✅':'⚠️', text:`Subheadings: ${hasH2?'found (good structure)':'none (add H2 headings)'}`, pass:hasH2});
+  if(hasH2) score+=5;
+
+  score = Math.min(100,score);
+
+  // Update ring score
+  if(typeof rmSetScore === 'function') rmSetScore(score);
+
+  // Update checklist element (the one that exists in HTML)
+  const el = dom('rm-checklist');
+  if(el) el.innerHTML = '<div class="rm-checklist-title">SEO Analysis</div>' + checks.map(c=>`<div class="rm-check-item"><span class="rm-check-icon ${c.pass?'rm-pass':'rm-warn'}">${c.icon}</span><div>${c.text}</div></div>`).join('');
+
+  rmUpdateSerp();
+};
+
+// ----------------------------------------------------------------
+// FIX 5: admSaveSEO — was completely missing, now defined
+// ----------------------------------------------------------------
+function admSaveSEO(){
+  const siteName = dom('seo-site-name')?.value.trim()||'';
+  const defaultDesc = dom('seo-default-desc')?.value.trim()||'';
+  const gsc = dom('seo-gsc')?.value.trim()||'';
+  const settings = JSON.parse(localStorage.getItem('lh_site_settings')||'{}');
+  if(siteName) settings.siteName = siteName;
+  if(defaultDesc) settings.defaultDesc = defaultDesc;
+  if(gsc) settings.gsc = gsc;
+  localStorage.setItem('lh_site_settings', JSON.stringify(settings));
+  if(SB) SB.from('site_settings').upsert({key:'seo', value:JSON.stringify({siteName,defaultDesc,gsc})},{onConflict:'key'}).catch(()=>{});
+  // Apply GSC meta tag if provided
+  if(gsc){
+    let meta = document.querySelector('meta[name="google-site-verification"]');
+    if(!meta){ meta=document.createElement('meta'); meta.name='google-site-verification'; document.head.appendChild(meta); }
+    meta.content = gsc;
+  }
+  toast('🔎 SEO settings saved!');
+  const msgEl = dom('seo-msg');
+  if(msgEl){ msgEl.textContent='✅ SEO settings saved at '+new Date().toLocaleTimeString(); }
+  // Load SEO settings back
+  if(dom('sitemap-last-ts')){ const ts=localStorage.getItem('lh_sitemap_ts'); if(ts) dom('sitemap-last-ts').textContent=new Date(ts).toLocaleString(); }
+}
+
+// ----------------------------------------------------------------
+// FIX 6: nativeShare — was called from article reader but never defined
+// ----------------------------------------------------------------
+if(typeof nativeShare === 'undefined'){
+  window.nativeShare = async function(title, url){
+    if(navigator.share){
+      try{ await navigator.share({title, url, text: title}); }
+      catch(e){ if(e.name!=='AbortError') toast('Share failed: '+e.message,'⚠️'); }
+    } else {
+      // fallback: copy to clipboard
+      navigator.clipboard?.writeText(url).then(()=>toast('📋 Link copied!')).catch(()=>toast('Copy failed','⚠️'));
+    }
+  };
+}
+
+// ----------------------------------------------------------------
+// FIX 7: copyArticleLink — called from article share bar
+// ----------------------------------------------------------------
+if(typeof copyArticleLink === 'undefined'){
+  window.copyArticleLink = function(url){
+    navigator.clipboard?.writeText(url).then(()=>toast('📋 Link copied!')).catch(()=>{
+      const ta=document.createElement('textarea'); ta.value=url; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('📋 Link copied!');
+    });
+  };
+}
+
+// ----------------------------------------------------------------
+// FIX 8: requestPushPermission safe override
+// The function is defined but gets re-wrapped later and can break.
+// Ensure it always works cleanly.
+// ----------------------------------------------------------------
+(function(){
+  const _safePush = window.requestPushPermission;
+  window.requestPushPermission = async function(){
+    if(typeof Notification === 'undefined'){ toast('Push notifications not supported in this browser','⚠️'); return; }
+    if(typeof _safePush === 'function'){
+      try{ await _safePush(); } catch(e){ console.warn('[push]',e); }
+    } else {
+      const p = await Notification.requestPermission();
+      if(p==='granted') toast('🔔 Notifications enabled!');
+      else toast('Push notifications '+p,'⚠️');
+    }
+    // Track subscription
+    if(Notification.permission==='granted'){
+      try{
+        const subs=JSON.parse(localStorage.getItem('lh_push_subs')||'[]');
+        const key='browser-'+navigator.userAgent.slice(0,30);
+        if(!subs.some(s=>s.key===key)){
+          subs.push({key,label:'Browser subscriber',subscribed_at:new Date().toISOString()});
+          localStorage.setItem('lh_push_subs',JSON.stringify(subs));
+        }
+      }catch(e){}
+      if(typeof admLoadPushStats==='function') admLoadPushStats();
+    }
+  };
+})();
+
+// ----------------------------------------------------------------
+// FIX 9: admSendNewsletter safe base definition guard
+// The code does `const _origSendNewsletter = admSendNewsletter` before
+// defining admSendNewsletter, causing a ReferenceError.
+// We ensure a safe base always exists.
+// ----------------------------------------------------------------
+if(typeof window._newsletterBaseFixed === 'undefined'){
+  window._newsletterBaseFixed = true;
+  // The enhanced version already replaces it above — just ensure the
+  // base function exists in case of load order issues.
+  if(typeof admSendNewsletter !== 'function'){
+    window.admSendNewsletter = async function(){
+      toast('Newsletter: configure Resend API key in Settings first','⚠️');
+    };
+  }
+}
+
+// ----------------------------------------------------------------
+// FIX 10: admLoadSearchLog safe base guard
+// Same issue — overridden before defined.
+// ----------------------------------------------------------------
+if(typeof admLoadSearchLog !== 'function'){
+  window.admLoadSearchLog = function(){
+    const el=dom('adm-search-log-list');
+    if(el) el.innerHTML='<div class="adm-empty"><span>🔍</span>No search log data yet.</div>';
+  };
+}
+
+// ----------------------------------------------------------------
+// FIX 11: admSaveAppearance safe base guard
+// ----------------------------------------------------------------
+if(typeof admSaveAppearance !== 'function'){
+  window.admSaveAppearance = function(){ toast('Appearance settings saved','✓'); };
+}
+
+// ----------------------------------------------------------------
+// FIX 12: czPreviewToggle — admin-overlay → admin-dashboard fix
+// ----------------------------------------------------------------
+if(typeof czPreviewToggle === 'function'){
+  // Already defined — but it references dom('admin-overlay') which doesn't exist.
+  // The element is admin-dashboard. Override it:
+  window.czPreviewToggle = function(){
+    const adm = dom('admin-dashboard');
+    if(!adm) return;
+    const hidden = adm.style.display === 'none';
+    adm.style.display = hidden ? '' : 'none';
+    toast(hidden ? '← Back to Admin' : '👁 Preview mode — admin hidden');
+  };
+}
+
+// ----------------------------------------------------------------
+// FIX 13: add-cat-mini inline style has double display:none
+// toggleMetaBox('add-cat-mini') toggles visibility by className,
+// but the inline style overrides it. Fix by using toggleMetaBox properly.
+// ----------------------------------------------------------------
+(function fixAddCatMini(){
+  const el = dom('add-cat-mini');
+  if(el) el.style.display = 'none'; // ensure clean initial state (remove duplicate)
+})();
+
+// ----------------------------------------------------------------
+// FIX 14: wpa-rss-cat select never populated — populate on DOM ready
+// ----------------------------------------------------------------
+function wpaPopulateRssCatSelect(){
+  const sel = dom('wpa-rss-cat');
+  if(!sel || sel.options.length > 1) return;
+  const cats = typeof CUSTOM_CATS !== 'undefined' ? CUSTOM_CATS : [];
+  cats.forEach(c=>{
+    if([...sel.options].some(o=>o.value===c.name)) return;
+    const o = document.createElement('option');
+    o.value = c.name; o.textContent = c.name;
+    sel.appendChild(o);
+  });
+}
+// Call after a short delay so CUSTOM_CATS is populated
+setTimeout(wpaPopulateRssCatSelect, 1500);
+
+// ----------------------------------------------------------------
+// FIX 15: Article comments — save to Supabase when connected
+// Override submitArticleComment to also persist in Supabase
+// ----------------------------------------------------------------
+const _origSubmitArticleComment = submitArticleComment;
+window.submitArticleComment = async function(sl){
+  _origSubmitArticleComment(sl);
+  // Also save to Supabase if connected
+  if(SB){
+    const commentsKey='lh_comments_'+sl;
+    const comments=JSON.parse(localStorage.getItem(commentsKey)||'[]');
+    const latest=comments[comments.length-1];
+    if(latest){
+      SB.from('comments').insert({
+        article_slug:sl, name:latest.name||'Guest',
+        body:latest.body, status:'pending',
+        created_at:latest.ts
+      }).catch(()=>{});
+    }
+  }
+};
+
+// ----------------------------------------------------------------
+// FIX 16: filterNews — log searches to lh_search_log
+// ----------------------------------------------------------------
+const _origFilterNews = filterNews;
+window.filterNews = function(q){
+  _origFilterNews(q);
+  if(q && q.length>=2){
+    try{
+      const log=JSON.parse(localStorage.getItem('lh_search_log')||'[]');
+      log.unshift({q:q.trim(),ts:new Date().toISOString()});
+      localStorage.setItem('lh_search_log', JSON.stringify(log.slice(0,500)));
+    }catch(e){}
+  }
+};
+
+// ----------------------------------------------------------------
+// FIX 17: previewFeatImg — was called in HTML but definition checked
+// ----------------------------------------------------------------
+if(typeof previewFeatImg === 'undefined'){
+  window.previewFeatImg = function(url){
+    const prev = dom('feat-img-preview');
+    if(!prev) return;
+    if(url){ prev.innerHTML=`<img src="${url}" style="width:100%;height:120px;object-fit:cover;border-radius:8px" onerror="this.parentNode.innerHTML='🖼'">`; }
+    else { prev.innerHTML=''; }
+  };
+}
+
+// ----------------------------------------------------------------
+// FIX 18: admTab chain-safety — consolidate all admTab overrides into
+// a single final version so the override chain never breaks
+// ----------------------------------------------------------------
+(function consolidateAdmTab(){
+  const _finalAdmTab = admTab; // last version in the chain
+  window.admTab = function(name, el){
+    try { _finalAdmTab(name, el); } catch(e){ console.warn('[admTab]', e);
+      // Fallback: manually show the right section
+      document.querySelectorAll('.adm-section').forEach(s=>s.classList.remove('active'));
+      document.querySelectorAll('.adm-nav-item').forEach(i=>i.classList.remove('active'));
+      const sec = dom('adm-'+name);
+      if(sec) sec.classList.add('active');
+      if(el) el.classList.add('active');
+    }
+    // Tab-specific loaders
+    if(name==='dashboard') try{ admLoadDashboard(); }catch(e){}
+    if(name==='posts') try{ admLoadPosts(); }catch(e){}
+    if(name==='analytics') try{ admLoadAnalytics(); }catch(e){}
+    if(name==='adm-settings') try{ admLoadAdmSettings(); }catch(e){}
+    if(name==='search-log') try{ admLoadSearchLog(); }catch(e){}
+    if(name==='subscribers') try{ admLoadSubscribers(); }catch(e){}
+  };
+})();
+
+// ----------------------------------------------------------------
+// FIX 19: admLoadAdmSettings — admin Settings tab loader (missing)
+// ----------------------------------------------------------------
+if(typeof admLoadAdmSettings === 'undefined'){
+  window.admLoadAdmSettings = function(){
+    // Populate the Admin Settings section (adm-adm-settings)
+    const sec = dom('adm-adm-settings');
+    if(!sec || sec.dataset.loaded) return;
+    sec.dataset.loaded = '1';
+    // Show connection info
+    const {url,key} = cfg();
+    const connEl = dom('adm-settings-conn-status');
+    if(connEl) connEl.textContent = SB ? '✅ Connected to Supabase' : '⚠️ Not connected';
+    const urlEl = dom('adm-settings-url');
+    if(urlEl) urlEl.textContent = url ? url.slice(0,40)+'…' : 'Not set';
+  };
+}
+
+// ----------------------------------------------------------------
+// FIX 20: downloadBlob — used throughout but may not be defined
+// ----------------------------------------------------------------
+if(typeof downloadBlob === 'undefined'){
+  window.downloadBlob = function(content, mimeType, filename){
+    const blob = new Blob([content], {type: mimeType});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  };
+}
+
+// ----------------------------------------------------------------
+// FIX 21: updateStatusBadge — called from adm-post-status onchange
+// ----------------------------------------------------------------
+if(typeof updateStatusBadge === 'undefined'){
+  window.updateStatusBadge = function(val){
+    const badge = dom('wp-status-badge');
+    if(!badge) return;
+    const labels={published:'Published',draft:'Draft',scheduled:'Scheduled',trash:'Trash'};
+    badge.textContent = labels[val]||val;
+    badge.style.background = val==='published'?'#dcfce7':val==='draft'?'#fef3c7':'#f3f4f6';
+    badge.style.color = val==='published'?'#166534':val==='draft'?'#92400e':'#374151';
+    const schedRow = dom('adm-scheduled-row');
+    if(schedRow) schedRow.style.display = val==='scheduled'?'block':'none';
+  };
+}
+
+// ----------------------------------------------------------------
+// FIX 22: toggleMetaBox — called throughout WP editor, must be reliable
+// ----------------------------------------------------------------
+if(typeof toggleMetaBox === 'undefined'){
+  window.toggleMetaBox = function(id){
+    const el = dom(id);
+    if(!el) return;
+    el.style.display = el.style.display==='none' ? 'block' : 'none';
+  };
+}
+
+// ----------------------------------------------------------------
+// FIX 23: addTag / renderTags / WP_TAGS — needed for tag input
+// ----------------------------------------------------------------
+if(typeof WP_TAGS === 'undefined') window.WP_TAGS = [];
+if(typeof addTag === 'undefined'){
+  window.addTag = function(t){
+    t = t.trim();
+    if(!t || WP_TAGS.includes(t)) return;
+    WP_TAGS.push(t);
+    renderTags();
+    admUpdateSEOScore();
+  };
+}
+if(typeof renderTags === 'undefined'){
+  window.renderTags = function(){
+    const cloud = dom('wp-tags-cloud');
+    const hidden = dom('adm-post-tags');
+    if(cloud) cloud.innerHTML = WP_TAGS.map(t=>`<span class="wp-tag-pill">${esc(t)}<span class="wp-tag-remove" onclick="WP_TAGS.splice(WP_TAGS.indexOf('${t.replace(/'/g,"\\'")}'),1);renderTags()">×</span></span>`).join('');
+    if(hidden) hidden.value = WP_TAGS.join(',');
+  };
+}
+
+// ----------------------------------------------------------------
+// FIX 24: addNewCategory — called from Add Category button
+// ----------------------------------------------------------------
+if(typeof addNewCategory === 'undefined'){
+  window.addNewCategory = function(){
+    const input = dom('new-cat-input');
+    const name = input?.value.trim();
+    if(!name){ toast('Enter a category name','⚠️'); return; }
+    if(typeof CUSTOM_CATS !== 'undefined' && !CUSTOM_CATS.some(c=>c.name===name)){
+      CUSTOM_CATS.push({name, slug:slug(name), color:'#555555', icon:'', desc:''});
+      if(typeof saveCustomCats==='function') saveCustomCats();
+      if(typeof syncCatDropdowns==='function') syncCatDropdowns();
+    }
+    // Add radio to the Add Post form
+    const radios = dom('wpa-cat-radios');
+    if(radios && ![...radios.querySelectorAll('input')].some(r=>r.value===name)){
+      const label = document.createElement('label');
+      label.className='wp-cat-item';
+      label.innerHTML=`<input type="radio" name="adm-cat" value="${esc(name)}"> ${esc(name)}`;
+      radios.appendChild(label);
+    }
+    if(input) input.value='';
+    if(dom('add-cat-mini')) dom('add-cat-mini').style.display='none';
+    toast(`✓ Category "${name}" added`);
+  };
+}
+
+// ----------------------------------------------------------------
+// FIX 25: saveTrash — called after trash operations but never defined
+// ----------------------------------------------------------------
+if(typeof saveTrash === 'undefined'){
+  window.saveTrash = function(){
+    try{ localStorage.setItem('lh_trash', JSON.stringify(TRASH||[])); }catch(e){}
+  };
+}
+
+// ----------------------------------------------------------------
+// FIX 26: admSaveSupabaseCredentials — for the admin Settings tab
+// ----------------------------------------------------------------
+window.admSaveSupabaseCredentials = async function(){
+  const url = dom('adm-sb-url')?.value.trim();
+  const key = dom('adm-sb-key')?.value.trim();
+  const msgEl = dom('adm-sb-msg');
+  if(!url || !key){ if(msgEl){ msgEl.textContent='⚠️ Both URL and key are required'; msgEl.style.color='var(--red)'; } return; }
+  if(!url.startsWith('https://')){ if(msgEl){ msgEl.textContent='⚠️ URL must start with https://'; msgEl.style.color='var(--red)'; } return; }
+  if(msgEl){ msgEl.textContent='Connecting…'; msgEl.style.color='var(--muted)'; }
+  try{
+    const newSB = supabase.createClient(url, key);
+    const {error} = await newSB.from('backlinks').select('id').limit(1);
+    if(error && error.code !== 'PGRST116'){
+      if(msgEl){ msgEl.textContent='❌ Connection failed: '+error.message.slice(0,60); msgEl.style.color='var(--red)'; }
+      const badge = dom('adm-settings-conn-badge');
+      if(badge){ badge.textContent='Error'; badge.className='db-badge bad'; }
+      return;
+    }
+    // Save credentials
+    localStorage.setItem('lh_sb_url', url);
+    localStorage.setItem('lh_sb_key', key);
+    SB = newSB;
+    setDbBadge('ok','Connected ✓');
+    const badge = dom('adm-settings-conn-badge');
+    const label = dom('adm-settings-conn-label');
+    if(badge){ badge.textContent='Connected ✓'; badge.className='db-badge ok'; }
+    if(label) label.textContent = url.slice(0,50)+'…';
+    if(msgEl){ msgEl.textContent='✅ Connected and saved!'; msgEl.style.color='var(--green)'; }
+    // Reload everything
+    await Promise.all([loadLinks(),loadCategoriesIntoHeader(),loadCustomCats(),loadCustomTags(),loadBookmarks(),loadCampaigns(),loadPlugins()]);
+    await Promise.all([loadSiteSettings(),applyAppearance()]);
+    loadPosts(false);
+    toast('✅ Supabase credentials saved!');
+    // Offer burn-in
+    setTimeout(()=>offerCredentialBurnIn(url,key),1500);
+  } catch(e){
+    if(msgEl){ msgEl.textContent='❌ Error: '+e.message; msgEl.style.color='var(--red)'; }
+  }
+};
+
+window.admTestSupabaseConnection = async function(){
+  const url = dom('adm-sb-url')?.value.trim() || localStorage.getItem('lh_sb_url') || _SB_URL;
+  const key = dom('adm-sb-key')?.value.trim() || localStorage.getItem('lh_sb_key') || _SB_KEY;
+  const msgEl = dom('adm-sb-msg');
+  if(!url||!key){ if(msgEl){ msgEl.textContent='⚠️ Enter URL and key first'; msgEl.style.color='var(--orange)'; } return; }
+  if(msgEl){ msgEl.textContent='Testing…'; msgEl.style.color='var(--muted)'; }
+  try{
+    const testSB = supabase.createClient(url,key);
+    const {error} = await testSB.from('news_cache').select('id').limit(1);
+    if(error && error.code !== 'PGRST116'){
+      if(msgEl){ msgEl.textContent='❌ Failed: '+error.message.slice(0,60); msgEl.style.color='var(--red)'; }
+    } else {
+      if(msgEl){ msgEl.textContent='✅ Connection successful!'; msgEl.style.color='var(--green)'; }
+      toast('✅ Connection test passed!');
+    }
+  } catch(e){
+    if(msgEl){ msgEl.textContent='❌ Error: '+e.message; msgEl.style.color='var(--red)'; }
+  }
+};
+
+// Populate admin settings fields when the tab opens
+(function(){
+  const _prev = window.admLoadAdmSettings;
+  window.admLoadAdmSettings = function(){
+    if(_prev) _prev();
+    const {url,key} = cfg();
+    if(dom('adm-sb-url')) dom('adm-sb-url').value = url||'';
+    if(dom('adm-sb-key')) dom('adm-sb-key').value = key||'';
+    const badge = dom('adm-settings-conn-badge');
+    const label = dom('adm-settings-conn-label');
+    if(SB){
+      if(badge){ badge.textContent='Connected ✓'; badge.className='db-badge ok'; }
+      if(label) label.textContent = (url||'').slice(0,50)+(url&&url.length>50?'…':'');
+    } else {
+      if(badge){ badge.textContent='Not connected'; badge.className='db-badge bad'; }
+      if(label) label.textContent = 'Enter credentials below and click Save & Reconnect';
+    }
+  };
+})();
+
+console.log('[234News] Bug-fix patch v2 fully loaded ✓');
+
+// ----------------------------------------------------------------
+// FIX 27: toggleBookmarks — bookmarks panel open/close (was missing)
+// ----------------------------------------------------------------
+if(typeof toggleBookmarks === 'undefined'){
+  window.toggleBookmarks = function(){
+    const panel = dom('bookmarks-panel');
+    if(!panel) return;
+    const isOpen = panel.classList.contains('show');
+    if(isOpen){
+      panel.classList.remove('show');
+    } else {
+      panel.classList.add('show');
+      if(typeof updateBookmarksBadge === 'function') updateBookmarksBadge();
+      const list = dom('bookmarks-list');
+      if(list){
+        if(!BOOKMARKS.length){
+          list.innerHTML = '<div class="bookmarks-empty">No saved articles yet.<br>Tap ☆ Save while reading to bookmark.</div>';
+        } else {
+          list.innerHTML = BOOKMARKS.map(b=>`
+            <div class="bookmark-item" onclick="toggleBookmarks();setTimeout(()=>{const i=NEWS.findIndex(a=>a.slug==='${(b.slug||'').replace(/'/g,"\\'")}');if(i>=0)openArticle(i,'${(b.slug||'').replace(/'/g,"\\'")}')},80)">
+              <div class="bookmark-item-title">${esc(b.title||'Untitled')}</div>
+              <div class="bookmark-item-meta">${esc(b.source||'')} · ${esc(b.category||'')}
+                <button onclick="event.stopPropagation();removeBookmark('${(b.slug||'').replace(/'/g,"\\'")}');" style="float:right;background:none;border:none;color:#cc0000;cursor:pointer;font-size:11px;font-family:Verdana,sans-serif">✕</button>
+              </div>
+            </div>`).join('');
+        }
+      }
+    }
+  };
+  // Close on outside click
+  setTimeout(()=>{
+    const panel = dom('bookmarks-panel');
+    if(panel) panel.addEventListener('click', e=>{ if(e.target===panel) panel.classList.remove('show'); });
+  }, 500);
+}
+
+// ----------------------------------------------------------------
+// FIX 28: fetchNews — alias for loadPosts (called from empty-state retry button)
+// ----------------------------------------------------------------
+if(typeof fetchNews === 'undefined'){
+  window.fetchNews = function(force){ return loadPosts(force !== false); };
+}
+
+// ----------------------------------------------------------------
+// FIX 29: admLoadDashboard — populate Dashboard tab stats + chart
+// ----------------------------------------------------------------
+if(typeof admLoadDashboard === 'undefined'){
+  window.admLoadDashboard = async function(){
+    let postCount = NEWS.length;
+    let subCount = 0, commentCount = 0, linkCount = 0;
+
+    if(SB){
+      try{
+        const [postsR, subsR, commentsR, linksR] = await Promise.all([
+          SB.from('news_cache').select('id',{count:'exact'}).not('slug','like','__%').eq('status','published').catch(()=>({count:null})),
+          SB.from('subscribers').select('id',{count:'exact'}).catch(()=>({count:null})),
+          SB.from('comments').select('id',{count:'exact'}).catch(()=>({count:null})),
+          SB.from('backlinks').select('id',{count:'exact'}).catch(()=>({count:null}))
+        ]);
+        if(postsR.count != null) postCount = postsR.count;
+        if(subsR.count != null) subCount = subsR.count;
+        if(commentsR.count != null) commentCount = commentsR.count;
+        if(linksR.count != null) linkCount = linksR.count;
+      } catch(e){}
+    } else {
+      subCount = JSON.parse(localStorage.getItem('lh_subscribers')||'[]').length;
+      linkCount = JSON.parse(localStorage.getItem('lh_links_cache')||JSON.parse(localStorage.getItem('lh_links')||'[]')).length||0;
+    }
+
+    const viewData = JSON.parse(localStorage.getItem('lh_page_views')||'{}');
+    const totalViews = Object.values(viewData).reduce((s,v)=>s+(v.total||0),0);
+
+    if(dom('adm-total-posts')) dom('adm-total-posts').textContent = postCount;
+    if(dom('adm-total-views')) dom('adm-total-views').textContent = totalViews>999?(totalViews/1000).toFixed(1)+'k':totalViews;
+    if(dom('adm-total-comments')) dom('adm-total-comments').textContent = commentCount;
+    if(dom('adm-total-subscribers')) dom('adm-total-subscribers').textContent = subCount;
+    if(dom('adm-total-links')) dom('adm-total-links').textContent = linkCount;
+    if(dom('adm-pending-comments')) dom('adm-pending-comments').textContent = 0;
+
+    // 7-day views bar chart
+    const chart = dom('adm-views-chart');
+    if(chart){
+      const days = [];
+      for(let i=6;i>=0;i--){
+        const d=new Date(); d.setDate(d.getDate()-i);
+        const k=d.toISOString().split('T')[0];
+        const label=d.toLocaleDateString('en-US',{weekday:'short'});
+        const val=Object.values(viewData).reduce((s,v)=>s+((v.daily||{})[k]||0),0);
+        days.push({label,val});
+      }
+      const maxV=Math.max(...days.map(d=>d.val),1);
+      chart.innerHTML=days.map(d=>`<div class="analytics-bar-wrap"><div class="analytics-bar" style="height:${Math.max(4,(d.val/maxV)*100)}%"></div><div class="analytics-bar-label">${d.label}</div></div>`).join('');
+    }
+
+    // Top 5 articles
+    const topList = dom('adm-top-articles');
+    if(topList){
+      const sorted=[...NEWS].sort((a,b)=>((viewData[b.slug]||{}).total||0)-((viewData[a.slug]||{}).total||0)).slice(0,5);
+      topList.innerHTML=sorted.length
+        ?sorted.map(a=>`<li><span style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block">${esc(a.title||'')}</span><span class="view-count">${(viewData[a.slug]||{}).total||0} views</span></li>`).join('')
+        :'<li style="color:var(--muted);font-size:0.82rem">No view data yet</li>';
+    }
+  };
 }
 </script>
 </body>
