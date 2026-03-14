@@ -1502,7 +1502,11 @@ footer{background:#f5f5f5;border-top:2px solid #cc0000;padding:10px;margin-top:0
 <nav class="cat-bar" role="navigation" aria-label="News categories">
   <div class="cat-inner" id="cat-tabs-inner">
     <button class="cat-tab active" data-cat="all" onclick="switchCat(this,'all')">Front Page</button>
-    <!-- Dynamic tabs injected here by loadCategoriesIntoHeader() -->
+    <button class="cat-tab" data-cat="World" onclick="switchCat(this,'World')">World</button>
+    <button class="cat-tab" data-cat="Celebrity" onclick="switchCat(this,'Celebrity')">Celebrity</button>
+    <button class="cat-tab" data-cat="Sports" onclick="switchCat(this,'Sports')">Sports</button>
+    <button class="cat-tab" data-cat="Live" onclick="switchCat(this,'Live')">Live</button>
+    <button class="cat-tab" data-cat="Movies" onclick="switchCat(this,'Movies')">Movies</button>
   </div>
 </nav>
 
@@ -4461,10 +4465,8 @@ window.addEventListener('popstate', e => {
 // CATEGORIES — Load from Supabase and inject into header nav
 // ================================================================
 async function loadCategoriesIntoHeader(){
-  const inner = dom('cat-tabs-inner');
-  if(!inner) return;
-
-  // FIXED category list — only these 5, in this order
+  // Tabs are hardcoded in HTML — nothing to inject
+  // Just update admin dropdowns
   const CATS = [
     { name:'World',     label:'World',     color:'#7e3af2' },
     { name:'Celebrity', label:'Celebrity', color:'#be185d' },
@@ -4472,21 +4474,6 @@ async function loadCategoriesIntoHeader(){
     { name:'Live',      label:'Live',      color:'#dc2626' },
     { name:'Movies',    label:'Movies',    color:'#b45309' },
   ];
-
-  // Remove previously injected tabs
-  inner.querySelectorAll('.cat-tab[data-dynamic]').forEach(el=>el.remove());
-
-  CATS.forEach(cat => {
-    const btn = document.createElement('button');
-    btn.className = 'cat-tab';
-    btn.dataset.cat = cat.name;
-    btn.dataset.dynamic = '1';
-    btn.textContent = cat.label;
-    btn.onclick = () => switchCat(btn, cat.name);
-    inner.appendChild(btn);
-  });
-
-  // Update admin dropdowns
   populateCategoryDropdowns(CATS);
 }
 
@@ -6182,7 +6169,13 @@ function stripHtml(h){ return(h||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ')
 // ================================================================
 // CATEGORIES MANAGER
 // ================================================================
-const DEFAULT_CATS = []; // Categories are loaded from Supabase only
+const DEFAULT_CATS = [
+  {name:'World',     slug:'world',     color:'#7e3af2', icon:'', desc:''},
+  {name:'Celebrity', slug:'celebrity', color:'#be185d', icon:'', desc:''},
+  {name:'Sports',    slug:'sports',    color:'#057a55', icon:'', desc:''},
+  {name:'Live',      slug:'live',      color:'#dc2626', icon:'', desc:''},
+  {name:'Movies',    slug:'movies',    color:'#b45309', icon:'', desc:''},
+];
 
 let CUSTOM_CATS=[...DEFAULT_CATS];
 async function saveCustomCats(){
@@ -6191,9 +6184,9 @@ async function saveCustomCats(){
   syncCatColorMap(); syncCatDropdowns();
 }
 async function loadCustomCats(){
-  if(SB){ const {data}=await SB.from('categories').select('*').order('sort_order',{ascending:true}).catch(()=>({data:null})); if(data&&data.length){ CUSTOM_CATS=data.map(c=>({name:c.name,slug:c.name.toLowerCase().replace(/[^a-z0-9]+/g,'-'),color:c.color||'#1a56db',icon:c.icon||'',desc:c.description||''})); syncCatColorMap(); syncCatDropdowns(); return; } }
-  try{ const cached=JSON.parse(localStorage.getItem('lh_custom_cats')||'null'); if(cached) CUSTOM_CATS=cached; }catch(e){}
-  syncCatColorMap(); syncCatDropdowns();
+  CUSTOM_CATS = [...DEFAULT_CATS];
+  syncCatColorMap();
+  syncCatDropdowns();
 }
 
 function syncCatColorMap(){
@@ -6212,21 +6205,7 @@ function syncCatDropdowns(){
     else el.innerHTML = opts;
     el.value = prev || CUSTOM_CATS[0]?.name || 'General';
   });
-  // Update cat filter bar on homepage
-  const bar = document.querySelector('.cat-bar');
-  if(bar){
-    const existingSlugs = [...bar.querySelectorAll('.cat-tab')].map(b=>b.dataset.cat);
-    CUSTOM_CATS.forEach(c=>{
-      if(!existingSlugs.includes(c.name)){
-        const btn = document.createElement('button');
-        btn.className = 'cat-tab';
-        btn.dataset.cat = c.name;
-        btn.onclick = function(){ switchCat(this, c.name); };
-        btn.innerHTML = `<span class="cat-icon">${c.icon||''}</span>${esc(c.name)}`;
-        bar.appendChild(btn);
-      }
-    });
-  }
+  // Cat bar is managed exclusively by loadCategoriesIntoHeader — skip here
   // Update posts-cat-filter
   const pcf = dom('posts-cat-filter');
   if(pcf){
@@ -7289,12 +7268,12 @@ const CZ_DEFAULTS = {
   ],
   // Nav tabs
   navTabs: [
-    {label:'Front Page', cat:'General', visible:true},
-    {label:'World', cat:'World', visible:true},
-    {label:'Celebrity', cat:'Celebrity', visible:true},
-    {label:'Sports', cat:'Sports', visible:true},
-    {label:'Live', cat:'Live News', visible:true},
-    {label:'Movies', cat:'Movies', visible:true},
+    {label:'Front Page', cat:'all', visible:true},
+    {label:'World',      cat:'World', visible:true},
+    {label:'Celebrity',  cat:'Celebrity', visible:true},
+    {label:'Sports',     cat:'Sports', visible:true},
+    {label:'Live',       cat:'Live', visible:true},
+    {label:'Movies',     cat:'Movies', visible:true},
   ],
   // Custom CSS
   customCSS: '',
@@ -7588,7 +7567,7 @@ function czApply(T){
   if(T.navTabs){
     const catInner = document.querySelector('.cat-inner');
     if(catInner){
-      const activeCat = ACTIVE_CAT || 'General';
+      const activeCat = ACTIVE_CAT || 'all';
       catInner.innerHTML = T.navTabs
         .filter(t=>t.visible)
         .map(t=>`<button class="cat-tab${t.cat===activeCat?' active':''}" data-cat="${esc(t.cat)}" onclick="switchCat(this,'${esc(t.cat)}')">${esc(t.label)}</button>`)
