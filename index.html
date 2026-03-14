@@ -6063,49 +6063,76 @@ const _origAdmSavePost = admSavePost;
 admSavePost = async function(statusOverride){
   const title = dom('adm-post-title')?.value.trim();
   if(!title){ toast('⚠️ Title required','⚠️'); return; }
+
+  // Sync visual editor to source textarea
   ceSyncToSource();
-  const sl = dom('adm-edit-slug')?.value || slug(title);
+
+  const sl = dom('adm-edit-slug')?.value.trim() || slug(title);
   const status = statusOverride || dom('adm-post-status')?.value || 'published';
   const scheduled = dom('adm-post-scheduled')?.value;
-  // Get selected categories
-  const cats = [...document.querySelectorAll('input[name="adm-cat"]:checked')].map(el=>el.value);
+  const now = new Date().toISOString();
+
+  // Get body from either the new editor or old textarea
+  const bodyVal = dom('adm-post-body-source')?.value
+               || dom('adm-post-body-visual')?.innerHTML
+               || dom('adm-post-body')?.value
+               || '';
+
+  // Get selected category from radio buttons
+  const catRadio = document.querySelector('input[name="adm-cat"]:checked');
+  const category = catRadio?.value || dom('adm-post-cat')?.value || 'World';
+
   const payload = {
-    slug:sl, title,
-    source: dom('adm-post-source')?.value.trim()||'',
-    category: cats[0]||'General',
-    url: dom('adm-post-url')?.value.trim()||'',
-    image: dom('adm-post-image')?.value.trim()||'',
-    summary: dom('adm-post-summary')?.value.trim()||'',
-    body: dom('adm-post-body-source')?.value||'',
-    meta_title: dom('rm-seo-title')?.value.trim()||'',
-    meta_desc: dom('rm-meta-desc')?.value.trim()||'',
-    robots: dom('rm-robots')?.value||'index,follow',
-    og_title: dom('rm-og-title')?.value||'',
-    og_desc: dom('rm-og-desc')?.value||'',
-    og_image: dom('rm-og-image')?.value||'',
-    tw_title: dom('rm-tw-title')?.value||'',
-    tw_desc: dom('rm-tw-desc')?.value||'',
-    schema_type: dom('rm-schema-type')?.value||'NewsArticle',
-    focus_keyword: dom('rm-focus-kw')?.value||'',
-    canonical: dom('rm-custom-canonical')?.value||'',
-    tags: dom('adm-post-tags')?.value||'',
-    sticky: dom('adm-post-sticky')?.checked,
+    slug:       sl,
+    title,
+    source:     dom('adm-post-source')?.value.trim() || '234News',
+    category,
+    url:        dom('adm-post-url')?.value.trim()    || '',
+    image:      dom('adm-post-image')?.value.trim()  || '',
+    summary:    dom('adm-post-summary')?.value.trim()|| '',
+    body:       bodyVal,
+    meta_title: dom('rm-seo-title')?.value.trim()    || title,
+    meta_desc:  dom('rm-meta-desc')?.value.trim()    || '',
     status,
-    scheduled_at: status==='scheduled'&&scheduled ? new Date(scheduled).toISOString() : null,
-    updated_at: new Date().toISOString()
+    sticky:     dom('adm-post-sticky')?.checked || false,
+    noindex:    false,
+    scheduled_at: status==='scheduled' && scheduled ? new Date(scheduled).toISOString() : null,
+    created_at: now,
+    updated_at: now,
   };
-  if(SB) await SB.from('news_cache').upsert(payload,{onConflict:'slug'});
-  // Always update in-memory NEWS array and re-render regardless of status
-  const idx = NEWS.findIndex(a=>a.slug===sl);
-  if(idx>=0) NEWS[idx]={...NEWS[idx],...payload};
-  else if(status==='published') NEWS.unshift(payload);
+
+  // Save to Supabase
+  if(SB){
+    const {error} = await SB.from('news_cache').upsert(payload, {onConflict:'slug'});
+    if(error){ toast('❌ Save failed: '+error.message,'❌'); return; }
+  }
+
+  // Update in-memory NEWS array immediately
+  const idx = NEWS.findIndex(a => a.slug === sl);
+  if(idx >= 0){
+    NEWS[idx] = {...NEWS[idx], ...payload};
+  } else if(status === 'published'){
+    NEWS.unshift(payload);
+  }
+
+  // Re-render homepage instantly
   renderCurrentNews();
-  // Reload from Supabase to confirm post is saved and visible
-  if(SB && status==='published') await loadPosts(true);
-  const msg=dom('adm-post-msg');
-  if(msg){ msg.textContent=`✓ Post ${status==='draft'?'saved as draft':'published'}!`; msg.style.color='var(--green)'; setTimeout(()=>msg.textContent='',4000); }
-  if(status==='published'&&PLUGINS.sitemap) setTimeout(()=>{ generateAndPingSitemap(); generateRSS(); },2000);
-  toast(status==='draft'?'📝 Draft saved':'✓ Post published!');
+
+  // Then reload from Supabase to confirm (non-blocking)
+  if(SB && status === 'published'){
+    setTimeout(() => loadPosts(true), 500);
+  }
+
+  const msg = dom('adm-post-msg');
+  if(msg){
+    msg.textContent = status === 'draft' ? '✓ Draft saved!' : '✓ Post published!';
+    msg.style.color = 'var(--green)';
+    setTimeout(() => msg.textContent = '', 4000);
+  }
+  toast(status === 'draft' ? '📝 Draft saved' : '✓ Post published!');
+  if(status === 'published' && PLUGINS.sitemap){
+    setTimeout(() => { generateAndPingSitemap(); generateRSS(); }, 2000);
+  }
 };
 
 // ================================================================
